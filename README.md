@@ -1,2 +1,2 @@
 # facturio
-Facturio, un super logiciel de gestion de factures.
+Facturio, un logiciel de gestion de factures.
