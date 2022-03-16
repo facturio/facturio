@@ -5,12 +5,8 @@
 from fpdf import FPDF
 
 
-<<<<<<< HEAD
-    def __init__(self, nom_entr = None, num_siren = None, adr= None, tel = None, email=None, logo=None):
-=======
 class Utilisateur:
     def __init__(self, nom_entr=None, nom=None, prenom=None, adr=None, tel=None, email=None, logo=None):
->>>>>>> bfdaf36487b7cc9877f78faa149b2a645093d82c
         self.nom_entr = nom_entr
         self.num_siren = num_siren
         self.adr = adr
@@ -28,16 +24,10 @@ class Particulier:
         self.email = email
 
 
-<<<<<<< HEAD
-    def __init__(self, nom_entr = None,num_siren = None, nom =None, prenom = None, adr = None, tel =None, email = None):
-        super().__init__(nom,prenom,adr,tel,email)
-        self.num_siren= num_siren
-=======
 class Entreprise(Particulier):
     def __init__(self, nom_entr=None, num_siren=None, nom=None, prenom=None, adr=None, tel=None, email=None):
         super().__init__(nom, prenom, adr, tel, email)
         self.num_siren = num_siren
->>>>>>> bfdaf36487b7cc9877f78faa149b2a645093d82c
         self.nom_entr = nom_entr
 
 
@@ -45,29 +35,12 @@ class Entreprise(Particulier):
 # variable pdf
 
 
-
 def creation_devis(Artisan, Client, date, mont, desc):
     """
     Genere un pdf pour un devis avec les infos
     utilisateur et client ...
     """
-<<<<<<< HEAD
     pdf = FPDF()
-    artisan_cell =  ""
-    pdf.set_font("Arial", size = 30)
-    pdf.cell(200, 10, txt = "Devis",
-		ln = 1, align = 'C')
-    pdf.set_font("Arial", size = 15)
-    if not Artisan.logo:
-        pass
-    if not Artisan.nom_entr:
-        artisan_cell += Artisan.nom_entr+'\n'
-    if not Artisan.adr:
-        artisan_cell += Artisan.adr+'\n'
-    if not Artisan.email:
-        artisan_cell += Artisan
-        
-=======
     artisan_cell = ""
     pdf.set_font("Arial", size=30)
     pdf.cell(200, 10, txt="Devis",
@@ -78,7 +51,6 @@ def creation_devis(Artisan, Client, date, mont, desc):
     if not Artisan.nom_entr:
         artisan_cell += Artisan.nom_entr
     if not Artisan.
->>>>>>> bfdaf36487b7cc9877f78faa149b2a645093d82c
 
     pdf.multi_cell(200, 10)
 
