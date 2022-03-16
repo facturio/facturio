@@ -6,10 +6,9 @@ from fpdf import FPDF
 
 class Utilisateur:
 
-    def __init__(self,nom_entr = None, nom = None, prenom = None, adr= None, tel = None, email=None,logo=None):
+    def __init__(self, nom_entr = None, num_siren = None, adr= None, tel = None, email=None, logo=None):
         self.nom_entr = nom_entr
-        self.nom = nom
-        self.prenom = prenom
+        self.num_siren = num_siren
         self.adr = adr
         self.tel = tel
         self.email = email
@@ -26,7 +25,7 @@ class Particulier:
 
 class Entreprise(Particulier):
 
-    def __init__(self,nom_entr = None,num_siren = None, nom =None, prenom = None, adr = None, tel =None, email = None):
+    def __init__(self, nom_entr = None,num_siren = None, nom =None, prenom = None, adr = None, tel =None, email = None):
         super().__init__(nom,prenom,adr,tel,email)
         self.num_siren= num_siren
         self.nom_entr = nom_entr
@@ -34,7 +33,7 @@ class Entreprise(Particulier):
 
 # save FPDF() class into a
 # variable pdf
-pdf = FPDF()
+
 
 
 def creation_devis(Artisan,Client,date,mont,desc):
@@ -42,6 +41,7 @@ def creation_devis(Artisan,Client,date,mont,desc):
     Genere un pdf pour un devis avec les infos
     utilisateur et client ...
     """
+    pdf = FPDF()
     artisan_cell =  ""
     pdf.set_font("Arial", size = 30)
     pdf.cell(200, 10, txt = "Devis",
@@ -50,8 +50,11 @@ def creation_devis(Artisan,Client,date,mont,desc):
     if not Artisan.logo:
         pass
     if not Artisan.nom_entr:
-        artisan_cell += Artisan.nom_entr
-    if not Artisan.
+        artisan_cell += Artisan.nom_entr+'\n'
+    if not Artisan.adr:
+        artisan_cell += Artisan.adr+'\n'
+    if not Artisan.email:
+        artisan_cell += Artisan
         
 
     
