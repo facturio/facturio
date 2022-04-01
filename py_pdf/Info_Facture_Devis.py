@@ -4,7 +4,8 @@ class Utilisateur:
     """
     Classe contenant toutes les informations liées à l'utilisateur
     """
-    def __init__(self, nom_entr=None, email=None, adr=None, tel=None, num_siren=None, logo=None) :
+    def __init__(self, nom_entr:str=None, email:str=None, adr:str=None, 
+                                  tel:str=None, num_siren:str=None, logo=None):
         """
         Les attributs sont initialisés selon leur ordre d'apparition
         """
@@ -20,7 +21,8 @@ class Particulier:
     """
     Classe contenant toutes les informations liées à un client physique
     """
-    def __init__(self, nom=None, prenom=None, email=None, adr=None, tel=None):
+    def __init__(self, nom:str=None, prenom:str=None, email:str=None, 
+                                                adr:str=None, tel:str=None):
         """
         Les attributs sont initialisés selon leur ordre d'apparition
         dans le pdf
@@ -37,13 +39,15 @@ class Entreprise(Particulier):
     """
     Classe contenant toutes les informations liées à un client moral
     """
-    def __init__(self, nom_entr=None, nom=None, prenom=None, email=None, adr=None, tel=None, num_siren=None,):
+    def __init__(self, nom_entr:str=None, nom:str=None, prenom:str=None, 
+                                email:str=None, adr:str=None, tel:str=None, 
+                                                           num_siren:str=None):
         """
         Les attributs sont initialisés selon leur ordre d'apparition
         dans le pdf
         """
         self.nom_entr = nom_entr                        #string
-        super().__init__(nom, prenom, adr, tel, email)  #string, string, string, string, string
+        super().__init__(nom, prenom, adr, tel, email)  #strings
         self.num_siren = num_siren                      #string
 
 
@@ -51,7 +55,7 @@ class Article():
     """
     Classe contenant toutes les informations liées à un article
     """
-    def __init__(self, nom_article, prix, description):
+    def __init__(self, nom_article:str, prix:float, description:str):
         self.nom_article = nom_article                  #string
         self.prix = prix                                #flottant
         self.description = description                  #string
@@ -61,42 +65,58 @@ class Acompte():
     """
     Classe contenant toutes les informations liées à un acomptes
     """
-    def __init__(self, date, montant):
-        
+    def __init__(self, date:str, montant:float):
         self.date = date                               #string
         self.montant = montant                         #flottant
 
 class F_D():
     """
-    Classe contenant toutes les informations communes liées aux factures et devis
+    Classe contenant toutes les informations communes liées aux 
+    factures et devis
     """
-    def __init__(self, utilisateur, client, date, liste_articles, montant = None,commentaire=None):
+    def __init__(self, utilisateur:Utilisateur, client, date:str, 
+                                liste_articles:list, montant:float = None,
+                                                        commentaire:str=None):
         
-        self.utilisateur = utilisateur                  #instance de classe utilisateur
-        self.client = client                            #instance de classe client physique ou moral
-        self.date = date                                #string
-        self.liste_articles = liste_articles            #liste de tuples avec comme couple instance classe article et la quantité en int
-        self.montant = montant                          #flottant
+        #instance de classe utilisateur
+        self.utilisateur = utilisateur    
+        #instance de classe client physique ou moral
+        self.client = client   
+        #string                         
+        self.date = date                                
+        #liste de tuples avec comme couple (Article, int)
+        #   une instance  de classe article et la quantité en int
+        self.liste_articles = liste_articles 
+
+        self.montant = montant                         
         self.commentaire = commentaire                  #entier
 
 
 class Facture():
 
-    def __init__(self, utilisateur, client, date, liste_articles, liste_acomptes, montant = None,commentaire=None):
+    def __init__(self, utilisateur:Utilisateur, client, date:str,               
+        liste_articles:list, liste_acomptes:list = None, 
+                                montant:float = None, commentaire:str=None):
         """
-        Classe contenant toutes les informations communes liées aux factures et devis
+        Classe contenant toutes les informations liées aux factures
         """
-        super().__init__(utilisateur, client, date, liste_articles, montant,commentaire) #attribut classe F_D
-        self.liste_acomptes = liste_acomptes             #liste d'instances de classes d'acomptes
+        #attribut de la classe F_D
+        super().__init__(utilisateur, client, date, liste_articles, 
+            montant,commentaire) 
+        #liste d'instances de classes d'acomptes
+        self.liste_acomptes = liste_acomptes             
 
 
 class Devis():
 
-    def __init__(self, utilisateur, client, date, liste_articles, montant = None,commentaire=None):
+    def __init__(self, utilisateur, client, date, liste_articles,      
+                                             montant = None,commentaire=None):  
         """
-        Classe contenant toutes les informations communes liées aux factures et devis
+        Classe contenant toutes les informations communes liées 
+        aux devis
         """
-        super().__init__(utilisateur, client, date, liste_articles, montant,commentaire) #attribut classe F_D
+        super().__init__(utilisateur, client, date, liste_articles,
+                             montant,commentaire) #attribut classe F_D
         
 
 
