@@ -98,16 +98,15 @@ class Acompte:
     """
     Classe contenant toutes les informations liées à un acomptes
     """
-
-    def __init__(self, date, montant):
-
-        self.date = date  # string
-        self.montant = montant  # flottant
+    def __init__(self, date:str, montant:float):
+        self.date = date                               #string
+        self.montant = montant                         #flottant
 
 
 class F_D:
     """
-    Classe contenant toutes les informations communes liées aux factures et devis
+    Classe contenant toutes les informations communes liées aux 
+    factures et devis
     """
 
     def __init__(
@@ -139,7 +138,7 @@ class Facture:
         commentaire=None,
     ):
         """
-        Classe contenant toutes les informations communes liées aux factures et devis
+        Classe contenant toutes les informations liées aux factures
         """
         super().__init__(
             utilisateur, client, date, liste_articles, montant, commentaire
