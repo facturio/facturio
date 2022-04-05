@@ -10,7 +10,7 @@ if __name__ == '__main__':
 
     args.text
 
-    req = re.compile(".*" + args.text + ".*", re.IGNORECASE)
+    req = re.compile(".*" + re.escape(args.text) + ".*", re.IGNORECASE)
     cls = []
     art = []
 
@@ -22,5 +22,5 @@ if __name__ == '__main__':
         if any([req.match(str(el)) for el in vars(article).values()]):
             art.append(article)
 
-    print([str(c) for c in cls])
-    print([str(c) for c in art])
+    print(art)
+    print(cls)
