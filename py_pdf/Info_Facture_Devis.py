@@ -52,7 +52,8 @@ class Client:
         self.tel = tel  # string
 
     def __str__(self):
-        return self.nom + " " + self.prenom + " | " + self.email + " | " + self.tel
+        return f"{self.nom} | {self.prenom} | {self.email} | " \
+               f"{self.adr}  | {self.tel}"
 
 
 class Entreprise(Client):
