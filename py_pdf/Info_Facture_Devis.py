@@ -100,6 +100,9 @@ class Article:
     def __str__(self):
         return f"{self.nom_article} | f{str(self.prix)}"
 
+    def __repr__(self):
+        return self.__str__()
+
 
 class Acompte:
     """
