@@ -23,12 +23,11 @@ class Utilisateur:
         self.num_siren = num_siren  # string
 
     def __str__(self):
-        return f"{self.log } | {self.nom_entr} " | " + self.email \
-                             + " | " + self.adr + " | " + self.tel  +\ 
-                                                " | " + self.num_siren
+        return f"{self.logo } | {self.nom_entr} | {self.email} | " \
+               f"{self.adr}  | {self.tel} | {self.num_siren}"
+                                               
 
-
-class Particulier:
+class Client:
     """
     Classe contenant toutes les informations liées à un client physique
     """
@@ -56,7 +55,7 @@ class Particulier:
         return self.nom + " " + self.prenom + " | " + self.email + " | " + self.tel
 
 
-class Entreprise(Particulier):
+class Entreprise(Client):
     """
     Classe contenant toutes les informations liées à un client moral
     """
@@ -114,7 +113,7 @@ class F_D:
     def __init__(
         self,
         utilisateur: Utilisateur,
-        client: Particulier,
+        client: Client,
         date: str,
         liste_articles: list[(Article, int)],
         montant=None,
@@ -161,11 +160,11 @@ class Devis:
         )  # attribut classe F_D
 
 
-clement = Particulier("Bazan", "Clement", "clement.bazan@email.com",
+clement = Client("Bazan", "Clement", "clement.bazan@email.com",
                       "AAAAAAAAAAAAAAAAAA", "0123456789")
-quentin = Particulier("Lombardo", "Quentin", "quentin.lombardo@email.com",
+quentin = Client("Lombardo", "Quentin", "quentin.lombardo@email.com",
                       "AAAAAAAAAAAAAAAAAAAAAA", "0000000000")
-youssef = Particulier("Benjelloun", "Youssef",
+youssef = Client("Benjelloun", "Youssef",
                       "youssef.benjelloun@email.com",
                       "AAAAAAAAAAAAAAAAAAAAA", "0101010101")
 
