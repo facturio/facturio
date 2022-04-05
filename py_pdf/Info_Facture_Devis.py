@@ -23,7 +23,9 @@ class Utilisateur:
         self.num_siren = num_siren  # string
 
     def __str__(self):
-        return self.nom_entr + " | " + self.email + " | " + self.tel
+        return f"{self.log } | {self.nom_entr} " | " + self.email \
+                             + " | " + self.adr + " | " + self.tel  +\ 
+                                                " | " + self.num_siren
 
 
 class Particulier:
@@ -114,7 +116,7 @@ class F_D:
         utilisateur: Utilisateur,
         client: Particulier,
         date: str,
-        liste_articles: [(Article, int)],
+        liste_articles: list[(Article, int)],
         montant=None,
         commentaire=None,
     ):
