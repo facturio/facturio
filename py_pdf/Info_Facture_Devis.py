@@ -98,7 +98,7 @@ class Article:
         self.description = description  # string
 
     def __str__(self):
-        return f"{self.nom_article} | f{str(self.prix)}"
+        return f"{self.nom_article} | {str(self.prix)}"
 
     def __repr__(self):
         return self.__str__()
