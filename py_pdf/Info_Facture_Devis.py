@@ -25,7 +25,10 @@ class Utilisateur:
     def __str__(self):
         return f"{self.logo } | {self.nom_entr} | {self.email} | " \
                f"{self.adr}  | {self.tel} | {self.num_siren}"
-                                               
+
+    def __repr__(self):
+        return self.__str__()
+
 
 class Client:
     """
@@ -53,6 +56,9 @@ class Client:
 
     def __str__(self):
         return self.nom + " " + self.prenom + " | " + self.email + " | " + self.tel
+
+    def __repr__(self):
+        return self.__str__()
 
 
 class Entreprise(Client):
@@ -92,7 +98,7 @@ class Article:
         self.description = description  # string
 
     def __str__(self):
-        return self.nom_article + " | " + str(self.prix)
+        return f"{self.nom_article} | f{str(self.prix)}"
 
 
 class Acompte:

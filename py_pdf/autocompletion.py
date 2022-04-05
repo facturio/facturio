@@ -1,23 +1,7 @@
 """Module d'autocomplétion."""
-from Info_Facture_Devis import Particulier, Article
+from Info_Facture_Devis import Particulier, Article, clients, articles
 import argparse
 import re
-
-clement = Particulier("Bazan", "Clement", "clement.bazan@email.com",
-                      "AAAAAAAAAAAAAAAAAA", "0123456789")
-quentin = Particulier("Lombardo", "Quentin", "quentin.lombardo@email.com",
-                      "AAAAAAAAAAAAAAAAAAAAAA", "0000000000")
-youssef = Particulier("Benjelloun", "Youssef",
-                      "youssef.benjelloun@email.com",
-                      "AAAAAAAAAAAAAAAAAAAAA", "0101010101")
-
-ordinateur = Article("ordinateur", 1684.33, "Un ordinateur portable.")
-cable_ethernet = Article("cable ethernet", 9.99, "Un câble ethernet.")
-telephone = Article("telephone", 399.99, "Un téléphone.")
-casque = Article("casque", 69.99, "Un casque audio.")
-
-clients = [clement, quentin, youssef]
-articles = [ordinateur, cable_ethernet, telephone, casque]
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="Autocompletion test.")
