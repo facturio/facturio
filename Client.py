@@ -44,6 +44,37 @@ class Client(Gtk.Window):
         self.grid.attach(self.button, 7, 6, 2, 1)
         self.button3 = Gtk.Button(label="Exporter")
         self.grid.attach(self.button3, 7, 5, 2, 1)
+        self.init_result()
+
+    def init_result(self):
+        """
+        init the list box to add result
+        from search
+        """
+        l_client= [
+        ]
+        self.liste_client= Gtk.ListStore(str, str, str)
+        for client in l_client:
+            self.liste_client.append(client)
+        # creating the treeview, making it use the filter as a model, and adding the columns
+        self.treeview = Gtk.TreeView(model=self.liste_client)
+        for i, column_title in enumerate(
+            ["Nom", "entreprise", "Adresse"]
+        ):
+            renderer = Gtk.CellRendererText()
+            column = Gtk.TreeViewColumn(column_title, renderer, text=i)
+            self.treeview.append_column(column)
+        # setting up the layout, putting the treeview in a scrollwindow, and the buttons in a row
+        self.scrollable_treelist = Gtk.ScrolledWindow()
+        self.grid.attach(self.scrollable_treelist, 3, 5, 4, 10)
+        self.scrollable_treelist.add(self.treeview)
+
+    def add_result(self,res):
+        """
+        take a list of 3 str and add
+        it to the listBox
+        """
+        self.liste_client.append(res)
 
 #########################
 #######TEST##############
