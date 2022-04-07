@@ -45,7 +45,7 @@ class Map(Gtk.Window):
         #Button
         self.init_map()
         self.init_result()
-        #self.mv_map("paris")
+        self.mv_map("15 chemin jean court le haut Pierrefeu")
 
     def init_map(self):
         self.osm = OsmGpsMap.Map()
@@ -58,6 +58,8 @@ class Map(Gtk.Window):
         location = geolocator.geocode(adrss)
         x,y=location.latitude, location.longitude
         self.osm.set_center_and_zoom(x, y,17)
+        pb = GdkPixbuf.Pixbuf.new_from_file_at_size("./icons/poi.png", 50, 50)
+        self.last_image = self.osm.image_add(x, y, pb)
 
 
 
