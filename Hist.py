@@ -27,7 +27,7 @@ class Client(Gtk.Window):
         self.spaceFooter = Gtk.Label(label="")
         self.grid.attach(self.spaceFooter,7,5,1,1)
         # logo
-        self.facturio_label = Gtk.Label(label="Client")
+        self.facturio_label = Gtk.Label(label="Historique")
         #                                     L  T  W  H
         self.grid.attach(self.facturio_label, 3, 2, 6, 1 )
         self.space = Gtk.Label(label="")
@@ -36,14 +36,8 @@ class Client(Gtk.Window):
         self.grid.attach(self.space2,1,6,10,10)
         #search bar
         self.searchbar = Gtk.SearchEntry()
-        self.grid.attach(self.searchbar, 3, 4, 4, 1)
+        self.grid.attach(self.searchbar, 3, 4, 6, 1)
         #Button
-        self.imp = Gtk.Button(label="Importer")
-        self.grid.attach(self.imp, 7, 4, 2, 1)
-        self.button = Gtk.Button(label="Plus")
-        self.grid.attach(self.button, 7, 6, 2, 1)
-        self.button3 = Gtk.Button(label="Exporter")
-        self.grid.attach(self.button3, 7, 5, 2, 1)
         self.init_result()
 
     def init_result(self):
@@ -56,17 +50,15 @@ class Client(Gtk.Window):
         self.liste_client= Gtk.ListStore(str, str, str)
         for client in l_client:
             self.liste_client.append(client)
-        # creating the treeview, making it use the filter as a model, and adding the columns
         self.treeview = Gtk.TreeView(model=self.liste_client)
         for i, column_title in enumerate(
-            ["Nom", "entreprise", "Adresse"]
+            ["Nom", "Date", "descrition"]
         ):
             renderer = Gtk.CellRendererText()
             column = Gtk.TreeViewColumn(column_title, renderer, text=i)
             self.treeview.append_column(column)
-        # setting up the layout, putting the treeview in a scrollwindow, and the buttons in a row
         self.scrollable_treelist = Gtk.ScrolledWindow()
-        self.grid.attach(self.scrollable_treelist, 3, 5, 4, 10)
+        self.grid.attach(self.scrollable_treelist, 3, 5, 6, 10)
         self.scrollable_treelist.add(self.treeview)
 
     def add_result(self,res):
