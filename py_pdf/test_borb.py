@@ -1,5 +1,5 @@
 
-from Info_Facture_Devis import *
+from py_pdf.facture_devis import *
 
 #Import de borb
 from borb.pdf import Document
@@ -83,22 +83,7 @@ def pdf_champs_prestataire(info, date, identifiant):
     return table_001
 
 def _build_invoice_information():    
-    table_001 = Table(number_of_rows=6, number_of_columns=3)
-
-    table_001.add(  
-        Paragraph(  
-            "De",  
-            background_color=HexColor("263238"),  
-            font_color=X11Color("White"),  
-        )  
-    )  
-    table_001.add(  
-        Paragraph(  
-            "A",  
-            background_color=HexColor("263238"),  
-            font_color=X11Color("White"),  
-        )  
-    ) 
+    table_001 = Table(number_of_rows=5, number_of_columns=3)
 	
     table_001.add(Paragraph("[Street Address]"))    
     table_001.add(Paragraph("Date", font="Helvetica-Bold", horizontal_alignment=Alignment.RIGHT))    
@@ -129,14 +114,14 @@ def _build_billing_and_shipping_information():
     table_001 = Table(number_of_rows=6, number_of_columns=2)  
     table_001.add(  
         Paragraph(  
-            "De",  
+            "BILL TO",  
             background_color=HexColor("263238"),  
             font_color=X11Color("White"),  
         )  
     )  
     table_001.add(  
         Paragraph(  
-            "A",  
+            "SHIP TO",  
             background_color=HexColor("263238"),  
             font_color=X11Color("White"),  
         )  
@@ -189,9 +174,8 @@ def _build_itemized_description_table():
     table_001.add(TableCell(Paragraph("Total", font="Helvetica-Bold", horizontal_alignment=Alignment.RIGHT  ), col_span=3,))  
     table_001.add(TableCell(Paragraph("$ 1163.30", horizontal_alignment=Alignment.RIGHT)))  
     table_001.set_padding_on_all_cells(Decimal(2), Decimal(2), Decimal(2), Decimal(2))  
-    table_001.no_borders()  
+    
     return table_001
-
 
 dte = datetime.now()   
 
@@ -210,21 +194,40 @@ page_layout.add(
         width=Decimal(75),        
         height=Decimal(75),    
         ))
-# Invoice information table  
-page_layout.add(_build_invoice_information())  
+# # Invoice information table  
+# page_layout.add(_build_invoice_information())  
   
-# Empty paragraph for spacing  
-page_layout.add(Paragraph(" "))
-page_layout.add(_build_billing_and_shipping_information())
-page_layout.add(Paragraph(" "))
-page_layout.add(_build_itemized_description_table())
+# # Empty paragraph for spacing  
+# page_layout.add(Paragraph(" "))
+# page_layout.add(_build_billing_and_shipping_information())
+# page_layout.add(Paragraph(" "))
+# page_layout.add(_build_itemized_description_table())
 
 
-pdf.append_page(page)
+# pdf.append_page(page)
 
 
     
-# store the PDF
-with open(Path("output.pdf"), "wb") as pdf_file_handle:
+# # store the PDF
+# with open(Path("output.pdf"), "wb") as pdf_file_handle:
+#     PDF.dumps(pdf_file_handle, pdf)
+
+#######################################################################
+
+# Invoice information table
+page_layout.add(_build_invoice_information())
+
+# Empty paragraph for spacing
+page_layout.add(Paragraph(" "))
+
+# Billing and shipping information table
+page_layout.add(_build_billing_and_shipping_information())
+
+# Itemized description
+page_layout.add(_build_itemized_description_table())
+
+pdf.append_page(page)
+
+with open("output2.pdf", "wb") as pdf_file_handle:
     PDF.dumps(pdf_file_handle, pdf)
     

@@ -1,5 +1,5 @@
 """Module d'autocomplétion."""
-from Info_Facture_Devis import clients, articles
+from py_pdf.facture_devis import clients, articles
 import argparse
 import re
 
