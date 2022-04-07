@@ -48,11 +48,10 @@ class Client:
         dans le pdf
         attributs : chaîne de caractères
         """
-        self.nom = nom  # string
-        self.prenom = prenom  # string
-        self.email = email  # string
-        self.adr = adr  # string
-        self.tel = tel  # string
+        self.nom = nom  
+        self.prenom = prenom  
+        self.email = email  
+        self.adr = adr  
 
     def __str__(self):
         return f"{self.nom} | {self.prenom} | {self.email} | " \
@@ -81,12 +80,17 @@ class Entreprise(Client):
         Les attributs sont initialisés selon leur ordre d'apparition
         dans le pdf
         """
-        self.nom_entr = nom_entr  # string
-        super().__init__(
-            nom, prenom, adr, tel, email
-        )  # string, string, string, string, string
-        self.num_siren = num_siren  # string
+        self.nom_entr = nom_entr 
+        super().__init__(nom, prenom, adr, tel, email) 
+        self.num_siren = num_siren  
 
+        def __str__(self):
+            return f"{self.nom_entr} | {self.nom} | {self.prenom} | " \
+                   f" | {self.email} | {self.adr} | {self.tel} |"\
+                   f"{self.num_siren}"
+        
+        def __repr__(self):
+            return self.__str__()
 
 class Article:
     """
@@ -94,12 +98,12 @@ class Article:
     """
 
     def __init__(self, nom_article: str, prix: float, description: str):
-        self.nom_article = nom_article  # string
-        self.prix = prix  # flottant
-        self.description = description  # string
+        self.nom_article = nom_article 
+        self.prix = prix  
+        self.description = description 
 
     def __str__(self):
-        return f"{self.nom_article} | {str(self.prix)}"
+        return f"{self.nom_article} | {str(self.prix)} | {self.description}"
 
     def __repr__(self):
         return self.__str__()
@@ -110,8 +114,14 @@ class Acompte:
     Classe contenant toutes les informations liées à un acomptes
     """
     def __init__(self, date:str, montant:float):
-        self.date = date                               #string
-        self.montant = montant                         #flottant
+        self.date = date                              
+        self.montant = montant
+
+    def __str__(self):
+        return f"{self.date} | {str(self.montant)}"
+
+    def __repr__(self):
+        return self.__str__()                        
 
 
 class F_D:
@@ -135,6 +145,9 @@ class F_D:
         self.liste_articles = liste_articles  # liste de tuples (instance classe article, quantité en int)
         self.montant = montant  # flottant
         self.commentaire = commentaire  # entier
+        
+        def __str__(self):
+            return f"{self.date} | {str(self.montant)}"
 
 
 class Facture:
