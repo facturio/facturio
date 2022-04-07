@@ -20,3 +20,10 @@ class Acompte:
     def __repr__(self):
         return self.__str__()   
     
+    def date_string(self):
+        """
+        Retourne la date sous forme de chaîne de caractères
+        """
+        return time.strftime("%d/%m/%Y  %H:%M:%S",time.localtime(self.date))
+
+    

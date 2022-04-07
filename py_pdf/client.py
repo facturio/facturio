@@ -58,7 +58,7 @@ class Entreprise(Client):
         dans le pdf
         """
         self.nom_entr = nom_entr 
-        super().__init__(nom, prenom, adr, tel, email) 
+        super().__init__(nom, prenom, email, adr, tel, commentaire) 
         self.num_siren = num_siren  
 
         def __str__(self):
