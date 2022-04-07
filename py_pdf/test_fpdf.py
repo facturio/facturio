@@ -4,54 +4,7 @@
 
 from fpdf import FPDF
 from datetime import datetime
-
-class Utilisateur:
-    
-    def __init__(self, nom_entr=None, email=None, adr=None, tel=None, num_siren=None, logo=None) :
-        """
-        Les attributs sont initialisés selon leur ordre d'apparition
-        dans le pdf
-        logo : image
-        autres attributs : chaîne de caractères
-        """
-        self.logo = logo
-        self.nom_entr = nom_entr
-        self.email = email
-        self.adr = adr
-        self.tel = tel
-        self.num_siren = num_siren
-
-
-class Particulier:
-    def __init__(self, nom=None, prenom=None, email=None, adr=None, tel=None):
-        """
-        Les attributs sont initialisés selon leur ordre d'apparition
-        dans le pdf
-        attributs : chaîne de caractères
-        """
-        self.nom = nom
-        self.prenom = prenom
-        self.email = email
-        self.adr = adr
-        self.tel = tel
-
-
-class Entreprise(Particulier):
-    def __init__(self, nom_entr=None, nom=None, prenom=None, email=None, adr=None, tel=None, num_siren=None,):
-        """
-        Les attributs sont initialisés selon leur ordre d'apparition
-        dans le pdf
-        attributs : chaîne de caractères
-        """
-        self.nom_entr = nom_entr
-        super().__init__(nom, prenom, adr, tel, email)
-        self.num_siren = num_siren
-        
-
-
-# save FPDF() class into a
-# variable pdf
-
+from facture_devis import *
 
 def cell_artisan(Artisan):
     """

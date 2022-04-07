@@ -1,7 +1,4 @@
 
-from tkinter import CENTER
-
-from grpc import RpcContext
 from facture_devis import *
 
 #Import de borb
@@ -223,82 +220,21 @@ def pdf_champs_prestataire_client(facture_devis):
         table.add(Paragraph(" "))
 
 
-    table.set_padding_on_all_cells(Decimal(1), Decimal(1), Decimal(1), Decimal(1))    		
+    table.set_padding_on_all_cells(Decimal(1), Decimal(1), Decimal(1), 
+                                                                    Decimal(1))    		
     table.no_borders()
     return table
 
-def _build_invoice_information():    
-    table = FlexibleColumnWidthTable(number_of_rows=5, number_of_columns=3)
-	
-    table.add(mail_icon)   
-    table.add(Paragraph("Date", font="Helvetica-Bold", horizontal_alignment=Alignment.RIGHT))    
-    now = datetime.now()    
-    table.add(Paragraph("%d/%d/%d" % (now.day, now.month, now.year)))
-	
-    table.add(Paragraph(" "))    
-    table.add(Paragraph("Invoice #", font="Helvetica-Bold", horizontal_alignment=Alignment.RIGHT))
-    table.add(Paragraph("%d" % random.randint(1000, 10000)))   
-	
-    table.add(phone_icon) 
-    table.add(Paragraph("[Phone]"))
-    table.add(Paragraph("%d/%d/%d" % (now.day, now.month, now.year))) 
-	
-
-    table.add(mail_icon) 
-    table.add(Paragraph("[Email Address]"))    
-    
-    table.add(Paragraph(" "))
-
-
-    table.add(email_icon)
-    table.add(Paragraph("[Company Website]"))
-    table.add(Paragraph(" "))
-
-    #table.set_padding_on_all_cells(Decimal(2), Decimal(2), Decimal(2), Decimal(2))    		
-    #table.no_borders()
-    return table
-
-# def _build_billing_and_shipping_information():  
-#     table = Table(number_of_rows=6, number_of_columns=2)  
-#     table.add(  
-#         Paragraph(  
-#             "BILL TO",  
-#             background_color=HexColor("263238"),  
-#             font_color=X11Color("White"),  
-#         )  
-#     )  
-#     table.add(  
-#         Paragraph(  
-#             "SHIP TO",  
-#             background_color=HexColor("263238"),  
-#             font_color=X11Color("White"),  
-#         )  
-#     )  
-#     table.add(Paragraph("[Recipient Name]"))        # BILLING  
-#     table.add(Paragraph("[Recipient Name]"))        # SHIPPING  
-#     table.add(Paragraph("[Company Name]"))          # BILLING  
-#     table.add(Paragraph("[Company Name]"))          # SHIPPING  
-#     table.add(Paragraph("[Street Address]"))        # BILLING  
-#     table.add(Paragraph("[Street Address]"))        # SHIPPING  
-#     table.add(Paragraph("[City, State, ZIP Code]")) # BILLING  
-#     table.add(Paragraph("[City, State, ZIP Code]")) # SHIPPING  
-#     table.add(Paragraph("[Phone]"))                 # BILLING  
-#     table.add(Paragraph("[Phone]"))                 # SHIPPING  
-#     table.set_padding_on_all_cells(Decimal(2), Decimal(2), Decimal(2), Decimal(2))  
-#     table.no_borders()  
-#     return table
-
-def _build_itemized_description_table(facture_devis):
+def pdf_articles_taxes(facture_devis, monnaie, taxe, remises):
 
 
     list_articles = facture_devis.liste_articles
     nb_articles = len(list_articles)
-
+    
     nb_lignes = nb_articles + 5
-
-    print(nb_articles)
     if(nb_lignes < 15):
         nb_lignes = 15
+    
     table = Table(number_of_rows=nb_lignes, number_of_columns=4)  
     for h in ["DESCRIPTION", "QUANTITÉ", "PRIX UNITAIRE", "TOTAL"]:  
         table.add(  
@@ -307,35 +243,27 @@ def _build_itemized_description_table(facture_devis):
                 background_color=HexColor("5f5f5f"),  
             )  
         )  
-  
-    
     couleur_impaire = HexColor("BBBBBB")  
     couleur_paire = HexColor("FFFFFF")  
-    parite = True
-    for row_number, item in enumerate([("Product 1", 2, 50), ("Product 2", 4, 60), ("Labor", 14, 60)]):  
-        c = couleur_paire if parite else couleur_impaire 
-        parite ^= True
-        table.add(TableCell(Paragraph(item[0]), background_color=c))  
-        table.add(TableCell(Paragraph(str(item[1])), background_color=c))  
-        table.add(TableCell(Paragraph("$ " + str(item[2])), background_color=c))  
-        table.add(TableCell(Paragraph("$ " + str(item[1] * item[2])), background_color=c))
 
-        
+    parite = True
+
     for article in list_articles:  
         c = couleur_paire if parite else couleur_impaire 
         parite ^= True
-        table.add(TableCell(Paragraph(f"""{article[0].nom_article} \n \
-                                            {article[0].description}""", 
-                            respect_newlines_in_text=True), background_color=c))  
+        table.add(TableCell(Paragraph(f"{article[0].nom_article}", 
+                            respect_newlines_in_text=True), 
+                                                    background_color=c))  
         table.add(TableCell(Paragraph(f"{article[1]}"), background_color=c))  
-        table.add(TableCell(Paragraph(f"{article[0].prix}"), 
+        table.add(TableCell(Paragraph(f"{article[0].prix} {monnaie}"), 
                                                         background_color=c))   
-        table.add(TableCell(Paragraph(f"$ {article[1] * article[0].prix}"
+        table.add(TableCell(Paragraph(
+                        f"{round(article[1] * article[0].prix,2)} {monnaie}")
                                                         , background_color=c))    
 	  
 	
     #Si on a moins de 10 articles alors on rajoute des lignes vides
-    while(nb_articles <= 10):
+    while(nb_articles < 10):
         c = couleur_paire if parite else couleur_impaire 
         parite ^= True
         table.add(TableCell(Paragraph(" "), background_color=c)) 
@@ -344,81 +272,117 @@ def _build_itemized_description_table(facture_devis):
         table.add(TableCell(Paragraph(" "), background_color=c)) 
         nb_articles += 1 
   
-    table.add(TableCell(Paragraph("Sous-total", font="Helvetica-Bold", horizontal_alignment=Alignment.RIGHT,), col_span=3,))  
-    table.add(TableCell(Paragraph("$ 1,180.00", horizontal_alignment=Alignment.RIGHT)))  
-    table.add(TableCell(Paragraph("Remises", font="Helvetica-Bold", horizontal_alignment=Alignment.RIGHT,),col_span=3,))  
-    table.add(TableCell(Paragraph("$ 177.00", horizontal_alignment=Alignment.RIGHT)))  
-    table.add(TableCell(Paragraph("Taxes", font="Helvetica-Bold", horizontal_alignment=Alignment.RIGHT), col_span=3,))  
-    table.add(TableCell(Paragraph("$ 100.30", horizontal_alignment=Alignment.RIGHT)))  
-    table.add(TableCell(Paragraph("Total", font="Helvetica-Bold", horizontal_alignment=Alignment.RIGHT  ), col_span=3,))  
-    table.add(TableCell(Paragraph("$ 1163.30", horizontal_alignment=Alignment.RIGHT)))  
-    table.set_padding_on_all_cells(Decimal(2), Decimal(2), Decimal(2), Decimal(2))  
+ 
+    table.add(TableCell(Paragraph("Sous-total", font="Helvetica-Bold", 
+                        horizontal_alignment=Alignment.RIGHT,), col_span=3,))  
+    table.add(TableCell(Paragraph(f"{facture_devis.total()} {monnaie}", 
+                                        horizontal_alignment=Alignment.RIGHT)))
+    if(isinstance(facture_devis, Facture)):
+        #Calcule du total et des taxe
+        tt = facture_devis.total_avec_acomptes()-remises
+        tx = tt*taxe   
+        table.add(TableCell(Paragraph("Remises/Acomptes", 
+            font="Helvetica-Bold", horizontal_alignment=Alignment.RIGHT,),
+                                                                col_span=3,))
+        table.add(TableCell(Paragraph(
+                       f"{facture_devis.total_acomptes() + remises} {monnaie}", 
+                                       horizontal_alignment=Alignment.RIGHT)))
+    else:
+        #Calcule du total et des taxe
+        tt = round(facture_devis.total()-remises, 2)
+        tx = round(tt*taxe,2)  
+        table.add(TableCell(Paragraph("Remises", 
+            font="Helvetica-Bold", horizontal_alignment=Alignment.RIGHT,),
+                                                                col_span=3,))
+        table.add(TableCell(Paragraph(f"{remises} {monnaie}", 
+                                       horizontal_alignment=Alignment.RIGHT)))
+    
+    table.add(TableCell(Paragraph(f"Taxes ({taxe*100}%)", 
+    font="Helvetica-Bold", horizontal_alignment=Alignment.RIGHT), col_span=3,)) 
+
+    table.add(TableCell(Paragraph(f"{round(tx, 2)} {monnaie}", 
+                                        horizontal_alignment=Alignment.RIGHT)))  
+    table.add(TableCell(Paragraph("Total", font="Helvetica-Bold", 
+                        horizontal_alignment=Alignment.RIGHT  ), col_span=3,))  
+    table.add(TableCell(Paragraph(f"{round(tt + tx, 2)} {monnaie} ", 
+                    horizontal_alignment=Alignment.RIGHT)))  
+    table.set_padding_on_all_cells(Decimal(2), 
+                                        Decimal(15), Decimal(2), Decimal(2))  
     
     return table
 
 
-artisan = Utilisateur("Facturio","15 rue des champs Cuers","0734567221", 
+
+  
+
+def construire_pdf(facture_devis, identifiant, monnaie, taxe, remise, 
+                                                                chemin= None):
+
+    # Créer un document pdf
+    pdf = Document()
+
+    # Créer une page pour le pdf
+    page = Page()
+
+    page_layout = SingleColumnLayout(page)
+
+    page_layout.vertical_margin = page.get_page_info().get_height() \
+                                                                * Decimal(0.02)
+    page_layout.add(pdf_entete_logo(facture_devis, identifiant))
+
+
+    # Informations du prestatire et du client
+    page_layout.add(pdf_champs_prestataire_client(facture_devis))
+
+    # Espace pour séparer
+    page_layout.add(Paragraph(" "))
+
+    # Tableaux des articles et des taxes
+    page_layout.add(pdf_articles_taxes(facture_devis, 
+                                                monnaie, taxe, remise))
+    
+    if(chemin == None):
+        chemin = "output.pdf"
+    
+    #On rajoute l'extension si elle n'est pas déjà présente
+    if(chemin[-4:] != ".pdf"):
+        chemin += ".pdf"
+
+    pdf.append_page(page)
+
+    with open(chemin, "wb") as pdf_file_handle:
+        PDF.dumps(pdf_file_handle, pdf)
+    
+    
+
+if __name__ == "__main__":
+    artisan = Utilisateur("Facturio","15 rue des champs Cuers","0734567221", 
                                        "128974654", "facturio@gmail.com",
                                                                 "logo.jpg")
 
-client_physique = Client("Lombardo", "Quentin", "quentin.lombardo@email.com",
-                                        "HLM Sainte-Muse Toulon", "0678905324")
-                
-client_moral = Entreprise("LeRoy", "Ben", "Karim", "287489404",
-            "LeRoy83@sfr.fr", "12 ZAC de La Crau", "0345678910")
+    client_physique = Client("Lombardo", "Quentin", 
+        "quentin.lombardo@email.com", "HLM Sainte-Muse Toulon", "0678905324")
+                    
+    client_moral = Entreprise("LeRoy", "Ben", "Karim", "287489404",
+                "LeRoy83@sfr.fr", "12 ZAC de La Crau", "0345678910")
 
-ordinateur = Article("ordinateur", 1684.33, "Un ordinateur portable.")
-cable_ethernet = Article("cable ethernet", 9.99, "Un câble ethernet.")
-telephone = Article("telephone", 399.99, "Un téléphone.")
-casque = Article("casque", 69.99, "Un casque audio.")
+    ordinateur = Article("ordinateur", 1684.33)
+    cable_ethernet = Article("cable ethernet", 9.99)
+    telephone = Article("telephone", 399.99)
+    casque = Article("casque", 69.99)
 
-paiements = [Acompte(1230.0), Acompte(654)]
+    paiements = [Acompte(1230.0), Acompte(654)]
 
-articles = [(ordinateur, 3), (cable_ethernet, 10), (telephone,1), (casque, 6)]
-
-
-fact = Facture(artisan, client_moral, articles, liste_acomptes =paiements, 
-                            commentaire="Facture de matériel informatiques" )
+    articles = [(ordinateur, 3), (cable_ethernet, 10), (telephone,1), (casque, 6)]
 
 
-dev = Devis(artisan, client_physique, articles, 
-                            commentaire="Facture de matériel informatiques" )
-
-dte = datetime.now()   
-
-# create an empty Document
-pdf = Document()
-
-# add an empty Page
-page = Page()
-
-page_layout = SingleColumnLayout(page)
-
-page_layout.vertical_margin = page.get_page_info().get_height() * Decimal(0.02)
-# page_layout.add(    
-#         Image(        
-#         image=Path("logo.jpg"),        
-#         width=Decimal(75),        
-#         height=Decimal(75),    
-#         ))
-
-page_layout.add(pdf_entete_logo(fact, 1))
+    fact = Facture(artisan, client_moral, articles, liste_acomptes =paiements, 
+                            commentaire="Facture de matériel informatiques")
 
 
-# Invoice information table
-page_layout.add(pdf_champs_prestataire_client(fact))
+    dev = Devis(artisan, client_physique, articles, 
+                            commentaire="Facture de matériel informatiques")
+    mon = "€"
 
-# Empty paragraph for spacing
-page_layout.add(Paragraph(" "))
-
-# Billing and shipping information table
-# page_layout.add(_build_billing_and_shipping_information())
-
-# Itemized description
-page_layout.add(_build_itemized_description_table(fact))
-
-pdf.append_page(page)
-
-with open("output2.pdf", "wb") as pdf_file_handle:
-    PDF.dumps(pdf_file_handle, pdf)
-    
+    construire_pdf(dev, 2, mon, 0, 150, "exemple_devis.pdf")
+    construire_pdf(fact, 4, mon, 0.2, 130, "exemple_facture")
