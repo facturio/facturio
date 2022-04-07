@@ -14,6 +14,7 @@ class Client:
         email: str = None,
         adr: str = None,
         tel: str = None,
+        commentaire: str =None
     ):
         """
         Les attributs sont initialisés selon leur ordre d'apparition
@@ -25,10 +26,11 @@ class Client:
         self.email = email  
         self.adr = adr
         self.tel = tel  
+        self.commentaire = commentaire
 
     def __str__(self):
         return f"{self.nom} | {self.prenom} | {self.email} | " \
-               f"{self.adr}  | {self.tel}"
+               f"{self.adr}  | {self.tel} | {self.commentaire}"
 
     def __repr__(self):
         return self.__str__()
@@ -48,6 +50,7 @@ class Entreprise(Client):
         email: str = None,
         adr: str = None,
         tel: str = None,
+        commentaire: str = None
         
     ):
         """
@@ -60,8 +63,8 @@ class Entreprise(Client):
 
         def __str__(self):
             return f"{self.nom_entr} | {self.nom} | {self.prenom} | " \
-                   f" | {self.email} | {self.adr} | {self.tel} |"\
-                   f"{self.num_siren}"
+                   f" | {self.email} | {self.adr} | {self.tel} | "\
+                   f"{self.num_siren} | {self.commentaire}"
         
         def __repr__(self):
             return self.__str__()

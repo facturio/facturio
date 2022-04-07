@@ -1,5 +1,5 @@
 
-from math import factorial
+
 from acompte import *
 from article import *
 from client import *
@@ -31,12 +31,23 @@ class F_D:
         self.commentaire = commentaire
         
         def __str__(self):
-            return f"{self.utilisateur} | {str(self.client)} | {self.date} | "\
-                   f"{self.liste_articles} | {self.montant} | "\
-                   f"{self.commentaire}"
+            return f"Utilisateur :\n{self.utilisateur}\nClient :\n" \
+            f"{self.client}\nDate :\n {self.date}\nListe des articles :\n"\
+            f"{self.liste_articles}\nMontants :\n{str(self.montant)}\n"\
+            f"Commentaire :\n{self.commentaire}"
         
         def __repr__(self):
             return self.__str__()
+        
+        def total(self):
+            """
+            Calcule le montant à partir de la liste des articles
+            """
+            self.montant = 0
+            for art in self.liste_articles:
+                self.montant += art[0].prix * art[1]
+            
+
 
 
 class Facture(F_D):
@@ -59,13 +70,31 @@ class Facture(F_D):
         )
         self.liste_acomptes = liste_acomptes  
 
-        def __str__(self):
-            return f"{self.utilisateur} | {str(self.client)} | {self.date} | "\
-                   f"{self.liste_articles} | {self.liste_articles} |  "\
-                   f"{self.montant} | {self.commentaire}"
+    def __str__(self):
+        return f"Utilisateur :\n{self.utilisateur}\nClient :\n" \
+            f"{self.client}\nDate :\n{self.date} \nListe des articles :\n"\
+            f"{self.liste_articles}\nListe des acomptes :\n" \
+            f"{self.liste_acomptes}\nMontants : \n{str(self.montant)}\n"\
+            f"Commentaire :\n{self.commentaire}"
         
-        def __repr__(self):
-            return self.__str__()
+    # def __str__(self):
+    #     return f"{self.utilisateur} | {self.client} | {self.date} | "\
+    #                f"{self.liste_articles} | {str(self.montant)} | "\
+    #                f"{self.commentaire}"
+        
+    def __repr__(self):
+        return self.__str__()
+    
+    def total_acompte(self):
+        self.total()
+        if(self.liste_acomptes):
+            for ac in self.liste_acomptes:
+                self.montant -= ac.montant
+
+
+
+    
+
 
 class Devis(F_D):
     """
@@ -86,9 +115,10 @@ class Devis(F_D):
             utilisateur, client, date, liste_articles, montant, commentaire
         )  # attribut classe F_D
     def __str__(self):
-            return f"{self.utilisateur} | {str(self.client)} | {self.date} | "\
-                   f"{self.liste_articles} | {self.montant} | "\
-                   f"{self.commentaire}"
+            return f"Utilisateur :\n{self.utilisateur}\nClient :\n" \
+            f"{self.client}\nDate :\n {self.date}\nListe des articles :\n"\
+            f"{self.liste_articles}\nMontants :\n{str(self.montant)}\n"\
+            f"Commentaire :\n{self.commentaire}"
     
     def __repr__(self):
         return self.__str__()
@@ -120,3 +150,8 @@ fact = Facture(artisan, client_moral, "23/05/2022", articles, paiements,None,
 
 dev = Devis(artisan, client_physique, "23/05/2022", articles, None, 
                                          "Facture de matériel informatiques" )
+
+print(fact)
+
+print()
+print(dev)
