@@ -14,18 +14,8 @@ class Afficher(Gtk.Window):
         style_context = Gtk.StyleContext()
         style_context.add_provider_for_screen(screen, provider,
                                               Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION)
-        #grid
-        self.grid = Gtk.Grid()
-        self.add(self.grid)
-        self.grid.set_column_homogeneous(True)
-        self.grid.set_row_homogeneous(True)
-        self.grid.set_row_spacing(20)
-        self.grid.set_column_spacing(20)
-        # spaces
-        self.spaceHeader = Gtk.Label(label="")
-        self.grid.attach(self.spaceHeader,1,1,10,10)
-        self.spaceFooter = Gtk.Label(label="")
-        self.grid.attach(self.spaceFooter,7,5,1,1)
+        self.init_grid()
+        self.space()
         self.facturio_label = Gtk.Label(label="Afficher")
         self.grid.attach(self.facturio_label, 3, 2, 6, 1 )
         if is_ut:
@@ -47,6 +37,16 @@ class Afficher(Gtk.Window):
             self.nums("test")
             self.entreprise("test")
             self.siret("test")
+
+    def space(self):
+        """
+        Ajoute les espace
+        pour l'ergonomie
+        """
+        spaceh = Gtk.Label(label="")
+        self.grid.attach(spaceh,1,1,10,10)
+        spacef = Gtk.Label(label="")
+        self.grid.attach(spacef,7,5,1,1)
 
     def adrss(self,adr):
         boxadress= Gtk.Box()
@@ -105,6 +105,18 @@ class Afficher(Gtk.Window):
         boxcom.pack_start(self.com, False, False, 0)
         boxcom.override_background_color(Gtk.StateType.NORMAL, Gdk.RGBA(.5,.5,.5,.5))
         self.grid.attach(boxcom, 7, 10, 3, 3 )
+
+    def init_grid(self):
+        """
+        Propriete de la Grid Gtk
+        voir doc
+        """
+        self.grid = Gtk.Grid()
+        self.add(self.grid)
+        self.grid.set_column_homogeneous(True)
+        self.grid.set_row_homogeneous(True)
+        self.grid.set_row_spacing(20)
+        self.grid.set_column_spacing(20)
 
 #########################
 #######TEST##############

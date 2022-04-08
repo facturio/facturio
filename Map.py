@@ -39,8 +39,9 @@ class Map(Gtk.Window):
 
     def search(self,l_attach):
         """
-        Invoque les bouton:
-        Importer,Exporter,Creer
+        Prend un emplacement et
+        Invoque la barre de recherche
+        a cette emplacement
         """
         searchbar = Gtk.SearchEntry()
         self.grid.attach(searchbar, *l_attach)
