@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 import gi
 gi.require_version("Gtk", "3.0")
-from gi.repository import Gtk, Gdk
+from gi.repository import Gtk, Gdk, GdkPixbuf
+
 
 class MyWindow(Gtk.Window):
     def __init__(self):
@@ -40,11 +41,16 @@ class MyWindow(Gtk.Window):
         self.grid.attach(self.searchbar, 3, 3, 6, 1)
 
         #icons
-        self.invoice_icon= Gtk.Image.new_from_file("./icons/invoice.png")
+        self.invoice_icon= Gtk.Image.new_from_file("./icons/Plus.png")
         # self.evbox= Gtk.EventBox()
         # self.evbox.add(self.invoice_icon)
         # self.evbox.connect("button-press-event", self.on_box_clicked)
-        self.button = Gtk.Button(label="Facture")
+        W_Weight, W_Height=self.get_size()
+        print(type(W_Height))
+        pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_scale(filename='./icons/Plus.png', width=240000/W_Weight, height=240000/W_Height, preserve_aspect_ratio=True)
+        img = Gtk.Image.new_from_pixbuf(pixbuf)
+        self.button = Gtk.Button()
+        self.button.add(img)
         self.grid.attach(self.button, 3, 5, 2, 1)
 
         self.button2 = Gtk.Button(label="Historique")
