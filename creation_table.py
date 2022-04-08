@@ -20,9 +20,7 @@ def creation_table_client(cursor,connexion):
     courriel STRING,
     courrier STRING,
     tel STRING,
-    commentaire STRING,
-    nom_entreprise STRING,
-    num_SIRET INTEGER
+    commentaire STRING
     )
     """)
 
@@ -31,8 +29,8 @@ def creation_table_client(cursor,connexion):
 def creation_table_utilisateur(cursor,connexion):
     cursor.execute("""
     CREATE TABLE IF NOT EXISTS utilisateur
-    ( num_tilisateur INTEGER PRIMARY KEY AUTOINCREMENT,
-    logo BLOB
+    ( num_utilisateur INTEGER PRIMARY KEY AUTOINCREMENT,
+    logo BLOB,
     nom_entreprise STRING,
     courriel STRING,
     courrier STRING,
@@ -47,7 +45,7 @@ def creation_table_utilisateur(cursor,connexion):
 def creation_table_acompte(cursor,connexion):
     cursor.execute("""
     CREATE TABLE IF NOT EXISTS accompte
-    (id_acompte INTEGER PRIMARY KEY,
+    (id_acompte INTEGER PRIMARY KEY AUTOINCREMENT,
     date INTEGER
     montant STRING,
     id_fac INTEGER,
@@ -71,16 +69,16 @@ def creation_table_article(cursor,connexion):
 def creation_table_facture_devis(cursor,connexion):
     cursor.execute("""
     CREATE TABLE IF NOT EXISTS facture_devis
-    ( id_facdev INTEGER PRIMARY KEY,
+    ( id_facdev INTEGER PRIMARY KEY AUTOINCREMENT,
     montant FLOAT,
     date INTEGER,
     description STRING,
-    notes STRING
-    commentaire STRING
+    notes STRING,
+    commentaire STRING,
     id_client INTEGER,
     id_util INTEGER,
-
-    FOREIGN KEY(id_util) REFERENCES utilisateur(id_util)
+    FOREIGN KEY(id_util) REFERENCES utilisateur(num_utilisateur),
+    FOREIGN KEY(id_client) REFERENCES client(id_client)
     )
     """)
 

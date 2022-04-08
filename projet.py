@@ -2,10 +2,14 @@
 import sqlite3
 from creation_table import *
 from insertion import *
-
+from datetime import date
 """
-autoincrement
-isnertion utilisateur voir logo
+a faire :
+
+id de facdev
+faire insertion_art_dev
+
+partie update et delete
 """
 #pour la creation de notre bdd
 #si il existe pas il est cree
@@ -26,11 +30,30 @@ creation_table_facture_devis(cursor,connexion)
 creation_table_facture(cursor,connexion)
 creation_table_art_dev(cursor,connexion)
 creation_table_acompte(cursor,connexion)
-"""fonction insertion dans la bdd """
+"""------------------------fonction insertion dans la bdd-------------------- """
 liste=["pull","un pull tres moche ",30]
 insertion_article(cursor,connexion,liste)
 
-liste=["logo.png","tomolivier283@gmail.com","avenue toto","0653536789","00543222"]
+liste=["logo.png","entreprise de reve","tomolivier283@gmail.com","avenue toto","0653536789","00543222"]
 insertion_utilisateur(cursor,connexion,liste)
+
+#booleen egale a 0 pour savoir si c'est un client et 1 pour une entreprise
+liste=["olivier","tom","tomolivier283@gmail.com","avenue du paradi","0675849320","le plus bg","entreprise","12345678"]
+bool=1
+insertion_client_ou_entreprise(cursor,connexion,liste,bool)
+
+data=date.today()
+#recuperation des id
+liste=[100.0,data,"acheter des vetement","10","de la merde",1,1]
+insertion_fac_dev(cursor,connexion,liste)
+insertion_fac(cursor,connexion,liste)
+#liste fac
+liste=[1]
+insertion_acompte(cursor,connexion,liste)
+
+insertion_art_dev(cursor,connexion,liste)
+"""------------------- fonction update dans la bdd --------------------"""
+
+"""--------------------fonction delete dans la bdd-------------------- """
 #fermer la connexion
 connexion.close()
