@@ -43,9 +43,9 @@ class Company(Client):
         surname: str,
         first_name: str,
         siren_number: str,
-        email: str = None,
-        adr: str = None,
-        phone: str = None,
+        email: str,
+        adr: str,
+        phone: str,
         note: str = None
         
     ):

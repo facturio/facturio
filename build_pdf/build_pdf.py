@@ -28,7 +28,7 @@ import sys
 #Import classes objet
 sys.path.append('../')
 from Invoice_classes.estimate_invoice import *
-#Layout Element pour l'insertion des images dans le pdf
+#Layout Element pour l'insertion d'icônes dans le pdf
 mail_icon: LayoutElement = Image(
     image=Path("icons/mail.png"),
     width=Decimal(10),
@@ -102,10 +102,102 @@ def pdf_header(receipt, id):
     table.add(Paragraph(f" {receipt.date_string()}", 
                                         respect_spaces_in_text=True))  
     table.no_borders()
-
     return table
 
-def pdf_provider_customer(receipt):    
+def pdf_customer_company(table,customer, provider):
+    """
+    Construit la partie client lorsqu'il s'agit d'une entreprise
+    """
+    #Deuxième moitié deuxième ligne
+    table.add(business_icon)
+    table.add(Paragraph(customer.company_name))
+    ### Troisième Ligne
+    #On affiche l'email du client et du prestataire si ils existent
+    if(provider.email == None):
+        table.add(Paragraph(" ")); table.add(Paragraph(" "))  
+    else:
+        table.add(email_icon)  
+        table.add(Paragraph(provider.email))
+
+    table.add(email_icon)  
+    table.add(Paragraph(customer.email))  
+    ### Quatrième Ligne
+    table.add(mail_icon)
+    table.add(Paragraph(provider.adr))
+    table.add(mail_icon)  
+    table.add(Paragraph(customer.adr))
+    ### Cinquième Ligne
+    table.add(phone_icon)
+    table.add(Paragraph(provider.phone))
+    table.add(phone_icon)  
+    table.add(Paragraph(customer.phone))
+    ### Sixième Ligne
+    table.add(Paragraph("N°", font="Helvetica-Bold", 
+                                    horizontal_alignment=Alignment.CENTERED))
+    table.add(Paragraph(f"{provider.siren_number}"))
+    table.add(Paragraph("N°", font="Helvetica-Bold", 
+                                    horizontal_alignment=Alignment.CENTERED))
+    table.add(Paragraph(f"{customer.siren_number}"))
+    ### Septième Ligne
+    table.add(Paragraph(" ")); table.add(Paragraph(" "))
+    # On affiche la ligne correspondant au représentant de l'entreprise  
+    table.add(person_icon)
+    table.add(Paragraph(f"{customer.first_name} {customer.surname}")) 
+    return table
+
+def pdf_customer_individual(table, customer, provider):
+    """
+    Construit la partie client lorsqu'il s'agit d'une entreprise
+    """
+    #Deuxième moitié deuxième ligne
+    table.add(person_icon)
+    table.add(Paragraph(f"{customer.first_name} {customer.surname}"))      
+    ### Troisième Ligne
+    #On affiche l'email du client et du prestataire si ils existent
+    if(provider.email == None):
+        table.add(Paragraph(" ")); table.add(Paragraph(" "))  
+    else:
+        table.add(email_icon)  
+        table.add(Paragraph(provider.email))
+
+    if(customer.email == None):
+        table.add(Paragraph(" ")); table.add(Paragraph(" "))
+    else:
+        table.add(email_icon)  
+        table.add(Paragraph(customer.email))  
+
+    ### Quatrième Ligne
+    table.add(mail_icon)
+    table.add(Paragraph(provider.adr))
+    #On affiche l'adresse du client si elle existe
+    if(customer.adr == None):
+        table.add(Paragraph(" ")); table.add(Paragraph(" "))
+    else:
+        table.add(mail_icon)  
+        table.add(Paragraph(customer.adr))
+
+    ### Cinquième Ligne
+    #On affiche le numéro téléphone du client si il existe
+    table.add(phone_icon)
+    table.add(Paragraph(provider.phone))
+
+    if(customer.phone == None):
+        table.add(Paragraph(" ")); table.add(Paragraph(" "))
+    else:
+        table.add(phone_icon)  
+        table.add(Paragraph(customer.phone))
+
+    ### Sixième Ligne
+    table.add(Paragraph("N°", font="Helvetica-Bold", 
+                                    horizontal_alignment=Alignment.CENTERED))
+    table.add(Paragraph(f"{provider.siren_number}"))
+    table.add(Paragraph(" ")); table.add(Paragraph(" ")) 
+    ### Septième Ligne
+    table.add(Paragraph(" ")); table.add(Paragraph(" "))
+    table.add(Paragraph(" "));table.add(Paragraph(" "))   
+    return table
+
+def pdf_provider_customer(receipt):   
     """
     Retourne une table liée aux informations du prestataire et du client
     """
@@ -123,80 +215,12 @@ def pdf_provider_customer(receipt):
 	### Deuxième Ligne
     table.add(business_icon)
     table.add(Paragraph(provider.company_name))
-
-    #On vérifie si le client est une entreprise si oui on affiche la ligne correspondant au nom de l'entreprise
-    #Si non on affiche le nom et le prenom du client
-    if(isinstance(customer,Company)):
-        table.add(business_icon)
-        table.add(Paragraph(customer.company_name))
-    else:
-        table.add(person_icon)
-        table.add(Paragraph(f"{customer.first_name} {customer.surname}"))
-       
-    ### Troisième Ligne
-    #On affiche l'email du client et du prestataire si ils existent
-    if(provider.email == None):
-        table.add(Paragraph(" "))  
-        table.add(Paragraph(" "))  
-    else:
-        table.add(email_icon)  
-        table.add(Paragraph(provider.email))
-
-    if(customer.email == None):
-        table.add(Paragraph(" "))
-        table.add(Paragraph(" "))
-    else:
-        table.add(email_icon)  
-        table.add(Paragraph(customer.email))  
- 
-    ### Quatrième Ligne
-    table.add(mail_icon)
-    table.add(Paragraph(provider.adr))
-    #On affiche l'adresse du client si elle existe
-    if(customer.adr == None):
-        table.add(Paragraph(" "))
-        table.add(Paragraph(" "))
-    else:
-        table.add(mail_icon)  
-        table.add(Paragraph(customer.adr))
- 	
-    ### Cinquième Ligne
-    #On affiche le numéro téléphone du client si il existe
-    table.add(phone_icon)
-    table.add(Paragraph(provider.phone))
-
-    if(customer.phone == None):
-        table.add(Paragraph(" "))
-        table.add(Paragraph(" "))
-    else:
-        table.add(phone_icon)  
-        table.add(Paragraph(customer.phone))
-
-    ### Sixième Ligne
-    table.add(Paragraph("N°", font="Helvetica-Bold", 
-                                    horizontal_alignment=Alignment.CENTERED))
-    table.add(Paragraph(f"{provider.siren_number}"))
-    # On affiche le numéro siren du client si il s'agit d'une entreprise
+    #On vérifie si l'on traite une entreprise ou un particulier
     if(isinstance(customer, Company)):
-        table.add(Paragraph("N°", font="Helvetica-Bold", 
-                                    horizontal_alignment=Alignment.CENTERED))
-        table.add(Paragraph(f"{customer.siren_number}"))
-    else :
-        table.add(Paragraph(" "))
-        table.add(Paragraph(" "))
-
-    ### Septième Ligne
-    table.add(Paragraph(" "))
-    table.add(Paragraph(" "))
-    # On affiche la ligne correspondant au représentant de l'entreprise 
-    #  si s'en est une
-    if(isinstance(customer, Company)):
-        table.add(person_icon)
-        table.add(Paragraph(f"{customer.first_name} {customer.surname}"))
-    else :
-        table.add(Paragraph(" "))
-        table.add(Paragraph(" "))
-
+        table = pdf_customer_company(table, customer, provider)
+    else:
+        table = pdf_customer_individual(table, customer, provider)
+    
     table.set_padding_on_all_cells(Decimal(1), Decimal(1), Decimal(1), 
                                                                 Decimal(1))    		
     table.no_borders()
@@ -221,7 +245,7 @@ def pdf_articles_tax(receipt, currency, tax, discount):
                 background_color=HexColor("5f5f5f"),  
             )  
         ) 
-    #Couleur différentes entre 
+    #Couleur différente pour chaque lignes qui se suivent 
     odd = HexColor("BBBBBB")  
     even = HexColor("FFFFFF")  
     #Variable pour savoir la parité de la ligne
@@ -248,6 +272,15 @@ def pdf_articles_tax(receipt, currency, tax, discount):
         table.add(TableCell(Paragraph(" "), background_color=c)) 
         table.add(TableCell(Paragraph(" "), background_color=c)) 
         articles_nb += 1 
+    table = pdf_taxes(table, receipt, currency, tax, discount)
+    table.set_padding_on_all_cells(Decimal(2), 
+                                        Decimal(15), Decimal(2), Decimal(2))  
+    return table
+
+def pdf_taxes(table, receipt, currency, tax, discount):
+    """
+    Construit la partie liée aux taxes pour les factures
+    """
     #Calcul du sous total
     table.add(TableCell(Paragraph("Sous-total", font="Helvetica-Bold", 
                         horizontal_alignment=Alignment.RIGHT,), col_span=3,))  
@@ -283,9 +316,7 @@ def pdf_articles_tax(receipt, currency, tax, discount):
     table.add(TableCell(Paragraph("Total", font="Helvetica-Bold", 
                         horizontal_alignment=Alignment.RIGHT  ), col_span=3,))  
     table.add(TableCell(Paragraph(f"{round(tt + tx, 2)} {currency} ", 
-                    horizontal_alignment=Alignment.RIGHT)))  
-    table.set_padding_on_all_cells(Decimal(2), 
-                                        Decimal(15), Decimal(2), Decimal(2))  
+                    horizontal_alignment=Alignment.RIGHT)))   
     return table
 
 def build_pdf(receipt, id, currency, tax, discount, path="output.pdf"):
@@ -322,10 +353,8 @@ if __name__ == "__main__":
     artisan = User("Facturio","15 rue des champs Cuers","0734567221", 
                                        "128974654", "facturio@gmail.com",
                                                                 "logo.jpg")
-
     client_physique = Client("Lombardo", "Quentin", 
-        "quentin.lombardo@email.com", "HLM Sainte-Muse Toulon", "0678905324")
-                    
+        "quentin.lombardo@email.com", "HLM Sainte-Muse Toulon", "0678905324")                  
     client_moral = Company("LeRoy", "Ben", "Karim", "287489404",
                 "LeRoy83@sfr.fr", "12 ZAC de La Crau", "0345678910")
     ordinateur = Article("ordinateur", 1684.33)
@@ -333,7 +362,6 @@ if __name__ == "__main__":
     telephone = Article("telephone", 399.99)
     casque = Article("casque", 69.99)
     paiements = [Advance(1230.0), Advance(654)]
-
     articles = [(ordinateur, 3), (cable_ethernet, 10), (telephone,1), 
                                                                 (casque, 6)]
     fact = Invoice(artisan, client_moral, articles, advances_list =paiements, 
