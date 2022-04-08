@@ -26,32 +26,25 @@ class Client(Gtk.Window):
         style_context = Gtk.StyleContext()
         style_context.add_provider_for_screen(screen, provider,
                                               Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION)
-        self.grid = Gtk.Grid()
-        self.add(self.grid)
-        self.grid.set_column_homogeneous(True)
-        self.grid.set_row_homogeneous(True)
-        self.grid.set_row_spacing(20)
-        self.grid.set_column_spacing(20)
+        self.init_grid()
         facturio_label = Gtk.Label(label="Client")
         self.grid.attach(facturio_label, 3, 2, 6, 1 )
         self.space()
         self.search((3,4,4,1))
         self.summon_button()
-        self.init_result()
+        self.init_result(["Nom","Entreprise","Adresse"])
+
 
     def space(self):
         """
         Ajoute les espace
         pour l'ergonomie
         """
-        spaceHeader = Gtk.Label(label="")
-        self.grid.attach(spaceHeader,1,1,10,10)
-        spaceFooter = Gtk.Label(label="")
-        self.grid.attach(spaceFooter,7,5,1,1)
-        space = Gtk.Label(label="")
-        self.grid.attach(space,1,5,10,10)
-        space2 = Gtk.Label(label="")
-        self.grid.attach(space2,1,6,10,10)
+        spaceh = Gtk.Label(label="")
+        self.grid.attach(spaceh,1,1,10,10)
+        spacef = Gtk.Label(label="")
+        self.grid.attach(spacef,7,5,1,1)
+
 
     def search(self,l_attach):
         """
@@ -70,12 +63,12 @@ class Client(Gtk.Window):
         p_button=(("Importer",(7,4,2,1)),
                   ("Plus",(7,5,2,1)),
                   ("Exporter",(7,6,2,1)))
-        for p in p_button:
-            but = Gtk.Button(label=p[0])
-            self.grid.attach(but, *p[1])
+        for para in p_button:
+            but = Gtk.Button(label=para[0])
+            self.grid.attach(but, *para[1])
 
 
-    def init_result(self):
+    def init_result(self,para):
         """
         Initialise la barre de recherche
         et permet l'ajout grace a la methode
@@ -87,9 +80,7 @@ class Client(Gtk.Window):
         for client in l_client:
             self.liste_client.append(client)
         self.treeview = Gtk.TreeView(model=self.liste_client)
-        for i, column_title in enumerate(
-            ["Nom", "entreprise", "Adresse"]
-        ):
+        for i, column_title in enumerate(para):
             renderer = Gtk.CellRendererText()
             column = Gtk.TreeViewColumn(column_title, renderer, text=i)
             self.treeview.append_column(column)
@@ -103,6 +94,18 @@ class Client(Gtk.Window):
         et les ajoute aux resultat de la barre
         """
         self.liste_client.append(res)
+
+    def init_grid(self):
+        """
+        Propriete de la Grid Gtk
+        voir doc
+        """
+        self.grid = Gtk.Grid()
+        self.add(self.grid)
+        self.grid.set_column_homogeneous(True)
+        self.grid.set_row_homogeneous(True)
+        self.grid.set_row_spacing(20)
+        self.grid.set_column_spacing(20)
 
 #########################
 #######TEST##############
