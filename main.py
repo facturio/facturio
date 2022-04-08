@@ -4,6 +4,7 @@ from gi.repository import Gtk, Gdk, Gio, GObject
 import sys
 from invoice_hmi import InvoicePage
 from home_hmi import MainPage, HeaderBar
+from customer_hmi import Customer
 
 class Window(Gtk.ApplicationWindow):
     def __init__(self, *args, **kwargs):
@@ -32,6 +33,8 @@ class Window(Gtk.ApplicationWindow):
         self.stack.add_named(self.main_page, "home_page")
         self.invoice_page = InvoicePage()
         self.stack.add_named(self.invoice_page, "invoice_page")
+        self.customer_page = Customer()
+        self.stack.add_named(self.customer_page, "customer_page")
 
         self.add(self.stack)
 
@@ -56,9 +59,9 @@ class App(Gtk.Application):
         self.window.initial_show()
         self.add_window(self.window)
 
-# win = MyWindow()
-app = App()
-app.run(sys.argv)
-# win.connect("destroy", Gtk.main_quit)
-# win.show_all()
-# Gtk.main()
+
+def main():
+    app = App()
+    app.run(sys.argv)
+if __name__ == "__main__":
+    main()
