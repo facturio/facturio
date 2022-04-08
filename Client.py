@@ -4,8 +4,20 @@ gi.require_version("Gtk", "3.0")
 from gi.repository import Gtk, Gdk, Gio, GdkPixbuf
 
 class Client(Gtk.Window):
+    """
+    Classe IHM de le fenetre client,
+    Elle permet d'importer, exporter,
+    creer.
+
+    +--------+
+    |--| [I] |
+    |  | [C] |
+    |__| [E] |
+    +--------+
+    """
     def __init__(self):
         super().__init__(title="Facturio: Client")
+        self.connect("destroy", lambda x: Gtk.main_quit())
         self.resize(1920, 1080)
         self.set_hexpand(False)
         provider = Gtk.CssProvider()
@@ -14,37 +26,60 @@ class Client(Gtk.Window):
         style_context = Gtk.StyleContext()
         style_context.add_provider_for_screen(screen, provider,
                                               Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION)
-        #grid
         self.grid = Gtk.Grid()
         self.add(self.grid)
         self.grid.set_column_homogeneous(True)
         self.grid.set_row_homogeneous(True)
         self.grid.set_row_spacing(20)
         self.grid.set_column_spacing(20)
-        self.spaceHeader = Gtk.Label(label="")
-        self.grid.attach(self.spaceHeader,1,1,10,10)
-        self.spaceFooter = Gtk.Label(label="")
-        self.grid.attach(self.spaceFooter,7,5,1,1)
-        self.facturio_label = Gtk.Label(label="Client")
-        self.grid.attach(self.facturio_label, 3, 2, 6, 1 )
-        self.space = Gtk.Label(label="")
-        self.grid.attach(self.space,1,5,10,10)
-        self.space2 = Gtk.Label(label="")
-        self.grid.attach(self.space2,1,6,10,10)
-        self.searchbar = Gtk.SearchEntry()
-        self.grid.attach(self.searchbar, 3, 4, 4, 1)
-        self.imp = Gtk.Button(label="Importer")
-        self.grid.attach(self.imp, 7, 4, 2, 1)
-        self.button = Gtk.Button(label="Plus")
-        self.grid.attach(self.button, 7, 6, 2, 1)
-        self.button3 = Gtk.Button(label="Exporter")
-        self.grid.attach(self.button3, 7, 5, 2, 1)
+        facturio_label = Gtk.Label(label="Client")
+        self.grid.attach(facturio_label, 3, 2, 6, 1 )
+        self.space()
+        self.search((3,4,4,1))
+        self.summon_button()
         self.init_result()
+
+    def space(self):
+        """
+        Ajoute les espace
+        pour l'ergonomie
+        """
+        spaceHeader = Gtk.Label(label="")
+        self.grid.attach(spaceHeader,1,1,10,10)
+        spaceFooter = Gtk.Label(label="")
+        self.grid.attach(spaceFooter,7,5,1,1)
+        space = Gtk.Label(label="")
+        self.grid.attach(space,1,5,10,10)
+        space2 = Gtk.Label(label="")
+        self.grid.attach(space2,1,6,10,10)
+
+    def search(self,l_attach):
+        """
+        Invoque les bouton:
+        Importer,Exporter,Creer
+        """
+        searchbar = Gtk.SearchEntry()
+        self.grid.attach(searchbar, *l_attach)
+
+
+    def summon_button(self):
+        """
+        Invoque les bouton:
+        Importer,Exporter,Creer
+        """
+        p_button=(("Importer",(7,4,2,1)),
+                  ("Plus",(7,5,2,1)),
+                  ("Exporter",(7,6,2,1)))
+        for p in p_button:
+            but = Gtk.Button(label=p[0])
+            self.grid.attach(but, *p[1])
+
 
     def init_result(self):
         """
-        init the list box to add result
-        from search
+        Initialise la barre de recherche
+        et permet l'ajout grace a la methode
+        add_result
         """
         l_client= [
         ]
@@ -64,8 +99,8 @@ class Client(Gtk.Window):
 
     def add_result(self,res):
         """
-        take a list of 3 str and add
-        it to the listBox
+        Prend une liste de 3 str
+        et les ajoute aux resultat de la barre
         """
         self.liste_client.append(res)
 
@@ -73,6 +108,5 @@ class Client(Gtk.Window):
 #######TEST##############
 #########################
 win =Client()
-win.connect("destroy", Gtk.main_quit)
 win.show_all()
 Gtk.main()
