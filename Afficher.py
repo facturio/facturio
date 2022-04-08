@@ -4,7 +4,7 @@ gi.require_version("Gtk", "3.0")
 from gi.repository import Gtk, Gdk, Gio, GdkPixbuf
 
 class Afficher(Gtk.Window):
-    def __init__(self):
+    def __init__(self,is_ut):
         super().__init__(title="Facturio: Afficher")
         self.resize(1920, 1080)
         self.set_hexpand(False)
@@ -26,16 +26,27 @@ class Afficher(Gtk.Window):
         self.grid.attach(self.spaceHeader,1,1,10,10)
         self.spaceFooter = Gtk.Label(label="")
         self.grid.attach(self.spaceFooter,7,5,1,1)
-        # logo
         self.facturio_label = Gtk.Label(label="Afficher")
         self.grid.attach(self.facturio_label, 3, 2, 6, 1 )
-        self.adrss("test")
-        self.mails("test")
-        self.nums("test")
-        self.entreprise("test")
-        self.siret("test")
-        self.logo("./icons/Moi.jpg")
-        self.commentaire("./icons/Moi.jpg")
+        if is_ut:
+            # logo
+            self.adrss("test")
+            self.mails("test")
+            self.nums("test")
+            self.entreprise("test")
+            self.siret("test")
+            self.logo("./icons/Moi.jpg")
+            self.commentaire("./icons/Moi.jpg")
+        else:
+            self.imp = Gtk.Button(label="Parameter")
+            self.grid.attach(self.imp, 7, 2, 2, 1)
+            self.button = Gtk.Button(label="Supprimer")
+            self.grid.attach(self.button, 9, 2, 2, 1)
+            self.adrss("test")
+            self.mails("test")
+            self.nums("test")
+            self.entreprise("test")
+            self.siret("test")
 
     def adrss(self,adr):
         boxadress= Gtk.Box()
@@ -98,7 +109,7 @@ class Afficher(Gtk.Window):
 #########################
 #######TEST##############
 #########################
-win =Afficher()
+win =Afficher(False)
 win.connect("destroy", Gtk.main_quit)
 win.show_all()
 Gtk.main()
