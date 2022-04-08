@@ -3,12 +3,10 @@ import gi
 gi.require_version("Gtk", "3.0")
 from gi.repository import Gtk, Gdk, Gio, GdkPixbuf
 
-class Afficher(Gtk.Window):
+class DisplayUsers(Gtk.Window):
     """
-    Classe IHM de le fenetre Map,
-    Elle permet soit d'afficher la
-    page d'utulisateur soit la page
-    d'un client
+    Classe IHM de le fenetre Map, elle permet soit d'afficher la page
+    d'utilisateur soit la page d'un client
     +--------+
     |---  == |
     |---  -- |
@@ -16,7 +14,6 @@ class Afficher(Gtk.Window):
     """
     def __init__(self,is_ut):
         super().__init__(title="Facturio: Afficher")
-        self.resize(1920, 1080)
         self.set_hexpand(False)
         provider = Gtk.CssProvider()
         provider.load_from_path("./main.css")
@@ -142,6 +139,6 @@ class Afficher(Gtk.Window):
 #########################
 #######TEST##############
 #########################
-win =Afficher(False)
+win =Afficher(True)
 win.show_all()
 Gtk.main()
