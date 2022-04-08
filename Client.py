@@ -21,23 +21,18 @@ class Client(Gtk.Window):
         self.grid.set_row_homogeneous(True)
         self.grid.set_row_spacing(20)
         self.grid.set_column_spacing(20)
-        # spaces
         self.spaceHeader = Gtk.Label(label="")
         self.grid.attach(self.spaceHeader,1,1,10,10)
         self.spaceFooter = Gtk.Label(label="")
         self.grid.attach(self.spaceFooter,7,5,1,1)
-        # logo
         self.facturio_label = Gtk.Label(label="Client")
-        #                                     L  T  W  H
         self.grid.attach(self.facturio_label, 3, 2, 6, 1 )
         self.space = Gtk.Label(label="")
         self.grid.attach(self.space,1,5,10,10)
         self.space2 = Gtk.Label(label="")
         self.grid.attach(self.space2,1,6,10,10)
-        #search bar
         self.searchbar = Gtk.SearchEntry()
         self.grid.attach(self.searchbar, 3, 4, 4, 1)
-        #Button
         self.imp = Gtk.Button(label="Importer")
         self.grid.attach(self.imp, 7, 4, 2, 1)
         self.button = Gtk.Button(label="Plus")
@@ -56,7 +51,6 @@ class Client(Gtk.Window):
         self.liste_client= Gtk.ListStore(str, str, str)
         for client in l_client:
             self.liste_client.append(client)
-        # creating the treeview, making it use the filter as a model, and adding the columns
         self.treeview = Gtk.TreeView(model=self.liste_client)
         for i, column_title in enumerate(
             ["Nom", "entreprise", "Adresse"]
@@ -64,7 +58,6 @@ class Client(Gtk.Window):
             renderer = Gtk.CellRendererText()
             column = Gtk.TreeViewColumn(column_title, renderer, text=i)
             self.treeview.append_column(column)
-        # setting up the layout, putting the treeview in a scrollwindow, and the buttons in a row
         self.scrollable_treelist = Gtk.ScrolledWindow()
         self.grid.attach(self.scrollable_treelist, 3, 5, 4, 10)
         self.scrollable_treelist.add(self.treeview)
