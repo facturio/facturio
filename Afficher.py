@@ -4,6 +4,16 @@ gi.require_version("Gtk", "3.0")
 from gi.repository import Gtk, Gdk, Gio, GdkPixbuf
 
 class Afficher(Gtk.Window):
+    """
+    Classe IHM de le fenetre Map,
+    Elle permet soit d'afficher la
+    page d'utulisateur soit la page
+    d'un client
+    +--------+
+    |---  == |
+    |---  -- |
+    +--------+
+    """
     def __init__(self,is_ut):
         super().__init__(title="Facturio: Afficher")
         self.resize(1920, 1080)
@@ -19,24 +29,35 @@ class Afficher(Gtk.Window):
         self.facturio_label = Gtk.Label(label="Afficher")
         self.grid.attach(self.facturio_label, 3, 2, 6, 1 )
         if is_ut:
-            # logo
-            self.adrss("test")
-            self.mails("test")
-            self.nums("test")
-            self.entreprise("test")
-            self.siret("test")
-            self.logo("./icons/Moi.jpg")
-            self.commentaire("./icons/Moi.jpg")
+            self.utulisateur()
         else:
-            self.imp = Gtk.Button(label="Parameter")
-            self.grid.attach(self.imp, 7, 2, 2, 1)
-            self.button = Gtk.Button(label="Supprimer")
-            self.grid.attach(self.button, 9, 2, 2, 1)
-            self.adrss("test")
-            self.mails("test")
-            self.nums("test")
-            self.entreprise("test")
-            self.siret("test")
+            self.client()
+
+    def utulisateur(self):
+        """
+        Affichage pour utulisateur
+        """
+        self.adrss("test")
+        self.mails("test")
+        self.nums("test")
+        self.entreprise("test")
+        self.siret("test")
+        self.logo("./icons/Moi.jpg")
+        self.commentaire("./icons/Moi.jpg")
+
+    def client(self):
+        """
+        Affichage pour client
+        """
+        self.imp = Gtk.Button(label="Parameter")
+        self.grid.attach(self.imp, 7, 2, 2, 1)
+        self.button = Gtk.Button(label="Supprimer")
+        self.grid.attach(self.button, 9, 2, 2, 1)
+        self.adrss("test")
+        self.mails("test")
+        self.nums("test")
+        self.entreprise("test")
+        self.siret("test")
 
     def space(self):
         """
@@ -122,6 +143,5 @@ class Afficher(Gtk.Window):
 #######TEST##############
 #########################
 win =Afficher(False)
-win.connect("destroy", Gtk.main_quit)
 win.show_all()
 Gtk.main()
