@@ -6,6 +6,7 @@ from invoice_hmi import InvoicePage
 from home_hmi import MainPage, HeaderBar
 from customer_hmi import Customer
 from history_hmi import History
+from map_hmi import Map
 
 class Window(Gtk.ApplicationWindow):
     def __init__(self, *args, **kwargs):
@@ -38,6 +39,8 @@ class Window(Gtk.ApplicationWindow):
         self.stack.add_named(self.customer_page, "customer_page")
         self.history_page = History()
         self.stack.add_named(self.history_page, "history_page")
+        self.map_page = Map()
+        self.stack.add_named(self.map_page, "map_page")
 
         self.add(self.stack)
 
@@ -49,13 +52,13 @@ class Window(Gtk.ApplicationWindow):
 
     def switch_page(self, btn=None, page=None):
         if self.stack.get_visible_child_name() != page:
-            self.stack.set_visible_child_name(page)
             # self.header_bar.switch_toggle(page)
             if page not in self.header_bar.buttons:
                 self.header_bar.deactivate_all_buttons()
             self.header_bar.set_visible(True)
             if page == "home_page" :
                 self.header_bar.set_visible(False)
+            self.stack.set_visible_child_name(page)
         print("ok", page)
 
 
