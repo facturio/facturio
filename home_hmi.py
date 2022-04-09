@@ -2,7 +2,7 @@ import gi
 gi.require_version("Gtk", "3.0")
 from gi.repository import Gtk, Gio
 
-class ButtonIcon(Gtk.ToggleButton):
+class ButtonIcon(Gtk.RadioButton):
     def __init__(self, label, icon_name):
         super().__init__()
         self.icon_name = icon_name
@@ -12,6 +12,7 @@ class ButtonIcon(Gtk.ToggleButton):
         self.set_image(self.image)
         self.set_label(self.label)
         self.set_always_show_image(True)
+        self.set_mode(False)
 
 
 class HeaderBar(Gtk.HeaderBar):
@@ -21,26 +22,31 @@ class HeaderBar(Gtk.HeaderBar):
         self.set_has_subtitle(False)
         self.set_show_close_button(True)
         # Creation et activation du button home
+        self.invisible_btn = Gtk.RadioButton()
         btn = ButtonIcon("","go-home-symbolic")
-        btn.set_active(True)
-        self.button_dict = {}
-        self.button_dict["home_page"] = btn
+        # btn.set_active(True)
+        btn.connect("clicked", self.window.switch_page, "home_page")
+        btn.join_group(self.invisible_btn)
+
         self.active_now = btn
-        btn.connect("toggled", self.switch_toggle, "home_page")
         self.pack_start(btn)
 
-        page_names = ("user_page", "quotation_page", "invoice_page",
-                      "customer_page")
-        labels = ("Utilisateur", "Devis", "Factures", "Clients")
-        icons = ("avatar-default-symbolic", "x-office-document-symbolic",
-                 "emblem-documents-symbolic", "system-users-symbolic")
+        self.buttons = set(["home_page", "invoice_page", "quotation_page",
+                            "customer_page"])
+        self.button_dict = {}
+        self.button_dict["home_page"] = btn
+
+        page_names = ("invoice_page", "quotation_page", "customer_page")
+        labels = ("Factures", "Devis", "Clients")
+        icons = ("emblem-documents-symbolic", "x-office-document-symbolic",
+                 "system-users-symbolic")
         self.box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL)
         Gtk.StyleContext.add_class(self.box.get_style_context(), "linked")
         for name, label, icon in zip(page_names, labels, icons):
-            btn = ButtonIcon(label, icon)
-            btn.connect('toggled', self.switch_toggle, name)
-            self.box.pack_start(btn, True, True, 10)
-            self.button_dict[name] = btn
+            self.button_dict[name] = ButtonIcon(label, icon)
+            self.button_dict[name].connect("clicked", self.window.switch_page, name)
+            self.button_dict[name].join_group(self.invisible_btn)
+            self.box.pack_start(self.button_dict[name], True, True, 10)
         self.set_custom_title(self.box)
 
     def set_visible(self, flag: bool):
@@ -51,23 +57,23 @@ class HeaderBar(Gtk.HeaderBar):
             self.button_dict["home_page"].set_visible(False)
             self.box.set_visible(False)
 
-    def switch_toggle(self, button, page):
-        if button == None:
-            button = self.button_dict[page]
-        if button != self.active_now :
-            self.active_now.set_active(False)
-            self.active_now = button
-            if page == "home_page":
-                self.set_visible(False)
-            else :
-                self.set_visible(True)
-            self.window.switch_page(page=page)
+    def switch_toggle(self, btn, page):
+        button = self.button_dict[page]
+        self.active_now = button
+        self.active_now.set_active(True)
+        # if self.active_now:
+        #     self.active_now.set_active(False)
+        # self.active_now = self.button_dict[page]
 
+
+    def deactivate_all_buttons(self):
+        self.invisible_btn.set_active(True)
 
 class MainPage(Gtk.ScrolledWindow):
-    def __init__(self, window):
+    def __init__(self, window, header_bar):
         super().__init__()
         self.window = window
+        self.header_bar = header_bar
         self.grid = Gtk.Grid(column_homogeneous=True, row_homogeneous=True,
                              column_spacing=20, row_spacing=20)
         # spaces
@@ -94,7 +100,11 @@ class MainPage(Gtk.ScrolledWindow):
         for label, pos, page in zip(labels, positions, page_names):
             btn = Gtk.Button(label=label)
             self.grid.attach(btn, *pos)
-            btn.connect("clicked", window.switch_page, page)
+            if page in self.header_bar.buttons:
+                btn.connect("clicked", self.header_bar.switch_toggle, page)
+            else:
+                btn.connect("clicked", self.window.switch_page, page)
+
             self.buttons.append(btn)
 
         space = Gtk.Label(label="")

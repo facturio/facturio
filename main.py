@@ -5,6 +5,7 @@ import sys
 from invoice_hmi import InvoicePage
 from home_hmi import MainPage, HeaderBar
 from customer_hmi import Customer
+from history_hmi import History
 
 class Window(Gtk.ApplicationWindow):
     def __init__(self, *args, **kwargs):
@@ -21,33 +22,41 @@ class Window(Gtk.ApplicationWindow):
                                        Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION)
         self.set_border_width(10)
 
-        self.header_bar = HeaderBar(self)
-        self.set_titlebar(self.header_bar)
-
         self.stack = Gtk.Stack()
         self.stack.set_transition_type(Gtk.StackTransitionType.
                                        SLIDE_LEFT_RIGHT)
         self.stack.set_transition_duration(1000)
+        self.header_bar = HeaderBar(self)
+        self.set_titlebar(self.header_bar)
 
-        self.main_page = MainPage(self)
+
+        self.main_page = MainPage(self, self.header_bar)
         self.stack.add_named(self.main_page, "home_page")
         self.invoice_page = InvoicePage()
         self.stack.add_named(self.invoice_page, "invoice_page")
         self.customer_page = Customer()
         self.stack.add_named(self.customer_page, "customer_page")
+        self.history_page = History()
+        self.stack.add_named(self.history_page, "history_page")
 
         self.add(self.stack)
 
     def initial_show(self):
         self.show_all()
         self.stack.set_visible_child_name("home_page")
-        self.header_bar.set_visible(False)
+        self.header_bar.set_visible(True)
 
 
     def switch_page(self, btn=None, page=None):
         if self.stack.get_visible_child_name() != page:
             self.stack.set_visible_child_name(page)
-        self.header_bar.switch_toggle(button=None, page=page)
+            # self.header_bar.switch_toggle(page)
+            if page not in self.header_bar.buttons:
+                self.header_bar.deactivate_all_buttons()
+            self.header_bar.set_visible(True)
+            if page == "home_page" :
+                self.header_bar.set_visible(False)
+        print("ok", page)
 
 
 class App(Gtk.Application):
