@@ -1,9 +1,8 @@
-#!/usr/bin/env python3
 import gi
 gi.require_version("Gtk", "3.0")
-from gi.repository import Gtk, Gdk, Gio, GdkPixbuf
+from gi.repository import Gtk, Gdk
 
-class DisplayUsers(Gtk.Window):
+class InfoPerson (Gtk.ScrolledWindow):
     """
     Classe IHM de le fenetre Map, elle permet soit d'afficher la page
     d'utilisateur soit la page d'un client
@@ -12,27 +11,22 @@ class DisplayUsers(Gtk.Window):
     |---  -- |
     +--------+
     """
-    def __init__(self,is_ut):
-        super().__init__(title="Facturio: Afficher")
-        self.set_hexpand(False)
-        provider = Gtk.CssProvider()
-        provider.load_from_path("./main.css")
-        screen = Gdk.Screen.get_default()
-        style_context = Gtk.StyleContext()
-        style_context.add_provider_for_screen(screen, provider,
-                                              Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION)
-        self.init_grid()
+    def __init__(self, is_ut, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.grid = Gtk.Grid(column_homogeneous=True, row_homogeneous=True,
+                             column_spacing=20, row_spacing=20)
+        self.add(self.grid)
         self.space()
         self.facturio_label = Gtk.Label(label="Afficher")
         self.grid.attach(self.facturio_label, 3, 2, 6, 1 )
         if is_ut:
-            self.utulisateur()
+            self.utilisateur()
         else:
             self.client()
 
-    def utulisateur(self):
+    def utilisateur(self):
         """
-        Affichage pour utulisateur
+        Affichage pour utilisateur
         """
         self.adrss("test")
         self.mails("test")
@@ -123,22 +117,3 @@ class DisplayUsers(Gtk.Window):
         boxcom.pack_start(self.com, False, False, 0)
         boxcom.override_background_color(Gtk.StateType.NORMAL, Gdk.RGBA(.5,.5,.5,.5))
         self.grid.attach(boxcom, 7, 10, 3, 3 )
-
-    def init_grid(self):
-        """
-        Propriete de la Grid Gtk
-        voir doc
-        """
-        self.grid = Gtk.Grid()
-        self.add(self.grid)
-        self.grid.set_column_homogeneous(True)
-        self.grid.set_row_homogeneous(True)
-        self.grid.set_row_spacing(20)
-        self.grid.set_column_spacing(20)
-
-#########################
-#######TEST##############
-#########################
-win =Afficher(True)
-win.show_all()
-Gtk.main()

@@ -7,6 +7,8 @@ from home_hmi import MainPage, HeaderBar
 from customer_hmi import Customer
 from history_hmi import History
 from map_hmi import Map
+from display_info import InfoPerson
+
 
 class Window(Gtk.ApplicationWindow):
     def __init__(self, *args, **kwargs):
@@ -41,6 +43,8 @@ class Window(Gtk.ApplicationWindow):
         self.stack.add_named(self.history_page, "history_page")
         self.map_page = Map()
         self.stack.add_named(self.map_page, "map_page")
+        self.user_page = InfoPerson(True)
+        self.stack.add_named(self.user_page, "user_page")
 
         self.add(self.stack)
 
