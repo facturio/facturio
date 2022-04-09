@@ -3,7 +3,7 @@ gi.require_version("Gtk", "3.0")
 from gi.repository import Gtk, Gdk, Gio, GObject
 import sys
 from invoice_hmi import InvoicePage
-from home_hmi import MainPage, HeaderBar
+from home_hmi import MainPage, HeaderBarSwitcher
 from customer_hmi import Customer
 from history_hmi import History
 from map_hmi import Map
@@ -29,11 +29,11 @@ class Window(Gtk.ApplicationWindow):
         self.stack.set_transition_type(Gtk.StackTransitionType.
                                        SLIDE_LEFT_RIGHT)
         self.stack.set_transition_duration(1000)
-        self.header_bar = HeaderBar(self)
+        self.header_bar = HeaderBarSwitcher(self.stack)
         self.set_titlebar(self.header_bar)
 
 
-        self.main_page = MainPage(self, self.header_bar)
+        self.main_page = MainPage(self.header_bar)
         self.stack.add_named(self.main_page, "home_page")
         self.invoice_page = InvoicePage()
         self.stack.add_named(self.invoice_page, "invoice_page")
@@ -54,16 +54,6 @@ class Window(Gtk.ApplicationWindow):
         self.header_bar.set_visible(True)
 
 
-    def switch_page(self, btn=None, page=None):
-        if self.stack.get_visible_child_name() != page:
-            # self.header_bar.switch_toggle(page)
-            if page not in self.header_bar.buttons:
-                self.header_bar.deactivate_all_buttons()
-            self.header_bar.set_visible(True)
-            if page == "home_page" :
-                self.header_bar.set_visible(False)
-            self.stack.set_visible_child_name(page)
-        print("ok", page)
 
 
 class App(Gtk.Application):
