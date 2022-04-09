@@ -3,7 +3,7 @@ gi.require_version("Gtk", "3.0")
 from gi.repository import Gtk, Gdk, Gio, GObject
 import sys
 from invoice_hmi import InvoicePage
-from home_hmi import MainPage, HeaderBarSwitcher
+from home_hmi import HomePage, HeaderBarSwitcher
 from customer_hmi import Customer
 from history_hmi import History
 from map_hmi import Map
@@ -33,7 +33,7 @@ class Window(Gtk.ApplicationWindow):
         self.set_titlebar(self.header_bar)
 
 
-        self.main_page = MainPage(self.header_bar)
+        self.main_page = HomePage(self.header_bar)
         self.stack.add_named(self.main_page, "home_page")
         self.invoice_page = InvoicePage()
         self.stack.add_named(self.invoice_page, "invoice_page")

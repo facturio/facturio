@@ -78,7 +78,7 @@ class HeaderBarSwitcher(Gtk.HeaderBar):
 
 
 
-class MainPage(Gtk.ScrolledWindow):
+class HomePage(Gtk.Box):
     def __init__(self, header_bar):
         super().__init__()
         self.header_bar = header_bar
@@ -116,4 +116,5 @@ class MainPage(Gtk.ScrolledWindow):
         self.grid.attach(space,1,7,10,1)
         space = Gtk.Label(label="")
         self.grid.attach(space,1,8,10,1)
-        self.add(self.grid)
+        # self.add(self.grid)
+        self.pack_start(self.grid, True, True, 0)
