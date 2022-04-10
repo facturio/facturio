@@ -11,3 +11,27 @@
 /* label { */
 /*     background-color: yellow; */
 /* } */
+
+#box_afficher{
+  background-color: rgba(246, 246, 246, 0.4);
+  border-radius: 5px;
+}
+
+#lg{
+  border: 10px solid rgba(246, 246, 246, 0.4);
+  border-radius: 5px;
+}
+
+button{
+  border-radius: 5px;
+}
+
+entry.search{
+  border-radius: 5px;
+}
+
+#box_afficher > label{
+  color: #252525
+}
+
+

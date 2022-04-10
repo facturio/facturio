@@ -17,15 +17,18 @@ class History(Gtk.ScrolledWindow):
     """
     def __init__(self):
         super().__init__()
-        self.grid = Gtk.Grid(column_homogeneous=True, row_homogeneous=True,
-                             column_spacing=20, row_spacing=20)
-        facturio_label = Gtk.Label(label="Historique")
-        self.grid.attach(facturio_label, 3, 2, 6, 1 )
+        self.init_grid()
+        self.title("Historique")
+        self.search((2,4,3,1))
         self.space()
-        self.search((3,4,6,1))
         self.init_result(["Nom", "date", "Description"])
         self.add(self.grid)
 
+
+    def title(self, ttl):
+        facturio_label = Gtk.Label(label=ttl)
+        facturio_label.set_markup("<span font_weight=\"bold\" size=\"xx-large\">"+ttl+"</span>")
+        self.grid.attach(facturio_label, 2, 2, 1, 1 )
 
     def init_result(self, para):
         """
@@ -42,7 +45,7 @@ class History(Gtk.ScrolledWindow):
             column = Gtk.TreeViewColumn(column_title, renderer, text=i)
             self.treeview.append_column(column)
         self.scrollable_treelist = Gtk.ScrolledWindow()
-        self.grid.attach(self.scrollable_treelist, 3, 5, 4, 10)
+        self.grid.attach(self.scrollable_treelist, 2, 5, 3, 10)
         self.scrollable_treelist.add(self.treeview)
 
     def space(self):
@@ -50,9 +53,7 @@ class History(Gtk.ScrolledWindow):
         Ajoute les espace pour l'ergonomie
         """
         spaceh = Gtk.Label(label="")
-        self.grid.attach(spaceh,1,1,10,10)
-        spacef = Gtk.Label(label="")
-        self.grid.attach(spacef,7,5,1,1)
+        self.grid.attach(spaceh,1,1,5,1)
 
 
     def search(self, l_attach):
@@ -63,4 +64,16 @@ class History(Gtk.ScrolledWindow):
         searchbar = Gtk.SearchEntry()
         self.grid.attach(searchbar, *l_attach)
 
+
+    def init_grid(self):
+        """
+        Propriete de la Grid Gtk
+        voir doc
+        """
+        self.grid = Gtk.Grid()
+        self.add(self.grid)
+        self.grid.set_column_homogeneous(True)
+        self.grid.set_row_homogeneous(True)
+        self.grid.set_row_spacing(20)
+        self.grid.set_column_spacing(20)
 

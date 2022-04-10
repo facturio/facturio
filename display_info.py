@@ -13,16 +13,21 @@ class InfoPerson (Gtk.ScrolledWindow):
     """
     def __init__(self, is_ut, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.grid = Gtk.Grid(column_homogeneous=True, row_homogeneous=True,
-                             column_spacing=20, row_spacing=20)
-        self.add(self.grid)
+        self.init_grid()
         self.space()
-        self.facturio_label = Gtk.Label(label="Afficher")
-        self.grid.attach(self.facturio_label, 3, 2, 6, 1 )
+        #doit devenir une variable
+        self.title("Moi")
         if is_ut:
             self.utilisateur()
         else:
             self.client()
+
+
+    def title(self, ttl):
+        facturio_label = Gtk.Label(label=ttl)
+        facturio_label.set_markup("<span font_weight=\"bold\" size=\"xx-large\">"+ttl+"</span>")
+        self.grid.attach(facturio_label, 0, 2, 1, 1 )
+
 
     def utilisateur(self):
         """
@@ -34,7 +39,8 @@ class InfoPerson (Gtk.ScrolledWindow):
         self.entreprise("test")
         self.siret("test")
         self.logo("./icons/Moi.jpg")
-        self.commentaire("./icons/Moi.jpg")
+        self.commentaire("ldhfskjv xbvhxknvkhxfvkjzx vjgcxbv jlkmc jcbui jmcljbuxvn kjxvhofxv dvudhvbdhkvn kbhvdubn kfuhvxovnludhvod")
+
 
     def client(self):
         """
@@ -56,64 +62,81 @@ class InfoPerson (Gtk.ScrolledWindow):
         pour l'ergonomie
         """
         spaceh = Gtk.Label(label="")
-        self.grid.attach(spaceh,1,1,10,10)
-        spacef = Gtk.Label(label="")
-        self.grid.attach(spacef,7,5,1,1)
+        spacel = Gtk.Label(label="")
+        self.grid.attach(spacel,7,0,1,1)
+        self.grid.attach(spaceh,0,1,4,1)
 
     def adrss(self,adr):
         boxadress= Gtk.Box()
-        self.adrs = Gtk.Label(label=adr)
+        boxadress.set_name("box_afficher")
+        self.adrs = Gtk.Label()
+        self.adrs.set_markup("<b>Adres.</b>:"+adr)
         boxadress.pack_start(self.adrs, False, False, 0)
-        boxadress.override_background_color(Gtk.StateType.NORMAL, Gdk.RGBA(.5,.5,.5,.5))
-        self.grid.attach(boxadress, 3, 4, 3, 1 )
+        self.grid.attach(boxadress, 1, 4, 3, 1 )
         self.spaceadrss = Gtk.Label(label="")
-        self.grid.attach(self.spaceadrss,1,5,10,10)
+        self.grid.attach(self.spaceadrss,0,5,1,10)
 
     def mails(self,adr):
         boxmail= Gtk.Box()
-        self.mail = Gtk.Label(label=adr)
+        boxmail.set_name("box_afficher")
+        self.mail = Gtk.Label()
+        self.mail.set_markup("<b>Mail</b>:"+adr)
         boxmail.pack_start(self.mail, False, False, 0)
-        boxmail.override_background_color(Gtk.StateType.NORMAL, Gdk.RGBA(.5,.5,.5,.5))
-        self.grid.attach(boxmail, 3, 6, 3, 1 )
+        self.grid.attach(boxmail, 1, 6, 3, 1 )
         self.spacemails = Gtk.Label(label="")
-        self.grid.attach(self.spacemails,1,7,10,10)
+        self.grid.attach(self.spacemails,0,7,1,10)
 
     def nums(self,adr):
         boxnum= Gtk.Box()
-        self.num = Gtk.Label(label=adr)
+        boxnum.set_name("box_afficher")
+        self.num = Gtk.Label()
+        self.num.set_markup("<b>Num.</b>:"+adr)
         boxnum.pack_start(self.num, False, False, 0)
-        boxnum.override_background_color(Gtk.StateType.NORMAL, Gdk.RGBA(.5,.5,.5,.5))
-        self.grid.attach(boxnum, 3, 8, 3, 1 )
+        self.grid.attach(boxnum, 1, 8, 3, 1 )
         self.spacenums = Gtk.Label(label="")
-        self.grid.attach(self.spacenums,1,9,10,10)
+        self.grid.attach(self.spacenums,0,9,1,10)
 
     def entreprise(self,adr):
         boxentr= Gtk.Box()
-        self.entr = Gtk.Label(label=adr)
+        boxentr.set_name("box_afficher")
+        self.entr = Gtk.Label()
+        self.entr.set_markup("<b>Entr.</b>:"+adr)
         boxentr.pack_start(self.entr, False, False, 0)
-        boxentr.override_background_color(Gtk.StateType.NORMAL, Gdk.RGBA(.5,.5,.5,.5))
-        self.grid.attach(boxentr, 3, 10, 3, 1 )
+        self.grid.attach(boxentr, 1, 10, 3, 1 )
         self.spaceentrs = Gtk.Label(label="")
-        self.grid.attach(self.spaceentrs,1,11,10,10)
+        self.grid.attach(self.spaceentrs,0,11,1,10)
 
     def siret(self,adr):
         boxsir= Gtk.Box()
-        self.sir = Gtk.Label(label=adr)
+        boxsir.set_name("box_afficher")
+        self.sir = Gtk.Label()
+        self.sir.set_markup("<b>Siret.</b>:"+adr)
         boxsir.pack_start(self.sir, False, False, 0)
-        boxsir.override_background_color(Gtk.StateType.NORMAL, Gdk.RGBA(.5,.5,.5,.5))
-        self.grid.attach(boxsir, 3, 12, 3, 1 )
+        self.grid.attach(boxsir, 1, 12, 3, 1 )
 
     def logo(self,path):
         lg = Gtk.Image()
         lg.set_from_file(path)
-        boxlg= Gtk.Box()
-        boxlg.pack_start(lg, False, False, 0)
-        boxlg.override_background_color(Gtk.StateType.NORMAL, Gdk.RGBA(.5,.5,.5,.5))
-        self.grid.attach(boxlg, 7, 4, 3, 6 )
+        lg.set_name("lg")
+        self.grid.attach(lg, 4, 4, 3, 6 )
 
     def commentaire(self,adr):
         boxcom= Gtk.Box()
+        boxcom.set_name("box_afficher")
         self.com = Gtk.Label(label=adr)
+        self.com.set_line_wrap(True)
+        self.com.set_max_width_chars(32)
         boxcom.pack_start(self.com, False, False, 0)
-        boxcom.override_background_color(Gtk.StateType.NORMAL, Gdk.RGBA(.5,.5,.5,.5))
-        self.grid.attach(boxcom, 7, 10, 3, 3 )
+        self.grid.attach(boxcom, 4, 10, 3, 3 )
+
+    def init_grid(self):
+        """
+        Propriete de la Grid Gtk
+        voir doc
+        """
+        self.grid = Gtk.Grid()
+        self.add(self.grid)
+        self.grid.set_column_homogeneous(True)
+        self.grid.set_row_homogeneous(True)
+        self.grid.set_row_spacing(20)
+        self.grid.set_column_spacing(20)

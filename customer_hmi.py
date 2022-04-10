@@ -16,13 +16,16 @@ class Customer(Gtk.ScrolledWindow):
     def __init__(self):
         super().__init__()
         self.init_grid()
-        facturio_label = Gtk.Label(label="Client")
-        self.grid.attach(facturio_label, 3, 2, 6, 1 )
+        self.title("Client")
         self.space()
         self.search((3,4,4,1))
         self.summon_button()
         self.init_result(["Nom","Entreprise","Adresse"])
 
+    def title(self, ttl):
+        facturio_label = Gtk.Label(label=ttl)
+        facturio_label.set_markup("<span font_weight=\"bold\" size=\"xx-large\">"+ttl+"</span>")
+        self.grid.attach(facturio_label, 0, 2, 6, 1 )
 
     def space(self):
         """
@@ -30,8 +33,6 @@ class Customer(Gtk.ScrolledWindow):
         """
         spaceh = Gtk.Label(label="")
         self.grid.attach(spaceh,1,1,10,10)
-        spacef = Gtk.Label(label="")
-        self.grid.attach(spacef,7,5,1,1)
 
     def search(self, l_attach):
         """
