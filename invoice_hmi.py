@@ -8,6 +8,7 @@ class InvoicePage(Gtk.ScrolledWindow):
                              column_spacing=20, row_spacing=20)
 
         self.label = Gtk.Label("<big>Facture</big>")
+        self.label.set_hexpand(True)
         self.label.set_use_markup(True)
         self.grid.attach(self.label, 1, 1, 4, 1)
         self.logo_button = Gtk.Button(label="Logo")
@@ -15,10 +16,12 @@ class InvoicePage(Gtk.ScrolledWindow):
         self.grid.attach(self.logo_button, 7, 1, 2, 2)
 
         self.label = Gtk.Label("<big>From</big>")
+        self.label.set_hexpand(True)
         self.label.set_use_markup(True)
         self.grid.attach(self.label, 1, 3, 1, 1)
 
         self.label = Gtk.Label("Name")
+        self.label.set_hexpand(True)
         self.grid.attach(self.label, 1, 4, 1, 1)
         self.label.set_hexpand(True)
         self.entry = Gtk.Entry()
@@ -26,21 +29,25 @@ class InvoicePage(Gtk.ScrolledWindow):
         self.grid.attach(self.entry, 2, 4, 3, 1)
 
         self.label = Gtk.Label("Email")
+        self.label.set_hexpand(True)
         self.grid.attach(self.label, 1, 5, 1, 1)
         self.entry = Gtk.Entry()
         self.grid.attach(self.entry, 2, 5, 3, 1)
 
         self.label = Gtk.Label("Adress")
+        self.label.set_hexpand(True)
         self.grid.attach(self.label, 1, 6, 1, 1)
         self.entry = Gtk.Entry()
         self.grid.attach(self.entry, 2, 6, 3, 1)
 
         self.label = Gtk.Label("Phone")
+        self.label.set_hexpand(True)
         self.grid.attach(self.label, 1, 7, 1, 1)
         self.entry = Gtk.Entry()
         self.grid.attach(self.entry, 2, 7, 3, 1)
 
         self.label = Gtk.Label("Business\nNumber")
+        self.label.set_hexpand(True)
         self.grid.attach(self.label, 1, 8, 1, 1)
         self.entry = Gtk.Entry()
         self.grid.attach(self.entry, 2, 8, 3, 1)
@@ -75,7 +82,7 @@ class InvoicePage(Gtk.ScrolledWindow):
 
         self.button = Gtk.Button(label="Importer Clients")
         self.grid.attach(self.button, 7, 8, 2, 1)
-        self.box.pack_start(self.grid, False, False, 20)
+        # self.box.pack_start(self.grid, False, False, 20)
 
         # self.article_grid()
         # self.box.pack_start(self.box1, False, False, 0)
@@ -98,14 +105,23 @@ class InvoicePage(Gtk.ScrolledWindow):
 
         # self.add(self.main_grid)
         #
-        self.main_box = Gtk.VBox()
-        self.add(self.main_box)
-        self.box.set_halign(Gtk.Align.CENTER)
-        self.main_box.pack_start(self.box, True, True, 0)
+        self.main_grid = Gtk.Grid(column_homogeneous=False,
+                                     row_homogeneous=False,
+                             column_spacing=20, row_spacing=20)
+        self.add(self.main_grid)
+        spacel = Gtk.Label("")
+        spacel.set_hexpand(True)
+        self.main_grid.attach(spacel, 1, 1, 1, 3)
+        spacer = Gtk.Label("")
+        spacer.set_hexpand(True)
+        self.main_grid.attach(spacer, 3, 1, 1, 3)
+        # self.box.set_hexpand(True)
+        # self.box.set_halign(Gtk.Align.CENTER)
+        self.main_grid.attach(self.grid, 2, 1, 1, 1)
         self.article_header()
         self.initial_article_row()
         self.article_grid.set_halign(Gtk.Align.CENTER)
-        self.main_box.pack_start(self.article_grid, True, True, 0)
+        self.main_grid.attach(self.article_grid, 2, 2, 1, 1)
         self.plus_btn_box()
         # self.article_header_box.pack_start(self.row_box, True, True, 0)
         # self.plus_btn_box()
