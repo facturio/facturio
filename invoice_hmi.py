@@ -11,7 +11,10 @@ class InvoicePage(Gtk.ScrolledWindow):
         self.label.set_hexpand(True)
         self.label.set_use_markup(True)
         self.grid.attach(self.label, 1, 1, 4, 1)
-        self.logo_button = Gtk.Button(label="Logo")
+        self.logo_button = Gtk.Button.new_from_icon_name("image-x-generic-symbolic",
+                                                    Gtk.IconSize.BUTTON)
+        self.logo_button.set_label('+ Logo')
+        self.logo_button.set_always_show_image(True)
         self.logo_button.set_hexpand(True)
         self.grid.attach(self.logo_button, 7, 1, 2, 2)
 
