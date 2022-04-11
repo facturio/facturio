@@ -17,6 +17,10 @@
   border-radius: 5px;
 }
 
+#name{
+  background-color: rgba(232, 232, 232, 0.4);
+  border-radius: 5px;
+}
 #lg{
   border: 10px solid rgba(246, 246, 246, 0.4);
   border-radius: 5px;
@@ -34,4 +38,7 @@ entry.search{
   color: #252525
 }
 
+#name > label{
+  color: #000000
+}
 

@@ -88,12 +88,10 @@ class HomePage(Gtk.Box):
         space = Gtk.Label(label="")
         self.grid.attach(space,1,1,10,1)
         # logo
-        self.facturio_label = Gtk.Label(label="Facturio")
-        self.grid.attach(self.facturio_label, 3, 2, 6, 1 )
 
         space = Gtk.Label(label="")
         self.grid.attach(space,1,4,10,1)
-
+        self.title("Facturio")
         #search bar
         self.searchbar = Gtk.SearchEntry()
         self.grid.attach(self.searchbar, 3, 3, 6, 1)
@@ -118,3 +116,8 @@ class HomePage(Gtk.Box):
         self.grid.attach(space,1,8,10,1)
         # self.add(self.grid)
         self.pack_start(self.grid, True, True, 0)
+
+    def title(self, ttl):
+        facturio_label = Gtk.Label(label=ttl)
+        facturio_label.set_markup("<span font_weight=\"bold\" size=\"xx-large\">"+ttl+"</span>")
+        self.grid.attach(facturio_label, 3, 2, 6, 1 )

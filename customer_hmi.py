@@ -20,7 +20,9 @@ class Customer(Gtk.ScrolledWindow):
         self.space()
         self.search((3,4,4,1))
         self.summon_button()
-        self.init_result(["Nom","Entreprise","Adresse"])
+        self.init_result(["Nom","Entreprise","Adresse",""])
+        self.add_result(["test","test","test"])
+        self.add_result(["test1","test2","test3"])
 
     def title(self, ttl):
         facturio_label = Gtk.Label(label=ttl)
