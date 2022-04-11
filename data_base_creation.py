@@ -10,7 +10,7 @@ from datetime import date
 
 """
 a faire :
-mettre les liste correctement
+
 update entreprise
 
 faire quant tout marche :
