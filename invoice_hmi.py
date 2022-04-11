@@ -318,7 +318,7 @@ class InvoicePage(Gtk.ScrolledWindow):
         self.label = Gtk.Label("Subtotal")
         self.label.set_xalign(0)
         self.total_grid.attach(self.label, 1, 1, 1, 1)
-        self.label = Gtk.Label("Tax(21%)")
+        self.label = Gtk.Label("Tax (21%)")
         self.label.set_xalign(0)
         self.total_grid.attach(self.label, 1, 2, 1, 1)
         self.label = Gtk.Label("Total")
