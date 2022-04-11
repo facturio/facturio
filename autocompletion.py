@@ -31,8 +31,8 @@ class FacturioEntryCompletion(Gtk.Entry):
 if __name__ == '__main__':
     win = Gtk.Window()
     box = Gtk.Box(orientation=1, spacing=6)
-    box.add(FacturioEntryCompletion(lambda x: x.prenom, examples.clients))
-    box.add(FacturioEntryCompletion(lambda x: x.nom, examples.clients))
+    box.add(FacturioEntryCompletion(lambda x: x.name, examples.clients))
+    box.add(FacturioEntryCompletion(lambda x: x.surname, examples.clients))
     win.add(box)
     win.connect('delete-event', Gtk.main_quit)
     win.show_all()
