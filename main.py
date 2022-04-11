@@ -13,8 +13,9 @@ from gui.display_info import InfoPerson
 class Window(Gtk.ApplicationWindow):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.set_hexpand(True)
+        # proprietés divers pour la window
         self.set_position(Gtk.WindowPosition.CENTER)
+        self.set_hexpand(True)
         self.set_vexpand(True)
         self.resize(960, 540)
         provider = Gtk.CssProvider()
@@ -25,13 +26,16 @@ class Window(Gtk.ApplicationWindow):
                                        Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION)
         self.set_border_width(10)
 
+        # Création du stack et ajout des pages
         self.stack = Gtk.Stack()
         self.stack.set_transition_type(Gtk.StackTransitionType.
                                        SLIDE_LEFT_RIGHT)
         self.stack.set_transition_duration(1000)
-        self.header_bar = HeaderBarSwitcher(self.stack)
-        self.set_titlebar(self.header_bar)
 
+        # Création de la header bar et ajout a l'écran
+        self.header_bar = HeaderBarSwitcher()
+        self.header_bar.set_stack(self.stack)
+        self.set_titlebar(self.header_bar)
 
         self.main_page = HomePage(self.header_bar)
         self.stack.add_named(self.main_page, "home_page")
@@ -48,12 +52,11 @@ class Window(Gtk.ApplicationWindow):
 
         self.add(self.stack)
 
+
     def initial_show(self):
         self.show_all()
         self.stack.set_visible_child_name("home_page")
         self.header_bar.set_visible(True)
-
-
 
 
 class App(Gtk.Application):
