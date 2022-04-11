@@ -21,18 +21,19 @@ class Map(Gtk.ScrolledWindow):
         self.grid = Gtk.Grid(column_homogeneous=True, row_homogeneous=True,
                              column_spacing=20, row_spacing=20)
         self.add(self.grid)
-        self.title("Carte")
-        self.space()
-        self.search((3,4,3,1))
-        self.init_map()
-        self.init_result()
+        self.title__("Carte")
+        self.space__()
+        self.search__((3,2,3,1))
+        self.init_map__()
+        #self.init_result__()
+        self.mv_map("Paris")
 
-    def title(self, ttl):
+    def title__(self, ttl):
         facturio_label = Gtk.Label(label=ttl)
         facturio_label.set_markup("<span font_weight=\"bold\" size=\"xx-large\">"+ttl+"</span>")
         self.grid.attach(facturio_label, 0, 2, 6, 1 )
 
-    def search(self,l_attach):
+    def search__(self,l_attach):
         """
         Prend un emplacement et
         Invoque la barre de recherche
@@ -41,7 +42,7 @@ class Map(Gtk.ScrolledWindow):
         searchbar = Gtk.SearchEntry()
         self.grid.attach(searchbar, *l_attach)
 
-    def space(self):
+    def space__(self):
         """
         Ajoute les espace
         pour l'ergonomie
@@ -49,14 +50,15 @@ class Map(Gtk.ScrolledWindow):
         spaceh = Gtk.Label(label="")
         self.grid.attach(spaceh,1,1,10,10)
 
-    def init_map(self):
+    def init_map__(self):
         """
         Initialise la map a l'universite de Toulon
         """
         self.osm = OsmGpsMap.Map()
         self.osm.set_property("map-source", OsmGpsMap.MapSource_t.OPENSTREETMAP)
         self.osm.set_center_and_zoom(43.13542095, 6.016683572120083,17)
-        self.grid.attach(self.osm, 6, 4, 3, 5)
+        self.osm.set_hexpand(True)
+        self.grid.attach(self.osm, 1, 4, 9, 5)
 
     def mv_map(self, adrss):
         """
@@ -74,7 +76,7 @@ class Map(Gtk.ScrolledWindow):
         self.osm.image_add(x, y, pb)
 
 
-    def init_result(self):
+    def init_result__(self):
         """
         Initialise la barre de recherche et permet l'ajout grace
         a la methode add_result

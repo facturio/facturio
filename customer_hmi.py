@@ -15,28 +15,28 @@ class Customer(Gtk.ScrolledWindow):
     """
     def __init__(self):
         super().__init__()
-        self.init_grid()
-        self.title("Client")
-        self.space()
-        self.search((3,4,4,1))
-        self.summon_button()
-        self.init_result(["Nom","Entreprise","Adresse",""])
+        self.init_grid__()
+        self.title__("Client")
+        self.space__()
+        self.search__((3,4,4,1))
+        self.summon_button__()
+        self.init_result__(["Nom","Entreprise","Adresse",""])
         self.add_result(["test","test","test"])
         self.add_result(["test1","test2","test3"])
 
-    def title(self, ttl):
+    def title__(self, ttl):
         facturio_label = Gtk.Label(label=ttl)
         facturio_label.set_markup("<span font_weight=\"bold\" size=\"xx-large\">"+ttl+"</span>")
         self.grid.attach(facturio_label, 0, 2, 6, 1 )
 
-    def space(self):
+    def space__(self):
         """
         Ajoute les espace pour l'ergonomie
         """
         spaceh = Gtk.Label(label="")
         self.grid.attach(spaceh,1,1,10,10)
 
-    def search(self, l_attach):
+    def search__(self, l_attach):
         """
         Prend un emplacement et invoque la barre de recherche
         a cette emplacement
@@ -45,7 +45,7 @@ class Customer(Gtk.ScrolledWindow):
         self.grid.attach(searchbar, *l_attach)
 
 
-    def summon_button(self):
+    def summon_button__(self):
         """
         Invoque les boutons: Importer,Exporter,Creer
         """
@@ -56,7 +56,7 @@ class Customer(Gtk.ScrolledWindow):
             self.grid.attach(but, *para[1])
 
 
-    def init_result(self,para):
+    def init_result__(self,para):
         """
         Initialise la barre de recherche et permet l'ajout grace a la methode
         add_result
@@ -80,7 +80,7 @@ class Customer(Gtk.ScrolledWindow):
         """
         self.liste_client.append(res)
 
-    def init_grid(self):
+    def init_grid__(self):
         """
         Propriete de la Grid Gtk
         voir doc
