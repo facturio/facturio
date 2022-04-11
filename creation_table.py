@@ -101,7 +101,7 @@ def creation_table_acompte(cursor,connexion):
     cursor.execute("""
     CREATE TABLE IF NOT EXISTS accompte
     (id_acompte INTEGER PRIMARY KEY AUTOINCREMENT,
-    date INTEGER
+    date INTEGER,
     montant STRING,
     id_fac INTEGER,
     FOREIGN KEY(id_fac) REFERENCES facture(id_facture) ON DELETE CASCADE

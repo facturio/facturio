@@ -11,7 +11,9 @@ from datetime import date
 """
 a faire :
 mettre les liste correctement
+update entreprise
 
+faire quant tout marche :
 anglais francais
 list een objet
 
@@ -40,46 +42,50 @@ def main():
 
     """------------------------fonction insertion dans la bdd-------------------- """
 
-    liste=["pull","un pull tres moche ",30]
+    liste=["t-shirt","un pull tres moche ",30]
     insertion_article(cursor,connexion,liste)
 
     liste=["logo.png","entreprise de reve","tomolivier283@gmail.com","avenue toto","0653536789","00543222"]
     insertion_utilisateur(cursor,connexion,liste)
 
     #booleen egale a 0 pour savoir si c'est un client et 1 pour une entreprise
-    liste=["olivier","tom","tomolivier283@gmail.com","avenue du paradi","0675849320","le plus bg","entreprise","12345678"]
+    liste=["bazan","clement","tomolivier283@gmail.com","avenue du paradi","0675849320","le plus bg","entreprise","12345678"]
     bool=0
     insertion_client_ou_entreprise(cursor,connexion,liste,bool)
 
     data=date.today()
-    #recuperation des id
+    #recuperation des id client et utilisateur
     liste=[100.0,data,"acheter des vetement","10","de la merde",1,1]
     insertion_fac_dev(cursor,connexion,liste)
     insertion_fac(cursor,connexion,liste)
-    #liste fac
+    #id de facture
     liste=[1]
     insertion_acompte(cursor,connexion,liste)
-
+    #id article et id de fac_dev
     liste=[1,1]
     insertion_art_dev(cursor,connexion,liste)
     """------------------- fonction update dans la bdd --------------------"""
 
-    liste=["logo.png","prise de reve","tomolivier283@gmail.com","avenue toto","0653536789","00543222","1"]
-    #update_utilisateur(cursor,connexion,liste)
-    #update_client(cursor,connexion,liste,bool)
-    #update_acompte(cursor,connexion,liste)
-    #update_article(cursor,connexion,liste)
-    #update_fac_dev(cursor,connexion,liste)
+    liste=["1","logo.png","prise de reve","tomolivier283@gmail.com","avenue toto","0653536789","00543222"]
+    update_utilisateur(cursor,connexion,liste)
+    liste=["1","bazan","clement","tomolivier283@gmail.com","avenue du paradi","0675849320","le plus bg"]
+    update_client(cursor,connexion,liste,bool)
+    liste=[1,data,1]
+    update_acompte(cursor,connexion,liste)
+    liste=[1,"t-shirt","un pull tres moche ",40]
+    update_article(cursor,connexion,liste)
+    liste=[1,100.0,data,"acheter des choses","10","de la merde",1,1]
+    update_fac_dev(cursor,connexion,liste)
     """--------------------fonction delete dans la bdd-------------------- """
 
     #recuperation de la ligne client quon envoie dans la fonction
-    liste=[1,1]
-    #delete_client(cursor,connexion,liste)
-    #delete_acompte(cursor,connexion,liste)
-    #delete_utilisateur(cursor,connexion,liste)
-    #delete_article(cursor,connexion,liste)
-    #delete_fac_dev(cursor,connexion,liste)
-    #delete_facture(cursor,connexion,liste)
+    liste=[1]
+    delete_client(cursor,connexion,liste)
+    delete_acompte(cursor,connexion,liste)
+    delete_utilisateur(cursor,connexion,liste)
+    delete_article(cursor,connexion,liste)
+    delete_fac_dev(cursor,connexion,liste)
+    delete_facture(cursor,connexion,liste)
 
     """ ------------------------fonction selection--------------------------"""
 
