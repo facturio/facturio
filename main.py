@@ -2,6 +2,7 @@
 import gi
 gi.require_version("Gtk", "3.0")
 from gi.repository import Gtk, Gdk, GdkPixbuf
+from omnisearch import FacturioOmnisearch
 
 
 class MyWindow(Gtk.Window):
@@ -37,11 +38,11 @@ class MyWindow(Gtk.Window):
         self.grid.attach(self.space,1,4,10,1)
 
         #search bar
-        self.searchbar = Gtk.SearchEntry()
-        self.grid.attach(self.searchbar, 3, 3, 6, 1)
+        self.searchbar = FacturioOmnisearch()
+        self.grid.attach(self.searchbar.box, 3, 3, 6, 2)
 
         #icons
-        self.invoice_icon= Gtk.Image.new_from_file("./icons/Plus.png")
+        self.invoice_icon = Gtk.Image.new_from_file("./icons/Plus.png")
         # self.evbox= Gtk.EventBox()
         # self.evbox.add(self.invoice_icon)
         # self.evbox.connect("button-press-event", self.on_box_clicked)
