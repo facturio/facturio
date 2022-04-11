@@ -1,11 +1,11 @@
 
-def creation_table_entreprise(cursor,connexion):
+def creation_table_company(cursor,connexion):
     cursor.execute("""
-    CREATE TABLE IF NOT EXISTS entreprise
-    (id_client_entreprise INTEGER PRIMARY KEY,
-    nom_entreprise STRING,
+    CREATE TABLE IF NOT EXISTS company
+    (id_client_company INTEGER PRIMARY KEY,
+    company_name STRING,
     num_SIRET INTEGER ,
-    FOREIGN KEY(id_client_entreprise) REFERENCES client(id_client) ON DELETE CASCADE
+    FOREIGN KEY(id_client_company) REFERENCES client(id_client) ON DELETE CASCADE
     )
     """)
 
@@ -15,12 +15,12 @@ def creation_table_client(cursor,connexion):
     cursor.execute("""
     CREATE TABLE IF NOT EXISTS client
     (id_client INTEGER PRIMARY KEY,
-    nom  STRING,
-    prenom STRING,
-    courriel STRING,
-    courrier STRING,
-    tel STRING,
-    commentaire STRING
+    last_name STRING,
+    first_name STRING,
+    e_mail STRING,
+    address STRING,
+    phone STRING,
+    remark STRING
     )
     """)
 
@@ -31,7 +31,7 @@ def creation_table_utilisateur(cursor,connexion):
     CREATE TABLE IF NOT EXISTS utilisateur
     ( num_utilisateur INTEGER PRIMARY KEY AUTOINCREMENT,
     logo BLOB,
-    nom_entreprise STRING,
+    company_name STRING,
     courriel STRING,
     courrier STRING,
     tel STRING,

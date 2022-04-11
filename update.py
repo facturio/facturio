@@ -5,7 +5,7 @@ def update_client(cursor,connexion,liste,bool):
 
     if bool==0:
         cursor.execute("""UPDATE client SET
-        nom=?,prenom=?,courriel=?,courrier=?,tel=?,commentaire=?
+        last_name=?,first_name=?,e_mail=?,address=?,phone=?,remark=?
         WHERE id_client=?""",liste)
     else:
         cursor.execute("""UPDATE client SET  WHERE num_client=?""",liste)
@@ -14,7 +14,7 @@ def update_client(cursor,connexion,liste,bool):
 def update_utilisateur(cursor,connexion,liste):
     liste=liste[1:]+[liste[0]]
 
-    cursor.execute("""UPDATE utilisateur SET logo=?,nom_entreprise=?,courriel=?,
+    cursor.execute("""UPDATE utilisateur SET logo=?,company_name=?,courriel=?,
     courrier=?,tel=?,num_SIREN=? WHERE num_utilisateur=?""",liste)
     connexion.commit()
 

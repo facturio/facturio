@@ -13,13 +13,13 @@ def insertion_utilisateur(cursor,connexion,liste):
 
     liste[0]=blobfile
 
-    cursor.execute("""INSERT INTO utilisateur(logo,nom_entreprise,courriel,courrier,tel,num_SIREN) VALUES(?,?,?,?,?,?)""",liste)
+    cursor.execute("""INSERT INTO utilisateur(logo,company_name,courriel,courrier,tel,num_SIREN) VALUES(?,?,?,?,?,?)""",liste)
     connexion.commit()
 
-def insertion_client_ou_entreprise(cursor,connexion,liste,bool):
+def insertion_client_or_company(cursor,connexion,liste,bool):
         """ envoi dun bouleen"""
         liste_c=liste[:6]
-        cursor.execute("""INSERT INTO client(nom,prenom,courriel,courrier,tel,commentaire) VALUES(?,?,?,?,?,?)""",liste_c)
+        cursor.execute("""INSERT INTO client(last_name,first_name,e_mail,address,phone,remark) VALUES(?,?,?,?,?,?)""",liste_c)
         connexion.commit()
 
 
@@ -30,7 +30,7 @@ def insertion_client_ou_entreprise(cursor,connexion,liste,bool):
 
             liste_e=[id_max[0][0]]+liste[6:]
             """ recuperation de id """
-            cursor.execute("""INSERT INTO entreprise(id_client_entreprise,nom_entreprise,num_SIRET) VALUES(?,?,?)""",liste_e)
+            cursor.execute("""INSERT INTO company(id_client_company,company_name,num_SIRET) VALUES(?,?,?)""",liste_e)
             connexion.commit()
 
 def insertion_fac_dev(cursor,connexion,liste):

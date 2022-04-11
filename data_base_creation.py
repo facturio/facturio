@@ -34,7 +34,7 @@ def main():
     creation_table_article(cursor,connexion)
     creation_table_utilisateur(cursor,connexion)
     creation_table_client(cursor,connexion)
-    creation_table_entreprise(cursor,connexion)
+    creation_table_company(cursor,connexion)
     creation_table_facture_devis(cursor,connexion)
     creation_table_facture(cursor,connexion)
     creation_table_art_dev(cursor,connexion)
@@ -51,7 +51,7 @@ def main():
     #booleen egale a 0 pour savoir si c'est un client et 1 pour une entreprise
     liste=["bazan","clement","tomolivier283@gmail.com","avenue du paradi","0675849320","le plus bg","entreprise","12345678"]
     bool=0
-    insertion_client_ou_entreprise(cursor,connexion,liste,bool)
+    insertion_client_or_company(cursor,connexion,liste,bool)
 
     data=date.today()
     #recuperation des id client et utilisateur
