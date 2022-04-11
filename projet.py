@@ -2,11 +2,15 @@
 import sqlite3
 from creation_table import *
 from insertion import *
+from delete import *
+from selection import *
+
 from datetime import date
+
 """
 a faire :
 
-id de facdev
+
 faire insertion_art_dev
 
 partie update et delete
@@ -39,7 +43,7 @@ insertion_utilisateur(cursor,connexion,liste)
 
 #booleen egale a 0 pour savoir si c'est un client et 1 pour une entreprise
 liste=["olivier","tom","tomolivier283@gmail.com","avenue du paradi","0675849320","le plus bg","entreprise","12345678"]
-bool=1
+bool=0
 insertion_client_ou_entreprise(cursor,connexion,liste,bool)
 
 data=date.today()
@@ -51,9 +55,28 @@ insertion_fac(cursor,connexion,liste)
 liste=[1]
 insertion_acompte(cursor,connexion,liste)
 
+liste=[1,1]
 insertion_art_dev(cursor,connexion,liste)
 """------------------- fonction update dans la bdd --------------------"""
-
+liste=["logo.png","entreprise de reve","tomolivier283@gmail.com","avenue toto","0653536789","00543222"]
+update_utilisateur(cursor,conenxion,liste)
 """--------------------fonction delete dans la bdd-------------------- """
+
+#recuperation de la ligne client quon envoie dans la fonction
+liste=[1]
+#delete_client(cursor,connexion,liste)
+#delete_acompte(cursor,connexion,liste)
+#delete_fac_dev(cursor,connexion,liste)
+delete_facture(cursor,connexion,liste)
+""" ------------------------fonction selection--------------------------"""
+selection_client(cursor,conenxion,liste,bool)
+selection_utilisateur(cursor,conenxion,liste)
+selection_acompte(cursor,conenxion,liste)
+selection_fac_dev(cursor,conenxion,liste)
+selection_entreprise(cursor,conenxion,liste)
+selection_article(cursor,conenxion,liste)
+selection_facture(cursor,conenxion,liste)
+selection_art_dev(cursor,conenxion,liste)
+""" ------------------------------------------------------------------------"""
 #fermer la connexion
 connexion.close()
