@@ -312,13 +312,13 @@ class InvoicePage(Gtk.ScrolledWindow):
 
 
     def total(self):
-        self.total_grid = Gtk.Grid(column_homogeneous=False,
+        self.total_grid = Gtk.Grid(column_homogeneous=True,
                                      row_homogeneous=True,
                              column_spacing=20, row_spacing=20)
         self.label = Gtk.Label("Subtotal")
         self.label.set_xalign(0)
         self.total_grid.attach(self.label, 1, 1, 1, 1)
-        self.label = Gtk.Label("Tax(21%)")
+        self.label = Gtk.Label("Tax (21%)")
         self.label.set_xalign(0)
         self.total_grid.attach(self.label, 1, 2, 1, 1)
         self.label = Gtk.Label("Total")
@@ -327,6 +327,9 @@ class InvoicePage(Gtk.ScrolledWindow):
         self.label = Gtk.Label("Montant Du")
         self.label.set_xalign(0)
         self.total_grid.attach(self.label, 1, 4, 1, 1)
+
+        self.space = Gtk.Label("")
+        self.total_grid.attach(self.space, 2, 1, 1, 3)
 
         self.label = Gtk.Label("0,00 €")
         self.label.set_xalign(1)

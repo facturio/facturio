@@ -17,21 +17,21 @@ class History(Gtk.ScrolledWindow):
     """
     def __init__(self):
         super().__init__()
-        self.init_grid__()
-        self.title__("Historique")
-        self.search__((2,4,3,1))
-        self.space__()
-        self.init_result__(["Nom", "date", "Description"])
-        self.add__(self.grid)
+        self.__init_grid()
+        self.__title("Historique")
+        self.__search((2,4,3,1))
+        self.__space()
+        self.__init_result(["Nom", "date", "Description"])
+        self.add(self.grid)
 
 
-    def title(self, ttl):
+    def __title(self, ttl):
         facturio_label = Gtk.Label(label=ttl)
         facturio_label.set_markup("<span font_weight=\"bold\" size=\"xx-large\">"+ttl+"</span>")
         self.grid.attach(facturio_label, 2, 2, 1, 1 )
 
 
-    def init_result(self, para):
+    def __init_result(self, para):
         """
         Initialise la barre de recherche et permet l'ajout grace
         a la methode add_result
@@ -50,7 +50,7 @@ class History(Gtk.ScrolledWindow):
         self.scrollable_treelist.add(self.treeview)
 
 
-    def space__(self):
+    def __space(self):
         """
         Ajoute les espace pour l'ergonomie
         """
@@ -58,7 +58,7 @@ class History(Gtk.ScrolledWindow):
         self.grid.attach(spaceh,1,1,5,1)
 
 
-    def search__(self, l_attach):
+    def __search(self, l_attach):
         """
         Prend un emplacement et invoque la barre de recherche
         a cette emplacement
@@ -67,7 +67,7 @@ class History(Gtk.ScrolledWindow):
         self.grid.attach(searchbar, *l_attach)
 
 
-    def init_grid(self):
+    def __init_grid(self):
         """
         Propriete de la Grid Gtk
         voir doc
