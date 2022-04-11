@@ -1,4 +1,4 @@
-
+from datetime import date   
 
 def insertion_article(cursor,connexion,liste):
     """ compter le nombre de ligne """

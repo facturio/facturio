@@ -4,6 +4,7 @@ from creation_table import *
 from insertion import *
 from delete import *
 from selection import *
+from update import *
 
 from datetime import date
 
@@ -59,24 +60,24 @@ liste=[1,1]
 insertion_art_dev(cursor,connexion,liste)
 """------------------- fonction update dans la bdd --------------------"""
 liste=["logo.png","entreprise de reve","tomolivier283@gmail.com","avenue toto","0653536789","00543222"]
-update_utilisateur(cursor,conenxion,liste)
+update_utilisateur(cursor,connexion,liste)
 """--------------------fonction delete dans la bdd-------------------- """
 
 #recuperation de la ligne client quon envoie dans la fonction
-liste=[1]
+liste=[1,1]
 #delete_client(cursor,connexion,liste)
 #delete_acompte(cursor,connexion,liste)
 #delete_fac_dev(cursor,connexion,liste)
-delete_facture(cursor,connexion,liste)
+#delete_facture(cursor,connexion,liste)
 """ ------------------------fonction selection--------------------------"""
-selection_client(cursor,conenxion,liste,bool)
-selection_utilisateur(cursor,conenxion,liste)
-selection_acompte(cursor,conenxion,liste)
-selection_fac_dev(cursor,conenxion,liste)
-selection_entreprise(cursor,conenxion,liste)
-selection_article(cursor,conenxion,liste)
-selection_facture(cursor,conenxion,liste)
-selection_art_dev(cursor,conenxion,liste)
+selection_client(cursor,connexion,liste,bool)
+selection_utilisateur(cursor,connexion,liste)
+selection_acompte(cursor,connexion,liste)
+selection_fac_dev(cursor,connexion,liste)
+selection_entreprise(cursor,connexion,liste)
+selection_article(cursor,connexion,liste)
+selection_facture(cursor,connexion,liste)
+selection_art_dev(cursor,connexion,liste)
 """ ------------------------------------------------------------------------"""
 #fermer la connexion
 connexion.close()

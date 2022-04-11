@@ -5,7 +5,7 @@ def creation_table_entreprise(cursor,connexion):
     (id_client_entreprise INTEGER PRIMARY KEY,
     nom_entreprise STRING,
     num_SIRET INTEGER ,
-    FOREIGN KEY(id_client_entreprise) REFERENCES client(id_client)
+    FOREIGN KEY(id_client_entreprise) REFERENCES client(id_client) ON DELETE CASCADE
     )
     """)
 
@@ -42,17 +42,7 @@ def creation_table_utilisateur(cursor,connexion):
 
 
 
-def creation_table_acompte(cursor,connexion):
-    cursor.execute("""
-    CREATE TABLE IF NOT EXISTS accompte
-    (id_acompte INTEGER PRIMARY KEY AUTOINCREMENT,
-    date INTEGER
-    montant STRING,
-    id_fac INTEGER,
-    FOREIGN KEY(id_fac) REFERENCES fac(id_fac)
-    )
-    """)
-    connexion.commit()
+
 
 def creation_table_article(cursor,connexion):
     cursor.execute("""
@@ -78,7 +68,7 @@ def creation_table_facture_devis(cursor,connexion):
     id_client INTEGER,
     id_util INTEGER,
     FOREIGN KEY(id_util) REFERENCES utilisateur(num_utilisateur),
-    FOREIGN KEY(id_client) REFERENCES client(id_client)
+    FOREIGN KEY(id_client) REFERENCES client(id_client) ON DELETE CASCADE
     )
     """)
 
@@ -89,8 +79,8 @@ def creation_table_art_dev(cursor,connexion):
     CREATE TABLE IF NOT EXISTS art_dev
     (
     id_article INTEGER,
-    id_facdev STRING,
-    FOREIGN KEY(id_facdev) REFERENCES facture_devis(id_facdev),
+    id_facdev INTEGER,
+    FOREIGN KEY(id_facdev) REFERENCES facture_devis(id_facdev) ON DELETE CASCADE,
     FOREIGN KEY(id_article) REFERENCES article(id_article)
     )
     """)
@@ -101,9 +91,20 @@ def creation_table_facture(cursor,connexion):
     cursor.execute("""
     CREATE TABLE IF NOT EXISTS facture
     (
-    id_facture INTEGER,
+    id_facture INTEGER PRIMARY KEY AUTOINCREMENT,
     solde INTEGER
     )
     """)
 
+    connexion.commit()
+def creation_table_acompte(cursor,connexion):
+    cursor.execute("""
+    CREATE TABLE IF NOT EXISTS accompte
+    (id_acompte INTEGER PRIMARY KEY AUTOINCREMENT,
+    date INTEGER
+    montant STRING,
+    id_fac INTEGER,
+    FOREIGN KEY(id_fac) REFERENCES facture(id_facture) ON DELETE CASCADE
+    )
+    """)
     connexion.commit()
