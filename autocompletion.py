@@ -26,7 +26,7 @@ class FacturioEntryCompletion(Gtk.Entry):
         self.completion.connect('match-selected', self.on_match_selected)
 
     def on_match_selected(self, entry_completion, model, iter):
-        print(tuple(model[entry_completion.get_text_column()]))
+        print(iter.get())
 
 if __name__ == '__main__':
     win = Gtk.Window()
