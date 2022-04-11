@@ -1,4 +1,4 @@
-from datetime import date   
+from datetime import date
 
 def insertion_article(cursor,connexion,liste):
     """ compter le nombre de ligne """
@@ -53,4 +53,8 @@ def insertion_acompte(cursor,connexion,liste):
     connexion.commit()
 
 def insertion_art_dev(cursor,connexion,liste):
-    print("en travaill")
+    """ liste de 2 indice
+    le premier pour id de article
+    le deuxieme pour id de fac_dev   """
+    cursor.execute("""INSERT INTO art_dev(id_article,id_facdev) VALUES(?,?)""",(liste))
+    connexion.commit()
