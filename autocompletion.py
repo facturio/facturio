@@ -4,7 +4,7 @@ import gi
 gi.require_version('Gtk', '3.0')
 
 from gi.repository import Gtk  # noqa: E402
-from Info_Facture_Devis import articles, clients
+import examples
 
 
 class FacturioEntryCompletion(Gtk.Entry):
@@ -31,8 +31,8 @@ class FacturioEntryCompletion(Gtk.Entry):
 if __name__ == '__main__':
     win = Gtk.Window()
     box = Gtk.Box(orientation=1, spacing=6)
-    box.add(FacturioEntryCompletion(lambda x: x.prenom, clients))
-    box.add(FacturioEntryCompletion(lambda x: x.nom, clients))
+    box.add(FacturioEntryCompletion(lambda x: x.prenom, examples.clients))
+    box.add(FacturioEntryCompletion(lambda x: x.nom, examples.clients))
     win.add(box)
     win.connect('delete-event', Gtk.main_quit)
     win.show_all()
