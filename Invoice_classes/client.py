@@ -5,7 +5,7 @@ class Client:
 
     def __init__(
         self,
-        surname: str,
+        last_name: str,
         first_name: str,
         email: str = None,
         adr: str = None,
@@ -17,15 +17,15 @@ class Client:
         dans le pdf
         attributs : chaîne de caractères
         """
-        self.surname = surname  
-        self.first_name = first_name  
-        self.email = email  
+        self.last_name = last_name
+        self.first_name = first_name
+        self.email = email
         self.adr = adr
-        self.phone = phone  
+        self.phone = phone
         self.note = note
 
     def __str__(self):
-        return f"{self.surname} | {self.first_name} | {self.email} | " \
+        return f"{self.last_name} | {self.first_name} | {self.email} | " \
                f"{self.adr}  | {self.phone} | {self.note}"
 
     def __repr__(self):
@@ -40,7 +40,7 @@ class Company(Client):
     def __init__(
         self,
         company_name: str,
-        surname: str,
+        last_name: str,
         first_name: str,
         siren_number: str,
         email: str,
@@ -53,12 +53,12 @@ class Company(Client):
         Les attributs sont initialisés selon leur ordre d'apparition
         dans le pdf
         """
-        self.company_name = company_name 
-        super().__init__(surname, first_name, email, adr, phone, note) 
-        self.siren_number = siren_number  
+        self.company_name = company_name
+        super().__init__(last_name, first_name, email, adr, phone, note)
+        self.siren_number = siren_number
 
         def __str__(self):
-            return f"{self.company_name} | {self.surname} | {self.first_name} | " \
+            return f"{self.company_name} | {self.last_name} | {self.first_name} | " \
                    f" | {self.email} | {self.adr} | {self.phone} | "\
                    f"{self.siren_number} | {self.note}"
         
