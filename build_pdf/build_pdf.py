@@ -1,6 +1,3 @@
-
-
-
 #Import de borb
 from borb.pdf import Document
 from borb.pdf import Page
@@ -241,8 +238,8 @@ def pdf_articles_tax(receipt, currency, tax, discount):
     for h in ["DESCRIPTION", "QUANTITÉ", "PRIX UNITAIRE", "TOTAL"]:  
         table.add(  
             TableCell(  
-                Paragraph(h, font_color=X11Color("White")),  
-                background_color=HexColor("5f5f5f"),  
+                Paragraph(h, font_color = HexColor("ffffff")),  
+                background_color = HexColor("5f5f5f"),  
             )  
         ) 
     #Couleur différente pour chaque lignes qui se suivent 
@@ -253,7 +250,7 @@ def pdf_articles_tax(receipt, currency, tax, discount):
     for article in art_list:  
         c = even if parity else odd 
         parity ^= True
-        table.add(TableCell(Paragraph(f"{article[0].description}", 
+        table.add(TableCell(Paragraph(f"{article[0].title}", 
                             respect_newlines_in_text=True), 
                                                     background_color=c))  
         table.add(TableCell(Paragraph(f"{article[1]}"), background_color=c))  
