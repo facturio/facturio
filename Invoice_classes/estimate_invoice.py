@@ -25,7 +25,7 @@ class Receipt:
         self.client = client  
         
         #On vérifie si la date est au format Unix time epoch
-        if isinstance(date, int):
+        if date:
             self.date = date
         else:                              
             self.date = int(time.time())
@@ -36,9 +36,8 @@ class Receipt:
         
         
     def __str__(self):
-        dte = time.strftime("%d/%m/%Y  %H:%M:%S",time.localtime(self.date))
         return f"User :\n{self.user}\nClient :\n" \
-        f"{self.client}\nDate :\n {dte}\nListe des articles :\n"\
+        f"{self.client}\nDate :\n {self.date_string()}\nListe des articles :\n"\
         f"{self.articles_list}\nMontants :\n{str(self.amount)}\n"\
         f"Commentaire :\n{self.note}"
         
@@ -87,9 +86,8 @@ class Invoice(Receipt):
             amount = self.total_with_advances()
 
     def __str__(self):
-        dte = time.strftime("%d/%m/%Y  %H:%M:%S",time.localtime(self.date))
         return f"User :\n{self.user}\nClient :\n" \
-            f"{self.client}\nDate :\n{dte} \nListe des articles :\n"\
+            f"{self.client}\nDate :\n{self.date_string} \nListe des articles :\n"\
             f"{self.articles_list}\nListe des acomptes :\n" \
             f"{self.advances_list}\nMontants : \n{str(self.amount)}\n"\
             f"Commentaire :\n{self.note}"
@@ -101,11 +99,7 @@ class Invoice(Receipt):
         """
         Calcule le total soustrait du total des advances
         """
-        amount = self.total()
-        if(self.advances_list != None):
-            for adv in self.advances_list:
-                amount -= adv.amount
-        return round(amount,2)
+        return round(self.total()-self.total_of_advances(), 2)
 
     def total_of_advances(self):
         """
@@ -116,12 +110,6 @@ class Invoice(Receipt):
             for adv in self.advances_list:
                 amount += adv.amount
         return round(amount,2)
-
-
-
-
-    
-
 
 class Estimate(Receipt):
     """
@@ -146,9 +134,8 @@ class Estimate(Receipt):
             amount = self.total()
 
     def __str__(self):
-        dte = time.strftime("%d/%m/%Y  %H:%M:%S",time.localtime(self.date))
         return f"User :\n{self.user}\nClient :\n" \
-        f"{self.client}\nDate :\n {dte}\nListe des articles :\n"\
+        f"{self.client}\nDate :\n {self.date_string()}\nListe des articles :\n"\
         f"{self.articles_list}\nMontants :\n{str(self.amount)}\n"\
         f"Commentaire :\n{self.note}"
     
