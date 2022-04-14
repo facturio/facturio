@@ -26,15 +26,15 @@ def creation_table_client(cursor,connexion):
 
     connexion.commit()
 
-def creation_table_utilisateur(cursor,connexion):
+def creation_table_user(cursor,connexion):
     cursor.execute("""
-    CREATE TABLE IF NOT EXISTS utilisateur
-    ( num_utilisateur INTEGER PRIMARY KEY AUTOINCREMENT,
+    CREATE TABLE IF NOT EXISTS user
+    ( id_user INTEGER PRIMARY KEY AUTOINCREMENT,
     logo BLOB,
     company_name STRING,
-    courriel STRING,
-    courrier STRING,
-    tel STRING,
+    e_mail STRING,
+    address STRING,
+    phone STRING,
     num_SIREN STRING
     )
     """)
@@ -48,26 +48,26 @@ def creation_table_article(cursor,connexion):
     cursor.execute("""
     CREATE TABLE IF NOT EXISTS article
     ( id_article INTEGER PRIMARY KEY AUTOINCREMENT,
-    nom STRING,
+    name STRING,
     description STRING,
-    prix float
+    price float
     )
     """)
 
     connexion.commit()
 
-def creation_table_facture_devis(cursor,connexion):
+def creation_table_invoice_devis(cursor,connexion):
     cursor.execute("""
-    CREATE TABLE IF NOT EXISTS facture_devis
+    CREATE TABLE IF NOT EXISTS invoice_devis
     ( id_facdev INTEGER PRIMARY KEY AUTOINCREMENT,
-    montant FLOAT,
+    amount FLOAT,
     date INTEGER,
     description STRING,
-    notes STRING,
-    commentaire STRING,
+    note STRING,
+    remark STRING,
     id_client INTEGER,
     id_util INTEGER,
-    FOREIGN KEY(id_util) REFERENCES utilisateur(num_utilisateur),
+    FOREIGN KEY(id_util) REFERENCES user(id_user),
     FOREIGN KEY(id_client) REFERENCES client(id_client) ON DELETE CASCADE
     )
     """)
@@ -80,31 +80,31 @@ def creation_table_art_dev(cursor,connexion):
     (
     id_article INTEGER,
     id_facdev INTEGER,
-    FOREIGN KEY(id_facdev) REFERENCES facture_devis(id_facdev) ON DELETE CASCADE,
+    FOREIGN KEY(id_facdev) REFERENCES invoice_devis(id_facdev) ON DELETE CASCADE,
     FOREIGN KEY(id_article) REFERENCES article(id_article)
     )
     """)
 
     connexion.commit()
 
-def creation_table_facture(cursor,connexion):
+def creation_table_invoice(cursor,connexion):
     cursor.execute("""
-    CREATE TABLE IF NOT EXISTS facture
+    CREATE TABLE IF NOT EXISTS invoice
     (
-    id_facture INTEGER PRIMARY KEY AUTOINCREMENT,
+    id_invoice INTEGER PRIMARY KEY AUTOINCREMENT,
     solde INTEGER
     )
     """)
 
     connexion.commit()
-def creation_table_acompte(cursor,connexion):
+def creation_table_deposit(cursor,connexion):
     cursor.execute("""
-    CREATE TABLE IF NOT EXISTS accompte
-    (id_acompte INTEGER PRIMARY KEY AUTOINCREMENT,
+    CREATE TABLE IF NOT EXISTS deposit
+    (id_deposit INTEGER PRIMARY KEY AUTOINCREMENT,
     date INTEGER,
-    montant STRING,
+    amount STRING,
     id_fac INTEGER,
-    FOREIGN KEY(id_fac) REFERENCES facture(id_facture) ON DELETE CASCADE
+    FOREIGN KEY(id_fac) REFERENCES invoice(id_invoice) ON DELETE CASCADE
     )
     """)
     connexion.commit()

@@ -14,7 +14,7 @@ a faire :
 update entreprise
 
 faire quant tout marche :
-anglais francais
+delete une fonction
 list een objet
 
 """
@@ -32,13 +32,13 @@ def main():
     """--------------------------------- creation des table ----------"""
 
     creation_table_article(cursor,connexion)
-    creation_table_utilisateur(cursor,connexion)
+    creation_table_user(cursor,connexion)
     creation_table_client(cursor,connexion)
     creation_table_company(cursor,connexion)
-    creation_table_facture_devis(cursor,connexion)
-    creation_table_facture(cursor,connexion)
+    creation_table_invoice_devis(cursor,connexion)
+    creation_table_invoice(cursor,connexion)
     creation_table_art_dev(cursor,connexion)
-    creation_table_acompte(cursor,connexion)
+    creation_table_deposit(cursor,connexion)
 
     """------------------------fonction insertion dans la bdd-------------------- """
 
@@ -46,46 +46,46 @@ def main():
     insertion_article(cursor,connexion,liste)
 
     liste=["logo.png","entreprise de reve","tomolivier283@gmail.com","avenue toto","0653536789","00543222"]
-    insertion_utilisateur(cursor,connexion,liste)
+    insertion_user(cursor,connexion,liste)
 
     #booleen egale a 0 pour savoir si c'est un client et 1 pour une entreprise
     liste=["bazan","clement","tomolivier283@gmail.com","avenue du paradi","0675849320","le plus bg","entreprise","12345678"]
-    bool=0
+    bool=1
     insertion_client_or_company(cursor,connexion,liste,bool)
 
     data=date.today()
     #recuperation des id client et utilisateur
     liste=[100.0,data,"acheter des vetement","10","de la merde",1,1]
-    insertion_fac_dev(cursor,connexion,liste)
-    insertion_fac(cursor,connexion,liste)
+    insertion_invoice_dev(cursor,connexion,liste)
+    insertion_invoice(cursor,connexion,liste)
     #id de facture
-    liste=[1]
-    insertion_acompte(cursor,connexion,liste)
+    liste=["100",1]
+    insertion_deposit(cursor,connexion,liste)
     #id article et id de fac_dev
     liste=[1,1]
     insertion_art_dev(cursor,connexion,liste)
     """------------------- fonction update dans la bdd --------------------"""
 
     liste=["1","logo.png","prise de reve","tomolivier283@gmail.com","avenue toto","0653536789","00543222"]
-    update_utilisateur(cursor,connexion,liste)
+    update_user(cursor,connexion,liste)
     liste=["1","bazan","clement","tomolivier283@gmail.com","avenue du paradi","0675849320","le plus bg"]
     update_client(cursor,connexion,liste,bool)
-    liste=[1,data,1]
-    update_acompte(cursor,connexion,liste)
+    liste=[1,data,"100",1]
+    update_deposit(cursor,connexion,liste)
     liste=[1,"t-shirt","un pull tres moche ",40]
     update_article(cursor,connexion,liste)
     liste=[1,100.0,data,"acheter des choses","10","de la merde",1,1]
-    update_fac_dev(cursor,connexion,liste)
+    update_invoice_dev(cursor,connexion,liste)
     """--------------------fonction delete dans la bdd-------------------- """
 
     #recuperation de la ligne client quon envoie dans la fonction
     liste=[1]
     delete_client(cursor,connexion,liste)
-    delete_acompte(cursor,connexion,liste)
-    delete_utilisateur(cursor,connexion,liste)
+    delete_deposit(cursor,connexion,liste)
+    delete_user(cursor,connexion,liste)
     delete_article(cursor,connexion,liste)
-    delete_fac_dev(cursor,connexion,liste)
-    delete_facture(cursor,connexion,liste)
+    delete_invoice_dev(cursor,connexion,liste)
+    delete_invoice(cursor,connexion,liste)
 
     """ ------------------------fonction selection--------------------------"""
 

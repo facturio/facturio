@@ -8,28 +8,30 @@ def update_client(cursor,connexion,liste,bool):
         last_name=?,first_name=?,e_mail=?,address=?,phone=?,remark=?
         WHERE id_client=?""",liste)
     else:
-        cursor.execute("""UPDATE client SET  WHERE num_client=?""",liste)
+        cursor.execute("""UPDATE client SET
+        last_name=?,first_name=?,e_mail=?,address=?,phone=?,remark=?
+        WHERE id_client=?""",liste)
     connexion.commit()
 
-def update_utilisateur(cursor,connexion,liste):
+def update_user(cursor,connexion,liste):
     liste=liste[1:]+[liste[0]]
 
-    cursor.execute("""UPDATE utilisateur SET logo=?,company_name=?,courriel=?,
-    courrier=?,tel=?,num_SIREN=? WHERE num_utilisateur=?""",liste)
+    cursor.execute("""UPDATE user SET logo=?,company_name=?,e_mail=?,
+    address=?,phone=?,num_SIREN=? WHERE id_user=?""",liste)
     connexion.commit()
 
-def update_acompte(cursor,connexion,liste):
+def update_deposit(cursor,connexion,liste):
     liste=liste[1:]+[liste[0]]
     print("toto",liste)
-    cursor.execute("""UPDATE accompte SET date=?, id_fac=? WHERE id_acompte=?""",liste)
+    cursor.execute("""UPDATE deposit SET date=?,amount=?, id_fac=? WHERE id_deposit=?""",liste)
     connexion.commit()
 
-def update_fac_dev(cursor,connexion,liste):
+def update_invoice_dev(cursor,connexion,liste):
     liste=liste[1:]+[liste[0]]
-    cursor.execute("""UPDATE facture_devis SET montant=?,date=?,description=?,notes=?,commentaire=?,id_client=?,id_util=? WHERE id_facdev=?""",liste)
+    cursor.execute("""UPDATE invoice_devis SET amount=?,date=?,description=?,note=?,remark=?,id_client=?,id_util=? WHERE id_facdev=?""",liste)
     connexion.commit()
 
 def update_article(cursor,connexion,liste):
     liste=liste[1:]+[liste[0]]
-    cursor.execute("""UPDATE article SET nom=?,description=?,prix=? WHERE id_article=?""",liste)
+    cursor.execute("""UPDATE article SET name=?,description=?,price=? WHERE id_article=?""",liste)
     connexion.commit()

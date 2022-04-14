@@ -2,10 +2,10 @@ from datetime import date
 
 def insertion_article(cursor,connexion,liste):
     """ compter le nombre de ligne """
-    cursor.execute("""INSERT INTO article(nom,description,prix) VALUES(?,?,?)""",liste)
+    cursor.execute("""INSERT INTO article(name,description,price) VALUES(?,?,?)""",liste)
     connexion.commit()
 
-def insertion_utilisateur(cursor,connexion,liste):
+def insertion_user(cursor,connexion,liste):
     texte=liste[0]
     #convertir image logo sous forme de fichier binaire
     with open(texte,"rb") as myfile:
@@ -13,7 +13,7 @@ def insertion_utilisateur(cursor,connexion,liste):
 
     liste[0]=blobfile
 
-    cursor.execute("""INSERT INTO utilisateur(logo,company_name,courriel,courrier,tel,num_SIREN) VALUES(?,?,?,?,?,?)""",liste)
+    cursor.execute("""INSERT INTO user(logo,company_name,e_mail,address,phone,num_SIREN) VALUES(?,?,?,?,?,?)""",liste)
     connexion.commit()
 
 def insertion_client_or_company(cursor,connexion,liste,bool):
@@ -33,23 +33,23 @@ def insertion_client_or_company(cursor,connexion,liste,bool):
             cursor.execute("""INSERT INTO company(id_client_company,company_name,num_SIRET) VALUES(?,?,?)""",liste_e)
             connexion.commit()
 
-def insertion_fac_dev(cursor,connexion,liste):
-
-    cursor.execute("""INSERT INTO facture_devis(montant,date,description,notes,commentaire,id_client,id_util) VALUES(?,?,?,?,?,?,?)""",liste)
+def insertion_invoice_dev(cursor,connexion,liste):
+    print(liste)
+    cursor.execute("""INSERT INTO invoice_devis(amount,date,description,note,remark,id_client,id_util) VALUES(?,?,?,?,?,?,?)""",liste)
     connexion.commit()
 
-def insertion_fac(cursor,connexion,liste):
+def insertion_invoice(cursor,connexion,liste):
 
-    cursor.execute("""SELECT max(id_facdev) FROM facture_devis""")
+    cursor.execute("""SELECT max(id_facdev) FROM invoice_devis""")
     connexion.commit()
     id_max=cursor.fetchall()
 
-    cursor.execute("""INSERT INTO facture(id_facture,solde) VALUES(?,?)""",(id_max[0][0],liste[0]))
+    cursor.execute("""INSERT INTO invoice(id_invoice,solde) VALUES(?,?)""",(id_max[0][0],liste[0]))
     connexion.commit()
 
-def insertion_acompte(cursor,connexion,liste):
+def insertion_deposit(cursor,connexion,liste):
     data=date.today()
-    cursor.execute("""INSERT INTO accompte(date,id_fac) VALUES(?,?)""",(data,liste[0]))
+    cursor.execute("""INSERT INTO deposit(date,amount,id_fac) VALUES(?,?,?)""",(data,liste[0],liste[1]))
     connexion.commit()
 
 def insertion_art_dev(cursor,connexion,liste):
