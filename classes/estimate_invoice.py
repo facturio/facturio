@@ -1,8 +1,8 @@
-from Invoice_classes.advance import *
-from Invoice_classes.article import *
-from Invoice_classes.client import *
-from Invoice_classes.user import *
-
+from classes.advance import *
+from classes.article import *
+from classes.client import *
+from classes.user import *
+from typing import Union
                  
 
 
@@ -15,15 +15,15 @@ class Receipt:
     def __init__(
         self,
         user: User,
-        client: Client,
+        client: Union[Client, Company],
         articles_list: list[(Article, int)],
         date: int = None,
+        taxes: float = None,
         amount: float = None,
         note: str = None,
     ):
         self.user = user 
         self.client = client  
-        
         #On vérifie si la date est au format Unix time epoch
         if date:
             self.date = date
@@ -31,28 +31,41 @@ class Receipt:
             self.date = int(time.time())
         
         self.articles_list = articles_list 
+        self.taxes = taxes
         self.amount = amount 
         self.note = note
-        
-        
+           
     def __str__(self):
         return f"User :\n{self.user}\nClient :\n" \
-        f"{self.client}\nDate :\n {self.date_string()}\nListe des articles :\n"\
-        f"{self.articles_list}\nMontants :\n{str(self.amount)}\n"\
-        f"Commentaire :\n{self.note}"
+        f"{self.client}\nDate :\n {self.date_string()}\nListe des articles :"\
+        f"\n{self.articles_list}\nTaxes :\n{self.taxes}Montants :\n"\
+        f"{str(self.amount)}\nCommentaire :\n{self.note}"
         
     def __repr__(self):
         return self.__str__()
-        
-    def total(self):
+
+    def dump_to_list(self):
         """
-        Calcule le montant à partir de la liste des articles
+        Renvoie une liste de toutes les variables de classes
+        """ 
+        return [self.user, self.client, self.date, self.articles_list, 
+                                            self.taxes, self.amount, self.note]
+
+    def subtotal(self):
+        """
+        Calcule le sous-total à partir de la liste des articles
         """
         amount = 0
         for art in self.articles_list:
             amount += art[0].price * art[1]
         return round(amount,2)
-    
+
+    def total_with_taxes(self):
+        """
+        Calcule le total avec les taxes
+        """
+        return self.subtotal() * (1 + self.taxes)
+
     def date_string(self):
         """
         Retourne la date sous forme de chaîne de caractères
@@ -69,17 +82,15 @@ class Invoice(Receipt):
     def __init__(
         self,
         user: User,
-        client: Client,
+        client: Union[Client, Company],
         articles_list: list[(Article, int)],
         advances_list: list[Advance] = None,
         date: int = None,
+        taxes: float = None,
         amount: float = None,
         note: str = None,
     ):
-        
-        super().__init__(
-            user, client, articles_list, date, amount, note
-        )
+        super().__init__(user, client, articles_list, date, taxes, amount, note)
         self.advances_list = advances_list  
 
         if amount == None:
@@ -87,19 +98,24 @@ class Invoice(Receipt):
 
     def __str__(self):
         return f"User :\n{self.user}\nClient :\n" \
-            f"{self.client}\nDate :\n{self.date_string} \nListe des articles :\n"\
-            f"{self.articles_list}\nListe des acomptes :\n" \
-            f"{self.advances_list}\nMontants : \n{str(self.amount)}\n"\
-            f"Commentaire :\n{self.note}"
+        f"{self.client}\nDate :\n{self.date_string()}\nListe des articles :"\
+        f"{self.articles_list}\n"\
+        f"\nListe des acomptes :\n{self.advances_list}"\
+        f"Taxes :\n{self.taxes}\n" \
+        f"Montants :\n{self.amount}\nCommentaire :\n{self.note}"
 
     def __repr__(self):
         return self.__str__()
+    
+    def dump_to_list(self):
+        return [self.user, self.client, self.date, self.articles_list,
+                self.advances_list, self.taxes, self.amount, self.note]
     
     def total_with_advances(self):
         """
         Calcule le total soustrait du total des advances
         """
-        return round(self.total()-self.total_of_advances(), 2)
+        return round(self.total_with_taxes() - self.total_of_advances(), 2)
 
     def total_of_advances(self):
         """
@@ -119,29 +135,33 @@ class Estimate(Receipt):
     def __init__(
         self,
         user: User,
-        client: Client,
+        client: Union[Client, Company],
         articles_list: list[(Article, int)],
         date: int = None ,
         amount: float = None,
+        taxes: float = None,
         note: str = None,
     ):
         
-        super().__init__(
-            user, client, articles_list, date, amount, note
-        )  # attribut classe Receipt
-
+        super().__init__(user, client, articles_list, date, amount, taxes, note)
         if amount == None:
-            amount = self.total()
+            amount = self.total_with_taxes()
 
     def __str__(self):
         return f"User :\n{self.user}\nClient :\n" \
-        f"{self.client}\nDate :\n {self.date_string()}\nListe des articles :\n"\
-        f"{self.articles_list}\nMontants :\n{str(self.amount)}\n"\
-        f"Commentaire :\n{self.note}"
+        f"{self.client}\nDate :\n {self.date_string()}\nListe des articles :"\
+        f"\n{self.articles_list}\nTaxes :\n{self.taxes}Montants :\n"\
+        f"{str(self.amount)}\nCommentaire :\n{self.note}"
     
     def __repr__(self):
         return self.__str__()
-
+    
+    def dump_to_list(self):
+        """
+        Renvoie une liste de toutes les variables de classes
+        """ 
+        return [self.user, self.client, self.date, self.articles_list, 
+                                            self.taxes, self.amount, self.note]
 
 if __name__ == "__main__":
     artisan = User("Facturio","15 rue des champs Cuers","0734567221", 

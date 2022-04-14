@@ -11,7 +11,7 @@ from borb.pdf.canvas.layout.table.fixed_column_width_table \
                             import FixedColumnWidthTable as Table
 from borb.pdf.canvas.layout.text.paragraph import Paragraph
 from borb.pdf.canvas.layout.layout_element import Alignment
-from borb.pdf.canvas.color.color import HexColor, X11Color
+from borb.pdf.canvas.color.color import HexColor
 from borb.pdf.canvas.layout.table.fixed_column_width_table \
                             import FixedColumnWidthTable as Table
 from borb.pdf.canvas.layout.table.table import TableCell
@@ -21,10 +21,11 @@ from borb.pdf.canvas.layout.layout_element import LayoutElement
 #Import librairie standard
 from decimal import Decimal
 from pathlib import Path
+
 import sys
 #Import classes objet
 sys.path.append('../')
-from Invoice_classes.estimate_invoice import *
+from classes.estimate_invoice import *
 #Layout Element pour l'insertion d'icônes dans le pdf
 mail_icon: LayoutElement = Image(
     image=Path("icons/mail.png"),
@@ -61,7 +62,7 @@ person_icon: LayoutElement = Image(
     padding_top=Decimal(5),
     padding_left=Decimal(3)
 )
-def pdf_header(receipt, id):
+def pdf_header(receipt: Union[Invoice, Estimate], id: int):
     """
     Construction de l'entête du pdf
     """
@@ -101,13 +102,14 @@ def pdf_header(receipt, id):
     table.no_borders()
     return table
 
-def pdf_customer_company(table,customer, provider):
+def pdf_client_company(table: FlexibleColumnWidthTable, client: Company, 
+                                                              provider: User):
     """
     Construit la partie client lorsqu'il s'agit d'une entreprise
     """
     #Deuxième moitié deuxième ligne
     table.add(business_icon)
-    table.add(Paragraph(customer.company_name))
+    table.add(Paragraph(client.company_name))
     ### Troisième Ligne
     #On affiche l'email du client et du prestataire si ils existent
     if(provider.email == None):
@@ -117,38 +119,39 @@ def pdf_customer_company(table,customer, provider):
         table.add(Paragraph(provider.email))
 
     table.add(email_icon)  
-    table.add(Paragraph(customer.email))  
+    table.add(Paragraph(client.email))  
     ### Quatrième Ligne
     table.add(mail_icon)
     table.add(Paragraph(provider.adr))
     table.add(mail_icon)  
-    table.add(Paragraph(customer.adr))
+    table.add(Paragraph(client.adr))
     ### Cinquième Ligne
     table.add(phone_icon)
     table.add(Paragraph(provider.phone))
     table.add(phone_icon)  
-    table.add(Paragraph(customer.phone))
+    table.add(Paragraph(client.phone))
     ### Sixième Ligne
     table.add(Paragraph("N°", font="Helvetica-Bold", 
                                     horizontal_alignment=Alignment.CENTERED))
-    table.add(Paragraph(f"{provider.siren_number}"))
+    table.add(Paragraph(f"{provider.buisness_number}"))
     table.add(Paragraph("N°", font="Helvetica-Bold", 
                                     horizontal_alignment=Alignment.CENTERED))
-    table.add(Paragraph(f"{customer.siren_number}"))
+    table.add(Paragraph(f"{client.buisness_number}"))
     ### Septième Ligne
     table.add(Paragraph(" ")); table.add(Paragraph(" "))
     # On affiche la ligne correspondant au représentant de l'entreprise  
     table.add(person_icon)
-    table.add(Paragraph(f"{customer.first_name} {customer.last_name}")) 
+    table.add(Paragraph(f"{client.first_name} {client.last_name}")) 
     return table
 
-def pdf_customer_individual(table, customer, provider):
+def pdf_client_individual(table: FlexibleColumnWidthTable, client: Client, 
+                                                               provider: User):
     """
     Construit la partie client lorsqu'il s'agit d'une entreprise
     """
     #Deuxième moitié deuxième ligne
     table.add(person_icon)
-    table.add(Paragraph(f"{customer.first_name} {customer.last_name}"))      
+    table.add(Paragraph(f"{client.first_name} {client.last_name}"))      
     ### Troisième Ligne
     #On affiche l'email du client et du prestataire si ils existent
     if(provider.email == None):
@@ -157,49 +160,49 @@ def pdf_customer_individual(table, customer, provider):
         table.add(email_icon)  
         table.add(Paragraph(provider.email))
 
-    if(customer.email == None):
+    if(client.email == None):
         table.add(Paragraph(" ")); table.add(Paragraph(" "))
     else:
         table.add(email_icon)  
-        table.add(Paragraph(customer.email))  
+        table.add(Paragraph(client.email))  
 
     ### Quatrième Ligne
     table.add(mail_icon)
     table.add(Paragraph(provider.adr))
     #On affiche l'adresse du client si elle existe
-    if(customer.adr == None):
+    if(client.adr == None):
         table.add(Paragraph(" ")); table.add(Paragraph(" "))
     else:
         table.add(mail_icon)  
-        table.add(Paragraph(customer.adr))
+        table.add(Paragraph(client.adr))
 
     ### Cinquième Ligne
     #On affiche le numéro téléphone du client si il existe
     table.add(phone_icon)
     table.add(Paragraph(provider.phone))
 
-    if(customer.phone == None):
+    if(client.phone == None):
         table.add(Paragraph(" ")); table.add(Paragraph(" "))
     else:
         table.add(phone_icon)  
-        table.add(Paragraph(customer.phone))
+        table.add(Paragraph(client.phone))
 
     ### Sixième Ligne
     table.add(Paragraph("N°", font="Helvetica-Bold", 
                                     horizontal_alignment=Alignment.CENTERED))
-    table.add(Paragraph(f"{provider.siren_number}"))
+    table.add(Paragraph(f"{provider.buisness_number}"))
     table.add(Paragraph(" ")); table.add(Paragraph(" ")) 
     ### Septième Ligne
     table.add(Paragraph(" ")); table.add(Paragraph(" "))
     table.add(Paragraph(" "));table.add(Paragraph(" "))   
     return table
 
-def pdf_provider_customer(receipt):   
+def pdf_provider_client(receipt: Union[Estimate,Invoice]):   
     """
     Retourne une table liée aux informations du prestataire et du client
     """
     provider = receipt.user
-    customer = receipt.client
+    client = receipt.client
     ### Première Ligne
     table = FlexibleColumnWidthTable(number_of_rows=7, number_of_columns=4) 
     table.add(Paragraph("De ", font="Helvetica-Bold",
@@ -213,17 +216,18 @@ def pdf_provider_customer(receipt):
     table.add(business_icon)
     table.add(Paragraph(provider.company_name))
     #On vérifie si l'on traite une entreprise ou un particulier
-    if(isinstance(customer, Company)):
-        table = pdf_customer_company(table, customer, provider)
+    if(isinstance(client, Company)):
+        table = pdf_client_company(table, client, provider)
     else:
-        table = pdf_customer_individual(table, customer, provider)
+        table = pdf_client_individual(table, client, provider)
     
     table.set_padding_on_all_cells(Decimal(1), Decimal(1), Decimal(1), 
                                                                 Decimal(1))    		
     table.no_borders()
     return table
 
-def pdf_articles_tax(receipt, currency, tax, discount):
+def pdf_articles_tax(receipt: Union[Invoice, Estimate], currency: float, 
+                                                   tax: float, discount:float):
     """
     Construit la listes des articles et des taxes
     """
@@ -274,9 +278,11 @@ def pdf_articles_tax(receipt, currency, tax, discount):
                                         Decimal(15), Decimal(2), Decimal(2))  
     return table
 
-def pdf_taxes(table, receipt, currency, tax, discount):
+def pdf_taxes(table: Table, receipt:Union[Invoice, Estimate], currency: str, 
+                                                 tax: float, discount: float):
     """
     Construit la partie liée aux taxes pour les factures
+
     """
     #Calcul du sous total
     table.add(TableCell(Paragraph("Sous-total", font="Helvetica-Bold", 
@@ -316,7 +322,8 @@ def pdf_taxes(table, receipt, currency, tax, discount):
                     horizontal_alignment=Alignment.RIGHT)))   
     return table
 
-def build_pdf(receipt, id, currency, tax, discount, path="output.pdf"):
+def build_pdf(receipt: Union[Invoice, Estimate], id: int, currency: str, 
+                        tax: float, discount: float, path: str="output.pdf"):
     """
     Fonction d'assemblage du pdf
     """
@@ -332,7 +339,7 @@ def build_pdf(receipt, id, currency, tax, discount, path="output.pdf"):
     #Construction de l'entête
     page_layout.add(pdf_header(receipt, id))
     # Informations du prestatire et du client
-    page_layout.add(pdf_provider_customer(receipt))
+    page_layout.add(pdf_provider_client(receipt))
     # Espace pour séparer
     page_layout.add(Paragraph(" "))
     # Tableaux des articles et des tax

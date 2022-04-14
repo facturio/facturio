@@ -13,3 +13,9 @@ class Article:
 
     def __repr__(self):
         return self.__str__()
+    
+    def dump_to_list(self):
+        """
+        Renvoie une liste de toutes les variables de classes
+        """
+        return [self.title, self.description, self.price]

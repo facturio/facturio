@@ -8,23 +8,35 @@ class User:
         company_name: str ,
         adr: str,
         phone: str,
-        siren_number: str,
+        buisness_number: str,
+        first_name: str,
+        last_name: str,
         email: str = None,
-        logo = None,
+        logo: str = None,
     ):
         """
         Les attributs sont initialisés selon leur ordre d'apparition
         """
-        self.logo = logo  # image
-        self.company_name = company_name  # string
-        self.email = email  # string
-        self.adr = adr  # string
-        self.phone = phone  # string
-        self.siren_number = siren_number  # string
+        self.logo = logo
+        self.company_name = company_name
+        self.email = email
+        self.adr = adr
+        self.phone = phone
+        self.first_name = first_name
+        self.last_name = last_name
+        self.buisness_number = buisness_number
 
     def __str__(self):
         return f"{self.logo } | {self.company_name} | {self.email} | " \
-               f"{self.adr}  | {self.phone} | {self.siren_number}"
+               f"{self.adr}  | {self.phone} | "\
+               f"{self.first_name} {self.last_name} | {self.buisness_number}"
 
     def __repr__(self):
         return self.__str__()
+    
+    def dump_to_list(self):
+        """
+        Renvoie une liste de toutes les variables de classes
+        """
+        return [self.logo, self.company_name, self.email, 
+self.adr, self.phone, self.first_name, self.last_name, self.buisness_number]
