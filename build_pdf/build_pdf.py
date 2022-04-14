@@ -142,7 +142,7 @@ def pdf_customer_company(table,customer, provider):
     table.add(Paragraph(" ")); table.add(Paragraph(" "))
     # On affiche la ligne correspondant au représentant de l'entreprise  
     table.add(person_icon)
-    table.add(Paragraph(f"{customer.first_name} {customer.surname}")) 
+    table.add(Paragraph(f"{customer.first_name} {customer.last_name}")) 
     return table
 
 def pdf_customer_individual(table, customer, provider):
@@ -151,7 +151,7 @@ def pdf_customer_individual(table, customer, provider):
     """
     #Deuxième moitié deuxième ligne
     table.add(person_icon)
-    table.add(Paragraph(f"{customer.first_name} {customer.surname}"))      
+    table.add(Paragraph(f"{customer.first_name} {customer.last_name}"))      
     ### Troisième Ligne
     #On affiche l'email du client et du prestataire si ils existent
     if(provider.email == None):

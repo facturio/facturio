@@ -1,27 +1,9 @@
 """Module d'autocomplétion."""
-from Info_Facture_Devis import clients, articles
+import examples
 import re
 import gi
 gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk  # noqa: E402
-
-# clement = Client("Bazan", "Clement", "clement.bazan@email.com",
-#                       "AAAAAAAAAAAAAAAAAA", "0123456789")
-# quentin = Client("Lombardo", "Quentin", "quentin.lombardo@email.com",
-#                       "AAAAAAAAAAAAAAAAAAAAAA", "0000000000")
-# youssef = Client("Benjelloun", "Youssef",
-#                       "youssef.benjelloun@email.com",
-#                       "AAAAAAAAAAAAAAAAAAAAA", "0101010101")
-
-# ordinateur = Article("ordinateur", 1684.33, "Un ordinateur portable.")
-# cable_ethernet = Article("cable ethernet", 9.99, "Un câble ethernet.")
-# telephone = Article("telephone", 399.99, "Un téléphone.")
-# casque = Article("casque", 69.99, "Un casque audio.")
-
-# clients = [clement, quentin, youssef]
-# articles = [ordinateur, cable_ethernet, telephone, casque]
-
-
 
 class ItemRow(Gtk.ListBoxRow):
     """Classe container d'une ligne de resultat de recherche."""
@@ -57,7 +39,7 @@ class FacturioOmnisearch(Gtk.SearchEntry):
             self.results.remove(row)
 
         if entry.get_text() != "":
-            for item in complete(clients+articles, entry.get_text()):
+            for item in complete(examples.clients+examples.articles, entry.get_text()):
                 self.results.add(ItemRow(item))
 
         self.results.show_all()

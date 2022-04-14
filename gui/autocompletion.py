@@ -4,15 +4,19 @@ import gi
 gi.require_version('Gtk', '3.0')
 
 from gi.repository import Gtk  # noqa: E402
-from Info_Facture_Devis import articles, clients
+import examples
 
 
 class FacturioEntryCompletion(Gtk.Entry):
     def __init__(self, func, completions):
         super().__init__()
 
+        self.func = func
+        self.to_update = []
+
         self.completion = Gtk.EntryCompletion()
         self.completion.set_inline_selection(True)
+        self.completion.set_inline_completion(True)
 
         self.set_completion(self.completion)
 
@@ -26,13 +30,32 @@ class FacturioEntryCompletion(Gtk.Entry):
         self.completion.connect('match-selected', self.on_match_selected)
 
     def on_match_selected(self, entry_completion, model, iter):
-        print(tuple(model[entry_completion.get_text_column()]))
+        obj = self.completion_dict[self.props.text]
+        for comp in self.to_update:
+            comp.props.text = comp.func(obj)
 
 if __name__ == '__main__':
     win = Gtk.Window()
     box = Gtk.Box(orientation=1, spacing=6)
-    box.add(FacturioEntryCompletion(lambda x: x.prenom, clients))
-    box.add(FacturioEntryCompletion(lambda x: x.nom, clients))
+
+    fn = FacturioEntryCompletion(lambda x: x.first_name, examples.clients)
+    ln = FacturioEntryCompletion(lambda x: x.last_name, examples.clients)
+    ml = FacturioEntryCompletion(lambda x: x.email, examples.clients)
+    adr = FacturioEntryCompletion(lambda x: x.adr, examples.clients)
+    tel = FacturioEntryCompletion(lambda x: x.phone, examples.clients)
+    
+    fn.to_update = [ln, ml, adr, tel]
+    ln.to_update = [fn, ml, adr, tel]
+    ml.to_update = [fn, ln, adr, tel]
+    adr.to_update = [fn, ln, ml, tel]
+    tel.to_update = [fn, ln, ml, adr]
+
+    box.add(fn)
+    box.add(ln)
+    box.add(ml)
+    box.add(adr)
+    box.add(tel)
+
     win.add(box)
     win.connect('delete-event', Gtk.main_quit)
     win.show_all()
