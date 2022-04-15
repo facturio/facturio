@@ -21,13 +21,11 @@ from borb.pdf.canvas.layout.layout_element import LayoutElement
 #Import librairie standard
 from decimal import Decimal
 from pathlib import Path
-
-import sys
-
-from numpy import isin
-#Import classes objet
-sys.path.append('../')
-from classes.estimate_invoice import *
+from typing import Union
+from facturio.classes.invoice_misc import Advance, Article, Invoice, \
+                                              Estimate
+from facturio.classes.client import Company, Client
+from facturio.classes.user import User
 #Layout Element pour l'insertion d'icônes dans le pdf
 mail_icon: LayoutElement = Image(
     image=Path("icons/mail.png"),
@@ -402,8 +400,8 @@ def pdf_estimate_total(table: Table, receipt:Estimate, currency: str):
                     horizontal_alignment=Alignment.RIGHT)))   
     return table
 
-def build_pdf(receipt: Union[Invoice, Estimate], id: int, 
-                                 path: str ="output.pdf", currency: str = "€"):
+def build_pdf(receipt: Union[Invoice, Estimate], id: int,
+              path: str ="output.pdf", currency: str = "€"):
     """
     Fonction d'assemblage du pdf
     """
@@ -442,21 +440,17 @@ if __name__ == "__main__":
                         
     client_moral = Company("LeRoy",  "LeRoy83@sfr.fr", "12 ZAC de La Crau",
                              "0345678910", "Ben", "Karim","287489404")
-    ordinateur = Article("ordinateur", 1684.33)
-    cable_ethernet = Article("cable ethernet", 9.99)
-    telephone = Article("telephone", 399.99)
-    casque = Article("casque", 69.99)
+    ordinateur = Article("ordinateur", 1684.33, 3)
+    cable_ethernet = Article("cable ethernet", 9.99, 10)
+    telephone = Article("telephone", 399.99, 1)
+    casque = Article("casque", 69.99, 6)
     paiements = [Advance(1230.0), Advance(654)]
-    articles = [(ordinateur, 3), (cable_ethernet, 10), (telephone,1), 
-                                                                (casque, 6)]
-    fact = Invoice(artisan, client_moral, articles, advances_list =paiements, 
-                        taxes = 0.2, note="Invoice de matériel informatiques")
+    articles = [ordinateur, cable_ethernet, telephone, casque]
+    fact = Invoice(artisan, client_moral, articles, advances_list =paiements,
+                        taxes = 0.2, note="Invoice de matériel informatiques",
+                   date = 0, amount=100)
     dev = Estimate(artisan, client_physique, articles, taxes=0,
                             note="Invoice de matériel informatiques")
 
-    print(client_moral)
-    print(artisan.dump_to_list())
-    print(client_moral.dump_to_list())
-    print(client_physique.dump_to_list())
-    #build_pdf(dev, 27, "exemple_devis.pdf")
+    build_pdf(dev, 27, "exemple_moi_devis.pdf")
     #build_pdf(fact, 490, "exemple_facture")

@@ -1,16 +1,18 @@
 #!/usr/bin/env python3
 from gi.repository import Gtk
+from classes.client import Company
+from classes.user import User
 class InvoicePage(Gtk.ScrolledWindow):
     def __init__(self):
         super().__init__()
         self.total_labels = []
+        self.main_grid = Gtk.Grid(column_homogeneous=False,
+                                  row_homogeneous=False, column_spacing=20,
+                                  row_spacing=20)
         self.__init_header_grid()
         self.__init_user_grid()
         self.__init_client_grid()
         self.__union_user_client_grid()
-        self.main_grid = Gtk.Grid(column_homogeneous=False,
-                                  row_homogeneous=False, column_spacing=20,
-                                  row_spacing=20)
         self.main_grid.attach(self.header_grid, 2, 1, 1, 1)
         self.main_grid.attach(self.user_client_grid, 2, 2, 1, 1)
         # spaces sur les cotes
@@ -49,10 +51,21 @@ class InvoicePage(Gtk.ScrolledWindow):
         self.add(self.main_grid)
 
     def test(self, btn):
-        for name, entry in self.client_data.items():
-            print(name, entry.get_text())
-        for name, entry in self.user_data.items():
-            print(name, entry.get_text())
+        self.client_data = {}
+        for name, entry in self.client_entries.items():
+            self.client_data[name] = entry.get_text()
+        self.client_data["note"] = None
+        company = Company.from_dict(self.client_data)
+        self.user_data = {}
+        for name, entry in self.user_entries.items():
+            self.user_data[name] = entry.get_text()
+        self.user_data["logo"] = None
+        for art_dict in self.article_list:
+            for name, entry in art_dict.items():
+                print(name, entry.get_text())
+
+        user = User.from_dict(self.user_data)
+        print(company, user)
 
     def __init_header_grid(self):
         """Facture texte et logo"""
@@ -72,7 +85,7 @@ class InvoicePage(Gtk.ScrolledWindow):
         self.client_grid = Gtk.Grid(column_homogeneous=True,
                                     row_homogeneous=True, column_spacing=20,
                                     row_spacing=20)
-        self.client_data = {}
+        self.client_entries = {}
         label = Gtk.Label("<big>Client</big>")
         label.set_hexpand(True)
         label.set_use_markup(True)
@@ -85,7 +98,7 @@ class InvoicePage(Gtk.ScrolledWindow):
         label.set_hexpand(True)
         entry = Gtk.Entry()
         entry.set_hexpand(True)
-        self.client_data["company_name"] = entry
+        self.client_entries["company_name"] = entry
 
         self.client_grid.attach(entry, 2, 4, 3, 1)
 
@@ -97,7 +110,7 @@ class InvoicePage(Gtk.ScrolledWindow):
         entry = Gtk.Entry()
         entry.set_hexpand(True)
         self.client_grid.attach(entry, 2, 5, 3, 1)
-        self.client_data["last_name"] = entry
+        self.client_entries["last_name"] = entry
 
         label = Gtk.Label("Prenom")
         label.set_justify(Gtk.Justification.CENTER)
@@ -107,21 +120,21 @@ class InvoicePage(Gtk.ScrolledWindow):
         entry = Gtk.Entry()
         entry.set_hexpand(True)
         self.client_grid.attach(entry, 2, 6, 3, 1)
-        self.client_data["first_name"] = entry
+        self.client_entries["first_name"] = entry
 
         label = Gtk.Label("Adresse")
         label.set_hexpand(True)
         self.client_grid.attach(label, 1, 7, 1, 1)
         entry = Gtk.Entry()
         self.client_grid.attach(entry, 2, 7, 3, 1)
-        self.client_data["adress"] = entry
+        self.client_entries["adress"] = entry
 
         label = Gtk.Label("E-mail")
         label.set_hexpand(True)
         self.client_grid.attach(label, 1, 8, 1, 1)
         entry = Gtk.Entry()
         self.client_grid.attach(entry, 2, 8, 3, 1)
-        self.client_data["email"] = entry
+        self.client_entries["email"] = entry
 
         label = Gtk.Label("Numéro\ntéléphone")
         label.set_hexpand(True)
@@ -129,7 +142,7 @@ class InvoicePage(Gtk.ScrolledWindow):
         self.client_grid.attach(label, 1, 9, 1, 1)
         entry = Gtk.Entry()
         self.client_grid.attach(entry, 2, 9, 3, 1)
-        self.client_data["phone_number"] = entry
+        self.client_entries["phone_number"] = entry
 
         label = Gtk.Label("Numéro\nSIRET/SIREN")
         label.set_justify(Gtk.Justification.CENTER)
@@ -137,7 +150,7 @@ class InvoicePage(Gtk.ScrolledWindow):
         self.client_grid.attach(label, 1, 10, 1, 1)
         entry = Gtk.Entry()
         self.client_grid.attach(entry, 2, 10, 3, 1)
-        self.client_data["business_number"] = entry
+        self.client_entries["business_number"] = entry
 
         button = Gtk.Button(label="Importer client")
         self.client_grid.attach(button, 3, 11, 2, 1)
@@ -149,7 +162,7 @@ class InvoicePage(Gtk.ScrolledWindow):
         self.user_grid = Gtk.Grid(column_homogeneous=True,
                                   row_homogeneous=True, column_spacing=20,
                                   row_spacing=20)
-        self.user_data = {}
+        self.user_entries = {}
         label = Gtk.Label("<big>Utilisateur</big>")
         label.set_hexpand(True)
         label.set_use_markup(True)
@@ -162,7 +175,7 @@ class InvoicePage(Gtk.ScrolledWindow):
         entry = Gtk.Entry()
         entry.set_hexpand(True)
         self.user_grid.attach(entry, 2, 4, 3, 1)
-        self.user_data["company_name"] = entry
+        self.user_entries["company_name"] = entry
 
         label = Gtk.Label("Nom")
         label.set_justify(Gtk.Justification.CENTER)
@@ -172,7 +185,7 @@ class InvoicePage(Gtk.ScrolledWindow):
         entry = Gtk.Entry()
         entry.set_hexpand(True)
         self.user_grid.attach(entry, 2, 5, 3, 1)
-        self.user_data["last_name"] = entry
+        self.user_entries["last_name"] = entry
 
         label = Gtk.Label("Prenom")
         label.set_justify(Gtk.Justification.CENTER)
@@ -182,21 +195,21 @@ class InvoicePage(Gtk.ScrolledWindow):
         entry = Gtk.Entry()
         entry.set_hexpand(True)
         self.user_grid.attach(entry, 2, 6, 3, 1)
-        self.user_data["first_name"] = entry
+        self.user_entries["first_name"] = entry
 
         label = Gtk.Label("Adresse")
         label.set_hexpand(True)
         self.user_grid.attach(label, 1, 7, 1, 1)
         entry = Gtk.Entry()
         self.user_grid.attach(entry, 2, 7, 3, 1)
-        self.user_data["adress"] = entry
+        self.user_entries["adress"] = entry
 
         label = Gtk.Label("E-mail")
         label.set_hexpand(True)
         self.user_grid.attach(label, 1, 8, 1, 1)
         entry = Gtk.Entry()
         self.user_grid.attach(entry, 2, 8, 3, 1)
-        self.user_data["email"] = entry
+        self.user_entries["email"] = entry
 
         label = Gtk.Label("Numéro\ntéléphone")
         label.set_hexpand(True)
@@ -204,7 +217,7 @@ class InvoicePage(Gtk.ScrolledWindow):
         self.user_grid.attach(label, 1, 9, 1, 1)
         entry = Gtk.Entry()
         self.user_grid.attach(entry, 2, 9, 3, 1)
-        self.user_data["phone_number"] = entry
+        self.user_entries["phone_number"] = entry
 
         label = Gtk.Label("Numéro\nSIRET/SIREN")
         label.set_justify(Gtk.Justification.CENTER)
@@ -212,7 +225,7 @@ class InvoicePage(Gtk.ScrolledWindow):
         self.user_grid.attach(label, 1, 10, 1, 1)
         entry = Gtk.Entry()
         self.user_grid.attach(entry, 2, 10, 3, 1)
-        self.user_data["business_number"] = entry
+        self.user_entries["business_number"] = entry
 
         button = Gtk.Button(label="Sauvegarder utilisateur")
         self.user_grid.attach(button, 1, 11, 2, 1)
@@ -233,6 +246,11 @@ class InvoicePage(Gtk.ScrolledWindow):
         space.set_hexpand(True)
         self.taxes_grid.attach(space, 2,1,1,1)
         self.taxes_grid.attach(self.spin_btn, 3,1,1,1)
+
+        label = Gtk.Label("Date")
+        self.taxes_grid.attach(label, 1,2,1,1)
+        self.calendar = Gtk.Calendar()
+        self.taxes_grid.attach(self.calendar, 3,2,1,1)
     def __union_taxes_total_grid(self):
         self.taxes_total_grid= Gtk.Grid(row_homogeneous=False,
                                         column_homogeneous=False)
@@ -307,12 +325,10 @@ class InvoicePage(Gtk.ScrolledWindow):
     def new_article_row(self, btn=None):
         i = self.plus_btn_row
         self.plus_btn_row += 3
-        self.article_grid.insert_row(i)
-        self.article_grid.insert_row(i)
-        self.article_grid.insert_row(i)
-        # self.article_grid.insert_row(i+1)
-        # self.article_grid.insert_row(i+2)
+        for _ in range(3):
+            self.article_grid.insert_row(i)
         row_widgets = []
+        article_entries = {}
         button = Gtk.Button.new_from_icon_name("window-close-symbolic",
                                                     Gtk.IconSize.BUTTON)
         row_widgets.append(button)
@@ -320,47 +336,46 @@ class InvoicePage(Gtk.ScrolledWindow):
         self.btns[button] = i
         button.connect("clicked", self.des_widgets)
 
-        self.entry = Gtk.Entry(placeholder_text="Description")
-        self.article_grid.attach(self.entry , 2, i, 2, 1)
-        row_widgets.append(self.entry)
+        title_entry = Gtk.Entry(placeholder_text="Nom de l'article")
+        self.article_grid.attach(title_entry , 2, i, 2, 1)
+        row_widgets.append(title_entry)
+        article_entries["title"] = title_entry
 
-        self.price_entry = Gtk.Entry(placeholder_text="0.00")
-        self.price_entry.set_alignment(1)
-        self.article_grid.attach(self.price_entry , 4, i, 1, 1)
-        row_widgets.append(self.price_entry)
+        price_entry = Gtk.Entry(placeholder_text="0.00")
+        price_entry.set_alignment(1)
+        self.article_grid.attach(price_entry , 4, i, 1, 1)
+        row_widgets.append(price_entry)
+        article_entries["price"] = price_entry
 
-        self.qty_entry = Gtk.Entry(placeholder_text="1")
-        self.qty_entry.set_alignment(1)
-        self.article_grid.attach(self.qty_entry , 5, i, 1, 1)
-        row_widgets.append(self.qty_entry)
+        qty_entry = Gtk.Entry(placeholder_text="1")
+        qty_entry.set_alignment(1)
+        self.article_grid.attach(qty_entry , 5, i, 1, 1)
+        row_widgets.append(qty_entry)
+        article_entries["quantity"] = qty_entry
 
-        entries = (self.price_entry, self.qty_entry)
-        self.label = Gtk.Label("0.00 €")
-        self.total_labels.append(self.label)
-        self.article_grid.attach(self.label, 6, i, 1, 1)
-        row_widgets.append(self.label)
+        label = Gtk.Label("0.00 €")
+        self.total_labels.append(label)
+        self.article_grid.attach(label, 6, i, 1, 1)
+        row_widgets.append(label)
 
-        self.price_entry.connect("changed", self.modify_label, *entries, self.label)
-        self.qty_entry.connect("changed", self.modify_label, *entries, self.label)
+        price_entry.connect("changed", self.modify_label, article_entries,
+                            label)
+        qty_entry.connect("changed", self.modify_label, article_entries, label)
 
-        # self.checkbutton = Gtk.CheckButton()
-        # self.checkbutton.set_valign(Gtk.Align.CENTER)
-        # self.checkbutton.set_halign(Gtk.Align.CENTER)
-        # self.article_grid.attach(self.checkbutton, 7, i, 1, 1)
-        # row_widgets.append(self.checkbutton)
-
-        self.entry = Gtk.Entry(placeholder_text="Détails additionnels")
+        des_entry = Gtk.Entry(placeholder_text="Détails additionnels")
         # self.entry.set_hexpand(True)
-        self.article_grid.attach(self.entry , 2, i+1, 2, 2)
-        row_widgets.append(self.entry)
+        self.article_grid.attach(des_entry , 2, i+1, 2, 2)
+        row_widgets.append(des_entry)
+        article_entries["description"] = des_entry
+        self.article_list.append(article_entries)
 
         # self.row_box.pack_start(self.article_grid, True, True, 0)
         for wid in row_widgets:
             wid.set_visible(True)
 
-    def modify_label(self, entry, price_ent, qty_ent, label):
-        price = int(price_ent.get_text())
-        qty = int(qty_ent.get_text())
+    def modify_label(self, entry, entries: dict, label):
+        price = int(entries["price"].get_text())
+        qty = int(entries["quantity"].get_text())
         label.set_text(f"{price * qty} €")
         self.modify_total()
 
@@ -373,31 +388,39 @@ class InvoicePage(Gtk.ScrolledWindow):
         self.modify_taxed_price()
 
     def initial_article_row(self):
-        self.label = Gtk.Label("")
-        self.label.set_hexpand(True)
-        self.article_grid.attach(self.label, 1, 2, 1, 1)
+        self.article_list = []
+        article_entries = {}
+        left_space= Gtk.Label("")
+        left_space.set_hexpand(True)
+        self.article_grid.attach(left_space, 1, 2, 1, 1)
 
-        self.entry = Gtk.Entry(placeholder_text="Description")
-        self.article_grid.attach(self.entry , 2, 2, 2, 1)
+        entry = Gtk.Entry(placeholder_text="Nom de l'article")
+        self.article_grid.attach(entry , 2, 2, 2, 1)
+        article_entries["title"] = entry
 
-        self.price_entry = Gtk.Entry(placeholder_text="0.00")
-        self.price_entry.set_alignment(1)
-        self.article_grid.attach(self.price_entry , 4, 2, 1, 1)
+        price_entry = Gtk.Entry(placeholder_text="0.00")
+        price_entry.set_alignment(1)
+        self.article_grid.attach(price_entry , 4, 2, 1, 1)
+        article_entries["price"] = price_entry
 
-        self.qty_entry = Gtk.Entry(placeholder_text="1")
-        self.qty_entry.set_alignment(1)
-        self.article_grid.attach(self.qty_entry , 5, 2, 1, 1)
+        qty_entry = Gtk.Entry(placeholder_text="1")
+        qty_entry.set_alignment(1)
+        self.article_grid.attach(qty_entry , 5, 2, 1, 1)
+        article_entries["quantity"] = qty_entry
 
-        self.entries = (self.price_entry, self.qty_entry)
-        self.label = Gtk.Label("0,00 €")
-        self.total_labels.append(self.label)
-        self.article_grid.attach(self.label, 6, 2, 1, 1)
+        label = Gtk.Label("0.00 €")
+        self.total_labels.append(label)
+        self.article_grid.attach(label, 6, 2, 1, 1)
 
-        self.price_entry.connect("changed", self.modify_label, *self.entries, self.label)
-        self.qty_entry.connect("changed", self.modify_label, *self.entries, self.label)
+        des_entry = Gtk.Entry(placeholder_text="Détails additionnels")
+        self.article_grid.attach(des_entry, 2, 3, 2, 2)
+        article_entries["description"] = des_entry
 
-        self.entry = Gtk.Entry(placeholder_text="Détails additionnels")
-        self.article_grid.attach(self.entry , 2, 3, 2, 2)
+        price_entry.connect("changed", self.modify_label, article_entries,
+                            label)
+        qty_entry.connect("changed", self.modify_label, article_entries, label)
+        self.article_list.append(article_entries)
+
 
     def __init_total_grid(self):
         self.total_grid = Gtk.Grid(column_homogeneous=True,
