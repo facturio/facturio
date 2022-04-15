@@ -23,12 +23,12 @@ def update_user(cursor,connexion,liste):
 def update_deposit(cursor,connexion,liste):
     liste=liste[1:]+[liste[0]]
     print("toto",liste)
-    cursor.execute("""UPDATE deposit SET date=?,amount=?, id_fac=? WHERE id_deposit=?""",liste)
+    cursor.execute("""UPDATE deposit SET date=?,amount=?, id_invoice=? WHERE id_deposit=?""",liste)
     connexion.commit()
 
 def update_invoice_dev(cursor,connexion,liste):
     liste=liste[1:]+[liste[0]]
-    cursor.execute("""UPDATE invoice_devis SET amount=?,date=?,description=?,note=?,remark=?,id_client=?,id_util=? WHERE id_facdev=?""",liste)
+    cursor.execute("""UPDATE invoice_devis SET amount=?,date=?,description=?,note=?,remark=?,id_client=?,id_user=? WHERE id_invoice_devis=?""",liste)
     connexion.commit()
 
 def update_article(cursor,connexion,liste):

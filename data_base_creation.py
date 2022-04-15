@@ -5,6 +5,7 @@ from insertion import *
 from delete import *
 from selection import *
 from update import *
+from classe_bd import *
 
 from datetime import date
 
@@ -16,9 +17,13 @@ update entreprise
 faire quant tout marche :
 delete une fonction
 list een objet
+tester avec note
 
 """
 def main():
+    name_bdd='facturioooo'
+    bdd=Data_base(name_bdd)
+
     #pour la creation de notre bdd
     #si il existe pas il est cree
     connexion=sqlite3.connect('facturio.db')
@@ -42,8 +47,8 @@ def main():
 
     """------------------------fonction insertion dans la bdd-------------------- """
 
-    liste=["t-shirt","un pull tres moche ",30]
-    insertion_article(cursor,connexion,liste)
+    liste=["pull","un pull tres moche ",30]
+    bdd.insertion_article(liste)
 
     liste=["logo.png","entreprise de reve","tomolivier283@gmail.com","avenue toto","0653536789","00543222"]
     insertion_user(cursor,connexion,liste)
@@ -79,18 +84,13 @@ def main():
     """--------------------fonction delete dans la bdd-------------------- """
 
     #recuperation de la ligne client quon envoie dans la fonction
-    liste=[1]
-    delete_client(cursor,connexion,liste)
-    delete_deposit(cursor,connexion,liste)
-    delete_user(cursor,connexion,liste)
-    delete_article(cursor,connexion,liste)
-    delete_invoice_dev(cursor,connexion,liste)
-    delete_invoice(cursor,connexion,liste)
-
+    id=1
+    nom_table="client"
+    #delete_table(cursor,connexion,name,id)
     """ ------------------------fonction selection--------------------------"""
 
-    nom="client"
-    selection_table(cursor,connexion,nom)
+    name="client"
+    selection_table(cursor,connexion,name)
 
     """ ------------------------------------------------------------------------"""
     #fermer la connexion

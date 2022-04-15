@@ -30,17 +30,17 @@ def insertion_client_or_company(cursor,connexion,liste,bool):
 
             liste_e=[id_max[0][0]]+liste[6:]
             """ recuperation de id """
-            cursor.execute("""INSERT INTO company(id_client_company,company_name,num_SIRET) VALUES(?,?,?)""",liste_e)
+            cursor.execute("""INSERT INTO company(id_company,company_name,num_SIRET) VALUES(?,?,?)""",liste_e)
             connexion.commit()
 
 def insertion_invoice_dev(cursor,connexion,liste):
     print(liste)
-    cursor.execute("""INSERT INTO invoice_devis(amount,date,description,note,remark,id_client,id_util) VALUES(?,?,?,?,?,?,?)""",liste)
+    cursor.execute("""INSERT INTO invoice_devis(amount,date,description,note,remark,id_client,id_user) VALUES(?,?,?,?,?,?,?)""",liste)
     connexion.commit()
 
 def insertion_invoice(cursor,connexion,liste):
 
-    cursor.execute("""SELECT max(id_facdev) FROM invoice_devis""")
+    cursor.execute("""SELECT max(id_invoice_devis) FROM invoice_devis""")
     connexion.commit()
     id_max=cursor.fetchall()
 
@@ -49,12 +49,12 @@ def insertion_invoice(cursor,connexion,liste):
 
 def insertion_deposit(cursor,connexion,liste):
     data=date.today()
-    cursor.execute("""INSERT INTO deposit(date,amount,id_fac) VALUES(?,?,?)""",(data,liste[0],liste[1]))
+    cursor.execute("""INSERT INTO deposit(date,amount,id_invoice) VALUES(?,?,?)""",(data,liste[0],liste[1]))
     connexion.commit()
 
 def insertion_art_dev(cursor,connexion,liste):
     """ liste de 2 indice
     le premier pour id de article
     le deuxieme pour id de fac_dev   """
-    cursor.execute("""INSERT INTO art_dev(id_article,id_facdev) VALUES(?,?)""",(liste))
+    cursor.execute("""INSERT INTO art_dev(id_article,id_invoice_devis) VALUES(?,?)""",(liste))
     connexion.commit()
