@@ -2,12 +2,12 @@ import gi
 gi.require_version("Gtk", "3.0")
 from gi.repository import Gtk, Gdk, Gio, GObject
 import sys
-from invoice_hmi import InvoicePage
-from home_hmi import HomePage, HeaderBarSwitcher
-from customer_hmi import Customer
-from history_hmi import History
-from map_hmi import Map
-from display_info import InfoPerson
+from gui.invoice  import InvoicePage
+from gui.home import HomePage, HeaderBarSwitcher
+from gui.customer import Customer
+from gui.history import History
+from gui.map import Map
+from gui.display_info import InfoPerson
 
 
 class Window(Gtk.ApplicationWindow):
