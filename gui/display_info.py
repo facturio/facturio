@@ -1,7 +1,7 @@
 import gi
 gi.require_version("Gtk", "3.0")
 from gui.page_gui import Page_Gui
-from gi.repository import Gtk, Gdk
+from gi.repository import Gtk, Gdk, Gio, GdkPixbuf, OsmGpsMap
 
 class InfoPerson (Page_Gui):
     """
@@ -42,7 +42,7 @@ class InfoPerson (Page_Gui):
         self.nums("test")
         self.entreprise("test")
         self.siret("test")
-        self.logo("./icons/.jpg")
+        self.logo("../icons/Moi.png")
         self.commentaire("ldhfskjv xbvhxknvkhxfvkjzx vjgcxbv jlkmc jcbui jmcljbuxvn kjxvhofxv dvudhvbdhkvn kbhvdubn kfuhvxovnludhvod")
 
 
@@ -60,6 +60,7 @@ class InfoPerson (Page_Gui):
         self.entreprise("test")
         self.siret("test")
 
+
     def __space_info(self):
         """
         Ajoute les espace
@@ -69,6 +70,7 @@ class InfoPerson (Page_Gui):
         spacel = Gtk.Label(label="")
         self.grid.attach(spacel,7,0,1,1)
         self.grid.attach(spaceh,0,1,4,1)
+
 
     def adrss(self,adr):
         boxadress= Gtk.Box()
@@ -80,6 +82,7 @@ class InfoPerson (Page_Gui):
         self.spaceadrss = Gtk.Label(label="")
         self.grid.attach(self.spaceadrss,0,5,1,10)
 
+
     def mails(self,adr):
         boxmail= Gtk.Box()
         boxmail.set_name("box_afficher")
@@ -89,6 +92,7 @@ class InfoPerson (Page_Gui):
         self.grid.attach(boxmail, 1, 6, 3, 1 )
         self.spacemails = Gtk.Label(label="")
         self.grid.attach(self.spacemails,0,7,1,10)
+
 
     def nums(self,adr):
         boxnum= Gtk.Box()
@@ -100,6 +104,7 @@ class InfoPerson (Page_Gui):
         self.spacenums = Gtk.Label(label="")
         self.grid.attach(self.spacenums,0,9,1,10)
 
+
     def entreprise(self,adr):
         boxentr= Gtk.Box()
         boxentr.set_name("box_afficher")
@@ -110,6 +115,7 @@ class InfoPerson (Page_Gui):
         self.spaceentrs = Gtk.Label(label="")
         self.grid.attach(self.spaceentrs,0,11,1,10)
 
+
     def siret(self,adr):
         boxsir= Gtk.Box()
         boxsir.set_name("box_afficher")
@@ -118,11 +124,13 @@ class InfoPerson (Page_Gui):
         boxsir.pack_start(self.sir, False, False, 0)
         self.grid.attach(boxsir, 1, 12, 3, 1 )
 
+
     def logo(self,path):
-        lg = Gtk.Image()
-        lg.set_from_file(path)
-        #lg.set_name("lg")
+        lg = Gtk.Image.new_from_pixbuf(
+            GdkPixbuf.Pixbuf.new_from_file_at_size(path, 200, 200, preserve_aspect_ratio=True))
+        lg.set_name("lg")
         self.grid.attach(lg, 4, 4, 3, 6 )
+
 
     def commentaire(self,adr):
         boxcom= Gtk.Box()
