@@ -1,8 +1,9 @@
 import gi
 gi.require_version("Gtk", "3.0")
+from gui.page_gui import Page_Gui
 from gi.repository import Gtk, Gdk
 
-class InfoPerson (Gtk.ScrolledWindow):
+class InfoPerson (Page_Gui):
     """
     Classe IHM de le fenetre Map, elle permet soit d'afficher la page
     d'utilisateur soit la page d'un client
@@ -13,10 +14,10 @@ class InfoPerson (Gtk.ScrolledWindow):
     """
     def __init__(self, is_ut, name,*args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.init_grid__()
-        self.space__()
+        self.init_grid()
+        self.__space_info()
         #doit devenir une variable
-        self.title__(name)
+        self.title(name)
         if is_ut:
             self.utilisateur()
         else:
@@ -41,7 +42,7 @@ class InfoPerson (Gtk.ScrolledWindow):
         self.nums("test")
         self.entreprise("test")
         self.siret("test")
-        self.logo("./icons/Moi.jpg")
+        self.logo("./icons/.jpg")
         self.commentaire("ldhfskjv xbvhxknvkhxfvkjzx vjgcxbv jlkmc jcbui jmcljbuxvn kjxvhofxv dvudhvbdhkvn kbhvdubn kfuhvxovnludhvod")
 
 
@@ -59,7 +60,7 @@ class InfoPerson (Gtk.ScrolledWindow):
         self.entreprise("test")
         self.siret("test")
 
-    def space__(self):
+    def __space_info(self):
         """
         Ajoute les espace
         pour l'ergonomie
@@ -132,14 +133,3 @@ class InfoPerson (Gtk.ScrolledWindow):
         boxcom.pack_start(self.com, False, False, 0)
         self.grid.attach(boxcom, 4, 10, 3, 3 )
 
-    def init_grid__(self):
-        """
-        Propriete de la Grid Gtk
-        voir doc
-        """
-        self.grid = Gtk.Grid()
-        self.add(self.grid)
-        self.grid.set_column_homogeneous(True)
-        self.grid.set_row_homogeneous(True)
-        self.grid.set_row_spacing(20)
-        self.grid.set_column_spacing(20)
