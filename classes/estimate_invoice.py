@@ -38,7 +38,7 @@ class Receipt:
     def __str__(self):
         return f"User :\n{self.user}\nClient :\n" \
         f"{self.client}\nDate :\n {self.date_string()}\nListe des articles :"\
-        f"\n{self.articles_list}\nTaxes :\n{self.taxes}Montants :\n"\
+        f"\n{self.articles_list}\nTaxes :\n{self.taxes}\nMontants :\n"\
         f"{str(self.amount)}\nCommentaire :\n{self.note}"
         
     def __repr__(self):
@@ -59,6 +59,12 @@ class Receipt:
         for art in self.articles_list:
             amount += art[0].price * art[1]
         return round(amount,2)
+    
+    def total_of_taxes(self):
+        """
+        Calcul le total des taxes
+        """
+        return self.subtotal()*self.taxes
 
     def total_with_taxes(self):
         """
@@ -90,18 +96,15 @@ class Invoice(Receipt):
         amount: float = None,
         note: str = None,
     ):
-        super().__init__(user, client, articles_list, date, taxes, amount, note)
+        super().__init__(user, client, articles_list, date, taxes, amount, 
+                                                                          note)
         self.advances_list = advances_list  
-
-        if amount == None:
-            amount = self.total_with_advances()
-
     def __str__(self):
         return f"User :\n{self.user}\nClient :\n" \
         f"{self.client}\nDate :\n{self.date_string()}\nListe des articles :"\
         f"{self.articles_list}\n"\
         f"\nListe des acomptes :\n{self.advances_list}"\
-        f"Taxes :\n{self.taxes}\n" \
+        f"\nTaxes :\n{self.taxes}\n" \
         f"Montants :\n{self.amount}\nCommentaire :\n{self.note}"
 
     def __repr__(self):
@@ -143,36 +146,19 @@ class Estimate(Receipt):
         note: str = None,
     ):
         
-        super().__init__(user, client, articles_list, date, amount, taxes, note)
-        if amount == None:
-            amount = self.total_with_taxes()
-
-    def __str__(self):
-        return f"User :\n{self.user}\nClient :\n" \
-        f"{self.client}\nDate :\n {self.date_string()}\nListe des articles :"\
-        f"\n{self.articles_list}\nTaxes :\n{self.taxes}Montants :\n"\
-        f"{str(self.amount)}\nCommentaire :\n{self.note}"
-    
-    def __repr__(self):
-        return self.__str__()
-    
-    def dump_to_list(self):
-        """
-        Renvoie une liste de toutes les variables de classes
-        """ 
-        return [self.user, self.client, self.date, self.articles_list, 
-                                            self.taxes, self.amount, self.note]
+        super().__init__(user, client, articles_list, date, taxes, amount, 
+                                                                         note)
 
 if __name__ == "__main__":
     artisan = User("Facturio","15 rue des champs Cuers","0734567221", 
                                         "128974654", "facturio@gmail.com",
-                                                                    "logo.jpg")
+                                                                "logo.jpg")
 
-    client_physique = Client("Lombardo", "Quentin", "quentin.lombardo@email.com",
-                                            "HLM Sainte-Muse Toulon", "0678905324")
+    client_physique = Client("Lombardo", "Quentin", 
+    "quentin.lombardo@email.com", "HLM Sainte-Muse Toulon", "0678905324")
                     
     client_moral = Company("LeRoy", "Ben", "Karim", "287489404"
-                                "LeRoy83@sfr.fr","12 ZAC de La Crau", "0345678910")
+                        "LeRoy83@sfr.fr","12 ZAC de La Crau", "0345678910")
 
     ordinateur = Article("Ordinateur", 1684.33)
     cable_ethernet = Article("Cable ethernet")
@@ -181,7 +167,8 @@ if __name__ == "__main__":
 
     paiements = [Advance(1230.0), Advance(654)]
 
-    articles = [(ordinateur, 3), (cable_ethernet, 10), (telephone,1), (casque, 6)]
+    articles = [(ordinateur, 3), (cable_ethernet, 10), (telephone,1), 
+                                                                (casque, 6)]
 
 
     fact = Invoice(artisan, client_moral, articles, advances_list =paiements, 

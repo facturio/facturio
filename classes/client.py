@@ -38,6 +38,13 @@ class Client:
         return [self.first_name, self.last_name, self.email, self.adr, 
                 self.phone, self.note]
 
+    def dump_to_field(self):
+        """
+        Renvoie la liste des variables utiles pour l'affichage des champs
+        liés au client physique
+        """
+        return [f"{self.first_name} {self.last_name}", self.email, self.adr, 
+                self.phone]
 
 class Company(Client):
     """
@@ -50,9 +57,9 @@ class Company(Client):
         email: str,
         adr: str,
         phone: str,
-        buisness_number: str,
         first_name: str,
         last_name: str,
+        buisness_number: str,
         note: str = None
         
     ):
@@ -77,7 +84,15 @@ class Company(Client):
         Renvoie une liste de toutes les variables de classes
         """
         return [self.company_name, self.email, self.adr, self.phone, 
-            self.buisness_number, self.first_name, self.last_name, self.note]
+             self.first_name, self.last_name, self.buisness_number, self.note]
+
+    def dump_to_field(self):
+        """
+        Renvoie la liste des variables utiles pour l'affichage des champs
+        liés au client moral
+        """
+        return [self.company_name, self.email, self.adr, self.phone, 
+             f"{self.first_name} {self.last_name}", self.buisness_number]
         
 
 

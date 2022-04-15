@@ -40,3 +40,11 @@ class User:
         """
         return [self.logo, self.company_name, self.email, 
 self.adr, self.phone, self.first_name, self.last_name, self.buisness_number]
+
+    def dump_to_field(self):
+        """
+        Renvoie la liste des variables utiles pour l'affichage des champs
+        liés au client moral
+        """
+        return [self.company_name, self.email, self.adr, self.phone, 
+             f"{self.first_name} {self.last_name}", self.buisness_number]
