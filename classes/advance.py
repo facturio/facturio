@@ -4,18 +4,17 @@ class Advance:
     """
     Classe contenant toutes les informations liées à un devis
     """
-    def __init__(self, amount:float, date:int = None):
+    def __init__(self, amount: float, date: int = None):
         self.amount = amount
         
         #On vérifie si la date est au format Unix time epoch
-        if isinstance(date, int):
+        if date:
             self.date = date
         else:                              
             self.date = int(time.time())
 
     def __str__(self):
-        return f"""{time.strftime("%d/%m/%Y  %H:%M:%S",
-                time.localtime(self.date))} | {self.amount}"""
+        return f" {self.date_string()} | {self.amount}"
 
     def __repr__(self):
         return self.__str__()   
@@ -25,5 +24,11 @@ class Advance:
         Retourne la date sous forme de chaîne de caractères
         """
         return time.strftime("%d/%m/%Y  %H:%M:%S",time.localtime(self.date))
+    
+    def dump_to_list(self):
+        """
+        Renvoie une liste de toutes les variables de classes
+        """
+        return [self.amount, self.date]
 
     

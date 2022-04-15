@@ -5,8 +5,8 @@ class Client:
 
     def __init__(
         self,
-        last_name: str,
         first_name: str,
+        last_name: str,
         email: str = None,
         adr: str = None,
         phone: str = None,
@@ -17,20 +17,34 @@ class Client:
         dans le pdf
         attributs : chaîne de caractères
         """
-        self.last_name = last_name
         self.first_name = first_name
+        self.last_name = last_name
         self.email = email
         self.adr = adr
         self.phone = phone
         self.note = note
 
     def __str__(self):
-        return f"{self.last_name} | {self.first_name} | {self.email} | " \
+        return f"{self.first_name} | {self.last_name} | {self.email} | " \
                f"{self.adr}  | {self.phone} | {self.note}"
 
     def __repr__(self):
         return self.__str__()
+    
+    def dump_to_list(self):
+        """
+        Renvoie une liste de toutes les variables de classes
+        """
+        return [self.first_name, self.last_name, self.email, self.adr, 
+                self.phone, self.note]
 
+    def dump_to_field(self):
+        """
+        Renvoie la liste des variables utiles pour l'affichage des champs
+        liés au client physique
+        """
+        return [f"{self.first_name} {self.last_name}", self.email, self.adr, 
+                self.phone]
 
 class Company(Client):
     """
@@ -40,12 +54,12 @@ class Company(Client):
     def __init__(
         self,
         company_name: str,
-        last_name: str,
-        first_name: str,
-        siren_number: str,
         email: str,
         adr: str,
         phone: str,
+        first_name: str,
+        last_name: str,
+        buisness_number: str,
         note: str = None
         
     ):
@@ -54,14 +68,39 @@ class Company(Client):
         dans le pdf
         """
         self.company_name = company_name
-        super().__init__(last_name, first_name, email, adr, phone, note)
-        self.siren_number = siren_number
+        super().__init__(first_name, last_name, email, adr, phone, note)
+        self.buisness_number = buisness_number
 
-        def __str__(self):
-            return f"{self.company_name} | {self.last_name} | {self.first_name} | " \
-                   f" | {self.email} | {self.adr} | {self.phone} | "\
-                   f"{self.siren_number} | {self.note}"
+    def __str__(self):
+        return f"{self.company_name} | {self.email} | {self.adr} | " \
+               f"{self.phone} | {self.buisness_number} | "\
+               f"{self.first_name} | {self.last_name} | {self.note}"
         
-        def __repr__(self):
-            return self.__str__()
+    def __repr__(self):
+        return self.__str__()
+
+    def dump_to_list(self):
+        """
+        Renvoie une liste de toutes les variables de classes
+        """
+        return [self.company_name, self.email, self.adr, self.phone, 
+             self.first_name, self.last_name, self.buisness_number, self.note]
+
+    def dump_to_field(self):
+        """
+        Renvoie la liste des variables utiles pour l'affichage des champs
+        liés au client moral
+        """
+        return [self.company_name, self.email, self.adr, self.phone, 
+             f"{self.first_name} {self.last_name}", self.buisness_number]
         
+
+
+if __name__ == "__main__":
+    client_moral = Client("Lombardo", "Quentin", 
+        "quentin.lombardo@email.com", "HLM Sainte-Muse Toulon", "0678905324")
+    print(client_moral.dump_to_list())
+
+    client_moral = Company("LeRoy", "Ben", "Karim", "287489404",
+                "LeRoy83@sfr.fr", "12 ZAC de La Crau", "0345678910")
+    print(client_moral.dump_to_list())

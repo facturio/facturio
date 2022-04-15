@@ -1,6 +1,3 @@
-
-
-
 #Import de borb
 from borb.pdf import Document
 from borb.pdf import Page
@@ -14,7 +11,7 @@ from borb.pdf.canvas.layout.table.fixed_column_width_table \
                             import FixedColumnWidthTable as Table
 from borb.pdf.canvas.layout.text.paragraph import Paragraph
 from borb.pdf.canvas.layout.layout_element import Alignment
-from borb.pdf.canvas.color.color import HexColor, X11Color
+from borb.pdf.canvas.color.color import HexColor
 from borb.pdf.canvas.layout.table.fixed_column_width_table \
                             import FixedColumnWidthTable as Table
 from borb.pdf.canvas.layout.table.table import TableCell
@@ -24,10 +21,13 @@ from borb.pdf.canvas.layout.layout_element import LayoutElement
 #Import librairie standard
 from decimal import Decimal
 from pathlib import Path
+
 import sys
+
+from numpy import isin
 #Import classes objet
 sys.path.append('../')
-from Invoice_classes.estimate_invoice import *
+from classes.estimate_invoice import *
 #Layout Element pour l'insertion d'icônes dans le pdf
 mail_icon: LayoutElement = Image(
     image=Path("icons/mail.png"),
@@ -64,7 +64,7 @@ person_icon: LayoutElement = Image(
     padding_top=Decimal(5),
     padding_left=Decimal(3)
 )
-def pdf_header(receipt, id):
+def pdf_header(receipt: Union[Invoice, Estimate], id: int):
     """
     Construction de l'entête du pdf
     """
@@ -104,13 +104,14 @@ def pdf_header(receipt, id):
     table.no_borders()
     return table
 
-def pdf_customer_company(table,customer, provider):
+def pdf_client_company(table: FlexibleColumnWidthTable, client: Company, 
+                                                              provider: User):
     """
     Construit la partie client lorsqu'il s'agit d'une entreprise
     """
     #Deuxième moitié deuxième ligne
     table.add(business_icon)
-    table.add(Paragraph(customer.company_name))
+    table.add(Paragraph(client.company_name))
     ### Troisième Ligne
     #On affiche l'email du client et du prestataire si ils existent
     if(provider.email == None):
@@ -120,38 +121,39 @@ def pdf_customer_company(table,customer, provider):
         table.add(Paragraph(provider.email))
 
     table.add(email_icon)  
-    table.add(Paragraph(customer.email))  
+    table.add(Paragraph(client.email))  
     ### Quatrième Ligne
     table.add(mail_icon)
     table.add(Paragraph(provider.adr))
     table.add(mail_icon)  
-    table.add(Paragraph(customer.adr))
+    table.add(Paragraph(client.adr))
     ### Cinquième Ligne
     table.add(phone_icon)
     table.add(Paragraph(provider.phone))
     table.add(phone_icon)  
-    table.add(Paragraph(customer.phone))
+    table.add(Paragraph(client.phone))
     ### Sixième Ligne
     table.add(Paragraph("N°", font="Helvetica-Bold", 
                                     horizontal_alignment=Alignment.CENTERED))
-    table.add(Paragraph(f"{provider.siren_number}"))
+    table.add(Paragraph(f"{provider.buisness_number}"))
     table.add(Paragraph("N°", font="Helvetica-Bold", 
                                     horizontal_alignment=Alignment.CENTERED))
-    table.add(Paragraph(f"{customer.siren_number}"))
+    table.add(Paragraph(f"{client.buisness_number}"))
     ### Septième Ligne
     table.add(Paragraph(" ")); table.add(Paragraph(" "))
     # On affiche la ligne correspondant au représentant de l'entreprise  
     table.add(person_icon)
-    table.add(Paragraph(f"{customer.first_name} {customer.last_name}")) 
+    table.add(Paragraph(f"{client.first_name} {client.last_name}")) 
     return table
 
-def pdf_customer_individual(table, customer, provider):
+def pdf_client_individual(table: FlexibleColumnWidthTable, client: Client, 
+                                                               provider: User):
     """
     Construit la partie client lorsqu'il s'agit d'une entreprise
     """
     #Deuxième moitié deuxième ligne
     table.add(person_icon)
-    table.add(Paragraph(f"{customer.first_name} {customer.last_name}"))      
+    table.add(Paragraph(f"{client.first_name} {client.last_name}"))      
     ### Troisième Ligne
     #On affiche l'email du client et du prestataire si ils existent
     if(provider.email == None):
@@ -160,51 +162,53 @@ def pdf_customer_individual(table, customer, provider):
         table.add(email_icon)  
         table.add(Paragraph(provider.email))
 
-    if(customer.email == None):
+    if(client.email == None):
         table.add(Paragraph(" ")); table.add(Paragraph(" "))
     else:
         table.add(email_icon)  
-        table.add(Paragraph(customer.email))  
+        table.add(Paragraph(client.email))  
 
     ### Quatrième Ligne
     table.add(mail_icon)
     table.add(Paragraph(provider.adr))
     #On affiche l'adresse du client si elle existe
-    if(customer.adr == None):
+    if(client.adr == None):
         table.add(Paragraph(" ")); table.add(Paragraph(" "))
     else:
         table.add(mail_icon)  
-        table.add(Paragraph(customer.adr))
+        table.add(Paragraph(client.adr))
 
     ### Cinquième Ligne
     #On affiche le numéro téléphone du client si il existe
     table.add(phone_icon)
     table.add(Paragraph(provider.phone))
 
-    if(customer.phone == None):
+    if(client.phone == None):
         table.add(Paragraph(" ")); table.add(Paragraph(" "))
     else:
         table.add(phone_icon)  
-        table.add(Paragraph(customer.phone))
+        table.add(Paragraph(client.phone))
 
     ### Sixième Ligne
     table.add(Paragraph("N°", font="Helvetica-Bold", 
                                     horizontal_alignment=Alignment.CENTERED))
-    table.add(Paragraph(f"{provider.siren_number}"))
+    table.add(Paragraph(f"{provider.buisness_number}"))
     table.add(Paragraph(" ")); table.add(Paragraph(" ")) 
     ### Septième Ligne
     table.add(Paragraph(" ")); table.add(Paragraph(" "))
     table.add(Paragraph(" "));table.add(Paragraph(" "))   
     return table
 
-def pdf_provider_customer(receipt):   
+def pdf_provider_client(receipt: Union[Estimate,Invoice]):   
     """
     Retourne une table liée aux informations du prestataire et du client
     """
     provider = receipt.user
-    customer = receipt.client
+    client = receipt.client
     ### Première Ligne
-    table = FlexibleColumnWidthTable(number_of_rows=7, number_of_columns=4) 
+    table = FlexibleColumnWidthTable(number_of_rows=6, number_of_columns=4) 
+    table_buisness_number = FlexibleColumnWidthTable(number_of_rows=1, number_of_columns=4) 
+
     table.add(Paragraph("De ", font="Helvetica-Bold",
                                         horizontal_alignment=Alignment.LEFT))
     table.add(Paragraph(" ", padding_left=Decimal(240)))
@@ -212,21 +216,84 @@ def pdf_provider_customer(receipt):
                                         horizontal_alignment=Alignment.RIGHT))
     table.add(Paragraph(" "))
          
-	### Deuxième Ligne
+    provider_list = provider.dump_to_field()
+    client_list = provider.dump_to_field()
+    provider_icon_list = [business_icon, email_icon, mail_icon, phone_icon, 
+                   person_icon]
+     
+    table_buisness_number.add(Paragraph("N°SIREN", font="Helvetica-Bold", 
+                                    horizontal_alignment=Alignment.LEFT))
+    table_buisness_number.add(Paragraph(provider_list[-1]))
+    if(provider.email == None):
+        del provider_icon_list[1]
+        del provider_list[1]
+    
+    if(isinstance(client,Company)):
+        company_icon_list = [business_icon, email_icon, mail_icon, phone_icon, 
+                   person_icon]
+
+        length_min = len(provider_icon_list)
+        i = 0
+        while(i < length_min):
+            table.add(provider_icon_list[i])  
+            table.add(Paragraph(provider_list[i]))
+            table.add(company_icon_list[i])  
+            table.add(Paragraph(client_list(i)))
+        if(i != 6):
+            table.add(Paragraph(" "))
+            table.add(Paragraph(" "))
+            table.add(company_icon_list[-1])
+            table.add(Paragraph(client_list[-2]))
+        table_buisness_number.add(Paragraph("N°SIREN", font="Helvetica-Bold", 
+                                    horizontal_alignment=Alignment.LEFT))
+        table_buisness_number.add(Paragraph(client_list[-1])) 
+    
+    elif(isinstance(client,client)):
+        client_icon_list = [person_icon, email_icon, mail_icon, phone_icon]
+        for i in range(1,4):
+            if(client_list[i] == None):
+                del client_icon_list[i]
+                del client_list[i]
+                
+        i = 0
+        length_min = len(client_list)
+
+        while(i < length_min):
+            table.add(provider_icon_list[i])  
+            table.add(Paragraph(provider_list[i]))
+            table.add(client_icon_list[i])  
+            table.add(Paragraph(client_list(i)))
+        i = length_min
+        length_min = len(provider_list)
+        while(i < length_min):
+            table.add(provider_icon_list[i])  
+            table.add(Paragraph(provider_list[i]))
+            table.add(Paragraph(" "))  
+            table.add(Paragraph(" "))
+
+
+
+            
+
+
+
+
+
+
     table.add(business_icon)
     table.add(Paragraph(provider.company_name))
     #On vérifie si l'on traite une entreprise ou un particulier
-    if(isinstance(customer, Company)):
-        table = pdf_customer_company(table, customer, provider)
+    if(isinstance(client, Company)):
+        table = pdf_client_company(table, client, provider)
     else:
-        table = pdf_customer_individual(table, customer, provider)
+        table = pdf_client_individual(table, client, provider)
     
     table.set_padding_on_all_cells(Decimal(1), Decimal(1), Decimal(1), 
                                                                 Decimal(1))    		
     table.no_borders()
     return table
 
-def pdf_articles_tax(receipt, currency, tax, discount):
+def pdf_articles_total(receipt: Union[Invoice, Estimate], currency: str):
     """
     Construit la listes des articles et des taxes
     """
@@ -236,13 +303,15 @@ def pdf_articles_tax(receipt, currency, tax, discount):
     rows_nb = articles_nb + 5
     if(rows_nb < 15):
         rows_nb = 15
-    
+    if(isinstance(receipt, Estimate)):
+        rows_nb -= 1
+
     table = Table(number_of_rows=rows_nb, number_of_columns=4)  
     for h in ["DESCRIPTION", "QUANTITÉ", "PRIX UNITAIRE", "TOTAL"]:  
         table.add(  
             TableCell(  
-                Paragraph(h, font_color=X11Color("White")),  
-                background_color=HexColor("5f5f5f"),  
+                Paragraph(h, font_color = HexColor("ffffff")),  
+                background_color = HexColor("5f5f5f"),  
             )  
         ) 
     #Couleur différente pour chaque lignes qui se suivent 
@@ -253,7 +322,7 @@ def pdf_articles_tax(receipt, currency, tax, discount):
     for article in art_list:  
         c = even if parity else odd 
         parity ^= True
-        table.add(TableCell(Paragraph(f"{article[0].description}", 
+        table.add(TableCell(Paragraph(f"{article[0].title}", 
                             respect_newlines_in_text=True), 
                                                     background_color=c))  
         table.add(TableCell(Paragraph(f"{article[1]}"), background_color=c))  
@@ -272,54 +341,69 @@ def pdf_articles_tax(receipt, currency, tax, discount):
         table.add(TableCell(Paragraph(" "), background_color=c)) 
         table.add(TableCell(Paragraph(" "), background_color=c)) 
         articles_nb += 1 
-    table = pdf_taxes(table, receipt, currency, tax, discount)
-    table.set_padding_on_all_cells(Decimal(2), 
-                                        Decimal(15), Decimal(2), Decimal(2))  
-    return table
-
-def pdf_taxes(table, receipt, currency, tax, discount):
-    """
-    Construit la partie liée aux taxes pour les factures
-    """
+    
     #Calcul du sous total
     table.add(TableCell(Paragraph("Sous-total", font="Helvetica-Bold", 
                         horizontal_alignment=Alignment.RIGHT,), col_span=3,))  
-    table.add(TableCell(Paragraph(f"{receipt.total()} {currency}", 
+    table.add(TableCell(Paragraph(f"{receipt.subtotal()} {currency}", 
                                         horizontal_alignment=Alignment.RIGHT)))
-    #Si il s'agit d'une facture on fait apparaître les acomptes
-    # à l'affichage et dans le calcul
+
     if(isinstance(receipt, Invoice)):
-        #Calcule du total et des taxes
-        tt = receipt.total_with_advances()-discount
-        tx = tt*tax   
-        table.add(TableCell(Paragraph("Remises/Acomptes", 
-            font="Helvetica-Bold", horizontal_alignment=Alignment.RIGHT,),
+        table = pdf_invoice_total(table, receipt, currency) 
+    elif(isinstance(receipt, Estimate)):
+        table = pdf_estimate_total(table, receipt, currency) 
+    
+    table.set_padding_on_all_cells(Decimal(2), 
+                                        Decimal(15), Decimal(2), Decimal(2))
+    return table
+
+def pdf_invoice_total(table: Table, receipt:Invoice, currency: str):
+    """
+    Construit la partie liée aux calcul des totaux pour les factures
+
+    """
+    #Calcul des Acomptes
+    table.add(TableCell(Paragraph("Acomptes", 
+        font="Helvetica-Bold", horizontal_alignment=Alignment.RIGHT,),
                                                                 col_span=3,))
-        table.add(TableCell(Paragraph(
-                       f"{receipt.total_of_advances() + discount} {currency}", 
+    table.add(TableCell(Paragraph(f"{receipt.total_of_advances()} {currency}", 
                                        horizontal_alignment=Alignment.RIGHT)))
-    else:
-        #Calcule du total et des taxes
-        tt = round(receipt.total()-discount, 2)
-        tx = round(tt*tax,2)  
-        table.add(TableCell(Paragraph("Remises", 
-            font="Helvetica-Bold", horizontal_alignment=Alignment.RIGHT,),
-                                                                col_span=3,))
-        table.add(TableCell(Paragraph(f"{discount} {currency}", 
-                                       horizontal_alignment=Alignment.RIGHT)))
+
     #Calcul de la partie taxe
-    table.add(TableCell(Paragraph(f"Taxes ({tax*100}%)", 
+    table.add(TableCell(Paragraph(f"Taxes ({receipt.taxes*100}%)", 
     font="Helvetica-Bold", horizontal_alignment=Alignment.RIGHT), col_span=3,)) 
-    table.add(TableCell(Paragraph(f"{round(tx, 2)} {currency}", 
+    table.add(TableCell(Paragraph(f"{round(receipt.total_of_taxes(), 2)} "\
+                                  f"{currency}", 
                                         horizontal_alignment=Alignment.RIGHT))) 
     #Cacul du total 
     table.add(TableCell(Paragraph("Total", font="Helvetica-Bold", 
                         horizontal_alignment=Alignment.RIGHT  ), col_span=3,))  
-    table.add(TableCell(Paragraph(f"{round(tt + tx, 2)} {currency} ", 
+    table.add(TableCell(Paragraph(f"{round(receipt.total_with_advances(), 2)}"\
+                                  f" {currency} ", 
                     horizontal_alignment=Alignment.RIGHT)))   
     return table
 
-def build_pdf(receipt, id, currency, tax, discount, path="output.pdf"):
+def pdf_estimate_total(table: Table, receipt:Estimate, currency: str):
+    """
+    Construit la partie liée aux taxes pour les factures
+
+    """
+    #Calcul de la partie taxe
+    table.add(TableCell(Paragraph(f"Taxes ({receipt.taxes*100}%)", 
+    font="Helvetica-Bold", horizontal_alignment=Alignment.RIGHT), col_span=3,)) 
+    table.add(TableCell(Paragraph(f"{round(receipt.total_of_taxes(), 2)} "\
+                                  f"{currency}", 
+                                        horizontal_alignment=Alignment.RIGHT))) 
+    #Cacul du total 
+    table.add(TableCell(Paragraph("Total", font="Helvetica-Bold", 
+                        horizontal_alignment=Alignment.RIGHT  ), col_span=3,))  
+    table.add(TableCell(Paragraph(f"{round(receipt.total_with_taxes())} "\
+                                  f"{currency} ", 
+                    horizontal_alignment=Alignment.RIGHT)))   
+    return table
+
+def build_pdf(receipt: Union[Invoice, Estimate], id: int, 
+                                 path: str ="output.pdf", currency: str = "€"):
     """
     Fonction d'assemblage du pdf
     """
@@ -335,11 +419,11 @@ def build_pdf(receipt, id, currency, tax, discount, path="output.pdf"):
     #Construction de l'entête
     page_layout.add(pdf_header(receipt, id))
     # Informations du prestatire et du client
-    page_layout.add(pdf_provider_customer(receipt))
+    page_layout.add(pdf_provider_client(receipt))
     # Espace pour séparer
     page_layout.add(Paragraph(" "))
     # Tableaux des articles et des tax
-    page_layout.add(pdf_articles_tax(receipt, currency, tax, discount))
+    page_layout.add(pdf_articles_total(receipt, currency))
     #On rajoute l'extension pdf si elle n'est pas déjà présente
     if(path[-4:] != ".pdf"):
         path += ".pdf"
@@ -350,13 +434,14 @@ def build_pdf(receipt, id, currency, tax, discount, path="output.pdf"):
         PDF.dumps(pdf_file_handle, pdf)
     
 if __name__ == "__main__":
-    artisan = User("Facturio","15 rue des champs Cuers","0734567221", 
-                                       "128974654", "facturio@gmail.com",
-                                                                "logo.jpg")
+    artisan = User("Facturio", "15 rue des champs Cuers", "0734567221", 
+                        "128974654", "Tom", "Pommier", "facturio@gmail.com",
+                                                            "logo.jpg")
     client_physique = Client("Lombardo", "Quentin", 
-        "quentin.lombardo@email.com", "HLM Sainte-Muse Toulon", "0678905324")                  
-    client_moral = Company("LeRoy", "Ben", "Karim", "287489404",
-                "LeRoy83@sfr.fr", "12 ZAC de La Crau", "0345678910")
+        "quentin.lombardo@email.com", "HLM Sainte-Muse Toulon", "0678905324")  
+                        
+    client_moral = Company("LeRoy",  "LeRoy83@sfr.fr", "12 ZAC de La Crau",
+                             "0345678910", "Ben", "Karim","287489404")
     ordinateur = Article("ordinateur", 1684.33)
     cable_ethernet = Article("cable ethernet", 9.99)
     telephone = Article("telephone", 399.99)
@@ -365,9 +450,13 @@ if __name__ == "__main__":
     articles = [(ordinateur, 3), (cable_ethernet, 10), (telephone,1), 
                                                                 (casque, 6)]
     fact = Invoice(artisan, client_moral, articles, advances_list =paiements, 
+                        taxes = 0.2, note="Invoice de matériel informatiques")
+    dev = Estimate(artisan, client_physique, articles, taxes=0,
                             note="Invoice de matériel informatiques")
-    dev = Estimate(artisan, client_physique, articles, 
-                            note="Invoice de matériel informatiques")
-    mon = "€"
-    build_pdf(dev, 27, mon, 0, 150, "exemple_devis.pdf")
-    build_pdf(fact, 490, mon, 0.2, 130, "exemple_facture")
+
+    print(client_moral)
+    print(artisan.dump_to_list())
+    print(client_moral.dump_to_list())
+    print(client_physique.dump_to_list())
+    #build_pdf(dev, 27, "exemple_devis.pdf")
+    #build_pdf(fact, 490, "exemple_facture")
