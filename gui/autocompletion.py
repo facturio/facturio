@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
 
-import gi
+import gi, sys
 gi.require_version('Gtk', '3.0')
 
 from gi.repository import Gtk  # noqa: E402
+from sys import sys.path.append(../)
 import examples
 
 
@@ -43,7 +44,7 @@ if __name__ == '__main__':
     ml = FacturioEntryCompletion(lambda x: x.email, examples.clients)
     adr = FacturioEntryCompletion(lambda x: x.adr, examples.clients)
     tel = FacturioEntryCompletion(lambda x: x.phone, examples.clients)
-    
+
     fn.to_update = [ln, ml, adr, tel]
     ln.to_update = [fn, ml, adr, tel]
     ml.to_update = [fn, ln, adr, tel]

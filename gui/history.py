@@ -21,9 +21,9 @@ class History(Page_Gui):
         (
             self.init_grid()
                 .title("Historique")
-                .search((1,3,4,1))
+                .search((1,3,5,1))
                 .space()
                 .init_result(["Nom", "date", "Description"],
-                          (1,4,4,10))
+                          (1,4,5,10))
                 .add(self.grid)
         )

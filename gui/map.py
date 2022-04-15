@@ -27,7 +27,7 @@ class Map(Page_Gui):
         (
             self.title("Carte")
                 .space()
-                .search((1,3,4,1))
+                .search((1,3,5,1))
                 .__init_map()
         )
         self.print_all_customer(["Paris","Toulon","Montlucon"])
@@ -41,7 +41,7 @@ class Map(Page_Gui):
         self.osm.set_property("map-source", OsmGpsMap.MapSource_t.OPENSTREETMAP)
         self.osm.set_center_and_zoom(46.333328 ,2.6, 5)
         self.osm.set_hexpand(True)
-        self.grid.attach(self.osm, 1, 4, 4, 6)
+        self.grid.attach(self.osm, 1, 4, 5, 6)
 
 
     def __get_gps(self,adrss):

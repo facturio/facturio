@@ -19,7 +19,7 @@ class Page_Gui(Gtk.ScrolledWindow):
         pour l'ergonomie
         """
         spaceh = Gtk.Label(label="")
-        self.grid.attach(spaceh,1,1,5,10)
+        self.grid.attach(spaceh,1,1,6,10)
         return self
 
 
