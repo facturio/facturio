@@ -1,7 +1,10 @@
 #!/usr/bin/env python3
-from gi.repository import Gtk
+import gi
+gi.require_version("Gtk", "3.0")
+from gi.repository import Gtk, Gdk
 from classes.client import Company
 from classes.user import User
+
 class InvoicePage(Gtk.ScrolledWindow):
     def __init__(self):
         super().__init__()
@@ -234,7 +237,7 @@ class InvoicePage(Gtk.ScrolledWindow):
         self.user_grid.attach(button, 3, 11, 2, 1)
 
     def __init_taxes_grid(self):
-        self.taxes_grid = Gtk.Grid()
+        self.taxes_grid = Gtk.Grid(row_spacing=20)
         label = Gtk.Label("Tax")
         adj = Gtk.Adjustment(value=21, lower=0, upper=100, step_increment=1)
         self.spin_btn = Gtk.SpinButton(adjustment=adj, climb_rate=1, digits=2)
@@ -249,8 +252,33 @@ class InvoicePage(Gtk.ScrolledWindow):
 
         label = Gtk.Label("Date")
         self.taxes_grid.attach(label, 1,2,1,1)
-        self.calendar = Gtk.Calendar()
-        self.taxes_grid.attach(self.calendar, 3,2,1,1)
+        vbox = Gtk.HBox()
+        date_entry = Gtk.Entry(placeholder_text="dd/mm/yyyy")
+        # self.taxes_grid.attach(date_entry, 3,2,1,1)
+        self.show_calendar = Gtk.ToggleButton(label="Montrer calendrier")
+        vbox.pack_start(date_entry, True, True, 0)
+        vbox.pack_start(self.show_calendar , True, True, 5)
+        self.init_calendar()
+        self.show_calendar.connect("clicked", self.test2)
+        self.taxes_grid.attach(vbox, 3,2,1,1)
+    def init_calendar(self):
+        self.calendar_vbox = Gtk.VBox()
+        validate_btn = Gtk.Button(label="Valider")
+        calendar = Gtk.Calendar()
+        self.calendar_vbox.pack_start(calendar, True, True, 10)
+        self.calendar_vbox.pack_start(validate_btn, True, True, 0)
+        self.taxes_grid.attach(self.calendar_vbox, 3,3,1,1)
+    def test2(self, btn):
+        if self.show_calendar.get_active():
+            self.calendar_vbox.hide()
+        else:
+            print("here")
+            self.calendar_vbox.show_all()
+            self.do_scroll_child(self, Gtk.ScrollType.END, False)
+
+
+
+
     def __union_taxes_total_grid(self):
         self.taxes_total_grid= Gtk.Grid(row_homogeneous=False,
                                         column_homogeneous=False)
