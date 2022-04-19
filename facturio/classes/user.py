@@ -2,12 +2,11 @@ class User:
     """
     Classe contenant toutes les informations liées à l'user
     """
-
     def __init__(
         self,
         company_name: str ,
-        adr: str,
-        phone: str,
+        adress: str,
+        phone_number: str,
         buisness_number: str,
         first_name: str,
         last_name: str,
@@ -20,15 +19,15 @@ class User:
         self.logo = logo
         self.company_name = company_name
         self.email = email
-        self.adr = adr
-        self.phone = phone
+        self.adress = adress
+        self.phone_number = phone_number
         self.first_name = first_name
         self.last_name = last_name
         self.buisness_number = buisness_number
 
     def __str__(self):
         return f"{self.logo } | {self.company_name} | {self.email} | " \
-               f"{self.adr}  | {self.phone} | "\
+               f"{self.adress}  | {self.phone_number} | "\
                f"{self.first_name} {self.last_name} | {self.buisness_number}"
 
     def __repr__(self):
@@ -39,12 +38,19 @@ class User:
         Renvoie une liste de toutes les variables de classes
         """
         return [self.logo, self.company_name, self.email, 
-self.adr, self.phone, self.first_name, self.last_name, self.buisness_number]
+self.adress, self.phone_number, self.first_name, self.last_name, self.buisness_number]
 
     def dump_to_field(self):
         """
         Renvoie la liste des variables utiles pour l'affichage des champs
         liés au client moral
         """
-        return [self.company_name, self.email, self.adr, self.phone, 
+        return [self.company_name, self.email, self.adress, self.phone_number,
              f"{self.first_name} {self.last_name}", self.buisness_number]
+    @classmethod
+    def from_dict(cls, data_dict):
+        res = cls(data_dict["company_name"], data_dict["adress"],
+                  data_dict["phone_number"], data_dict["business_number"],
+                  data_dict["first_name"], data_dict["last_name"],
+                  data_dict["email"], data_dict["logo"])
+        return res
