@@ -64,46 +64,6 @@ person_icon: LayoutElement = Image(
     padding_top=Decimal(5),
     padding_left=Decimal(3)
 )
-def pdf_header(receipt: Union[Invoice, Estimate], id: int):
-    """
-    Construction de l'entête du pdf
-    """
-    #Initialisation d'une table avec des colones flexibles
-    table = FlexibleColumnWidthTable(number_of_rows= 2, number_of_columns=4) 
-    ### Première ligne
-    #Insertion du logo si il existe
-    if(receipt.user.logo != None):
-        table.add(TableCell(   
-        Image(        
-        image=Path(receipt.user.logo),        
-        width=Decimal(75),        
-        height=Decimal(75),    
-        ), row_span=2))
-    else:
-        table.add(TableCell(Paragraph(" ", padding_left=Decimal(50)),
-                                                                row_span=2))
-
-    table.add(Paragraph(" ", padding_left=Decimal(190)))
-
-    #Numéro de la facture ou du devis
-    if isinstance(receipt, Invoice):      
-        table.add(Paragraph("Facture", 
-                font="Helvetica-Bold",horizontal_alignment=Alignment.LEFT))
-
-    elif isinstance(receipt, Estimate):
-        table.add(Paragraph(f"Devis", 
-                font="Helvetica-Bold",horizontal_alignment=Alignment.LEFT))
-                  
-    table.add(Paragraph(f" # {id}",respect_spaces_in_text=True)) 
-    ### Deuxième Ligne
-    table.add(Paragraph(" "))
-    table.add(Paragraph("Date", font="Helvetica-Bold", 
-                                    horizontal_alignment=Alignment.LEFT))       
-    table.add(Paragraph(f" {receipt.date_string()}", 
-                                        respect_spaces_in_text=True))  
-    table.no_borders()
-    return table
-
 
 def pdf_provider_client(receipt: Union[Estimate,Invoice]):   
     """
@@ -194,13 +154,14 @@ def provider_individual_table(
         provider_icon_list: list, 
         client_list: list
                             ):   
+        print(client_list)
         client_icon_list = [person_icon, email_icon, mail_icon, phone_icon]
-        for i in range(3, 0, -1):
-            
+        for i in range(3, 0, -1):  
             if(client_list[i] == None):
                 del client_icon_list[i]
                 del client_list[i]
         i = 0
+        print(client_list)
         length_min = len(client_icon_list)
         while(i < length_min):
             table.add(provider_icon_list[i])  
@@ -228,115 +189,6 @@ def provider_individual_table(
         buisness_number_table.add(Paragraph(" "))     
 
         return table, buisness_number_table
-        
-def pdf_articles_total(receipt: Union[Invoice, Estimate], currency: str):
-    """
-    Construit la listes des articles et des taxes
-    """
-    art_list = receipt.articles_list
-    articles_nb = len(art_list)
-    #Calcule du nombre de lignes que le tableau va prendre
-    rows_nb = articles_nb + 5
-    if(rows_nb < 15):
-        rows_nb = 15
-    if(isinstance(receipt, Estimate)):
-        rows_nb -= 1
-
-    table = Table(number_of_rows=rows_nb, number_of_columns=4)  
-    for h in ["DESCRIPTION", "QUANTITÉ", "PRIX UNITAIRE", "TOTAL"]:  
-        table.add(  
-            TableCell(  
-                Paragraph(h, font_color = HexColor("ffffff")),  
-                background_color = HexColor("5f5f5f"),  
-            )  
-        ) 
-    #Couleur différente pour chaque lignes qui se suivent 
-    odd = HexColor("BBBBBB")  
-    even = HexColor("FFFFFF")  
-    #Variable pour savoir la parité de la ligne
-    parity = True
-    for article in art_list:  
-        c = even if parity else odd 
-        parity ^= True
-        table.add(TableCell(Paragraph(f"{article[0].title}", 
-                            respect_newlines_in_text=True), 
-                                                    background_color=c))  
-        table.add(TableCell(Paragraph(f"{article[1]}"), background_color=c))  
-        table.add(TableCell(Paragraph(f"{article[0].price} {currency}"), 
-                                                        background_color=c))   
-        table.add(TableCell(Paragraph(
-                        f"{round(article[1] * article[0].price,2)} {currency}")
-                                                        , background_color=c))    
-    #Si on a moins de 10 articles alors on rajoute des lignes vides
-    # pour le style
-    while(articles_nb < 10):
-        c = even if parity else odd 
-        parity ^= True
-        table.add(TableCell(Paragraph(" "), background_color=c)) 
-        table.add(TableCell(Paragraph(" "), background_color=c)) 
-        table.add(TableCell(Paragraph(" "), background_color=c)) 
-        table.add(TableCell(Paragraph(" "), background_color=c)) 
-        articles_nb += 1 
-    
-    #Calcul du sous total
-    table.add(TableCell(Paragraph("Sous-total", font="Helvetica-Bold", 
-                        horizontal_alignment=Alignment.RIGHT,), col_span=3,))  
-    table.add(TableCell(Paragraph(f"{receipt.subtotal()} {currency}", 
-                                        horizontal_alignment=Alignment.RIGHT)))
-
-    if(isinstance(receipt, Invoice)):
-        table = pdf_invoice_total(table, receipt, currency) 
-    elif(isinstance(receipt, Estimate)):
-        table = pdf_estimate_total(table, receipt, currency) 
-    
-    table.set_padding_on_all_cells(Decimal(2), 
-                                        Decimal(15), Decimal(2), Decimal(2))
-    return table
-
-def pdf_invoice_total(table: Table, receipt:Invoice, currency: str):
-    """
-    Construit la partie liée aux calcul des totaux pour les factures
-
-    """
-    #Calcul des Acomptes
-    table.add(TableCell(Paragraph("Acomptes", 
-        font="Helvetica-Bold", horizontal_alignment=Alignment.RIGHT,),
-                                                                col_span=3,))
-    table.add(TableCell(Paragraph(f"{receipt.total_of_advances()} {currency}", 
-                                       horizontal_alignment=Alignment.RIGHT)))
-
-    #Calcul de la partie taxe
-    table.add(TableCell(Paragraph(f"Taxes ({receipt.taxes*100}%)", 
-    font="Helvetica-Bold", horizontal_alignment=Alignment.RIGHT), col_span=3,)) 
-    table.add(TableCell(Paragraph(f"{round(receipt.total_of_taxes(), 2)} "\
-                                  f"{currency}", 
-                                        horizontal_alignment=Alignment.RIGHT))) 
-    #Cacul du total 
-    table.add(TableCell(Paragraph("Total", font="Helvetica-Bold", 
-                        horizontal_alignment=Alignment.RIGHT  ), col_span=3,))  
-    table.add(TableCell(Paragraph(f"{round(receipt.total_with_advances(), 2)}"\
-                                  f" {currency} ", 
-                    horizontal_alignment=Alignment.RIGHT)))   
-    return table
-
-def pdf_estimate_total(table: Table, receipt:Estimate, currency: str):
-    """
-    Construit la partie liée aux taxes pour les factures
-
-    """
-    #Calcul de la partie taxe
-    table.add(TableCell(Paragraph(f"Taxes ({receipt.taxes*100}%)", 
-    font="Helvetica-Bold", horizontal_alignment=Alignment.RIGHT), col_span=3,)) 
-    table.add(TableCell(Paragraph(f"{round(receipt.total_of_taxes(), 2)} "\
-                                  f"{currency}", 
-                                        horizontal_alignment=Alignment.RIGHT))) 
-    #Cacul du total 
-    table.add(TableCell(Paragraph("Total", font="Helvetica-Bold", 
-                        horizontal_alignment=Alignment.RIGHT  ), col_span=3,))  
-    table.add(TableCell(Paragraph(f"{round(receipt.total_with_taxes())} "\
-                                  f"{currency} ", 
-                    horizontal_alignment=Alignment.RIGHT)))   
-    return table
 
 def build_pdf(receipt: Union[Invoice, Estimate], id: int, 
                                  path: str ="output.pdf", currency: str = "€"):
@@ -352,16 +204,13 @@ def build_pdf(receipt: Union[Invoice, Estimate], id: int,
     #Calcul des marge
     page_layout.vertical_margin = page.get_page_info().get_height() \
                                                                 * Decimal(0.02)
-    #Construction de l'entête
-    page_layout.add(pdf_header(receipt, id))
+
     # Informations du prestatire et du client
     tb1, tb2 = pdf_provider_client(receipt)
     page_layout.add(tb1)
     page_layout.add(tb2)
-    # Espace pour séparer
-    page_layout.add(Paragraph(" "))
-    # Tableaux des articles et des tax
-    page_layout.add(pdf_articles_total(receipt, currency))
+
+    
     #On rajoute l'extension pdf si elle n'est pas déjà présente
     if(path[-4:] != ".pdf"):
         path += ".pdf"
@@ -370,7 +219,8 @@ def build_pdf(receipt: Union[Invoice, Estimate], id: int,
     #Écriture du pdf au chemin indiqué
     with open(path, "wb") as pdf_file_handle:
         PDF.dumps(pdf_file_handle, pdf)
-    
+
+
 if __name__ == "__main__":
     artisan = User("Facturio", "15 rue des champs Cuers", "0734567221", 
                         "128974654", "Tom", "Pommier", "facturio@gmail.com",
@@ -393,4 +243,4 @@ if __name__ == "__main__":
                             note="Invoice de matériel informatiques")
 
     build_pdf(dev, 27, "exemple_devis.pdf")
-    build_pdf(fact, 490, "exemple_facture")
+    #build_pdf(fact, 490, "exemple_facture")
