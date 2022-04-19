@@ -185,7 +185,7 @@ def pdf_provider_client(receipt: Union[Estimate,Invoice]):
     client = receipt.client
     ### Première Ligne
     table = FlexibleColumnWidthTable(number_of_rows=6, number_of_columns=4) 
-    buisness_number_table = FlexibleColumnWidthTable(number_of_rows=1, number_of_columns=5) 
+    business_number_table = FlexibleColumnWidthTable(number_of_rows=1, number_of_columns=5) 
 
     table.add(Paragraph("De ", font="Helvetica-Bold",
                                         horizontal_alignment=Alignment.LEFT))
@@ -203,11 +203,11 @@ def pdf_provider_client(receipt: Union[Estimate,Invoice]):
     provider_icon_list = [business_icon, email_icon, mail_icon, phone_icon, 
                    person_icon]
     #Numero SIREN de l'artisan
-    buisness_number_table.add(Paragraph("N°SIREN", font="Helvetica-Bold", 
+    business_number_table.add(Paragraph("N°SIREN", font="Helvetica-Bold", 
                                     horizontal_alignment=Alignment.LEFT))
-    buisness_number_table.add(Paragraph(provider_list[-1], 
+    business_number_table.add(Paragraph(provider_list[-1], 
                                         horizontal_alignment=Alignment.RIGHT))
-    buisness_number_table.add(Paragraph(" ", padding_left=Decimal(145)))
+    business_number_table.add(Paragraph(" ", padding_left=Decimal(145)))
     
     #Si le champ email pour l'utilisateur n'est pas remplit,
     #On supprime l'élément dans la liste
@@ -217,25 +217,25 @@ def pdf_provider_client(receipt: Union[Estimate,Invoice]):
     #On appelle une fonction si le client est une entité morale
     #ou physique
     if(isinstance(client, Company)):
-        table, buisness_number_table = provider_company_table(table, 
-        buisness_number_table, provider_list, provider_icon_list, client_list)  
+        table, business_number_table = provider_company_table(table, 
+        business_number_table, provider_list, provider_icon_list, client_list)  
 
     elif(isinstance(client, Client)):
-        table, buisness_number_table = provider_individual_table(table, 
-        buisness_number_table, provider_list, provider_icon_list, client_list)
+        table, business_number_table = provider_individual_table(table, 
+        business_number_table, provider_list, provider_icon_list, client_list)
     
     table.set_padding_on_all_cells(Decimal(1), Decimal(1), Decimal(1), 
                                                                 Decimal(1))    		
     table.no_borders()
-    buisness_number_table.set_padding_on_all_cells(Decimal(1), Decimal(1), 
+    business_number_table.set_padding_on_all_cells(Decimal(1), Decimal(1), 
                                                         Decimal(1), Decimal(1))    		
-    buisness_number_table.no_borders()
+    business_number_table.no_borders()
 
-    return table, buisness_number_table
+    return table, business_number_table
 
 def provider_company_table(
         table : FlexibleColumnWidthTable, 
-        buisness_number_table : FlexibleColumnWidthTable, 
+        business_number_table : FlexibleColumnWidthTable, 
         provider_list: list,
         provider_icon_list: list, 
         client_list: list
@@ -263,16 +263,16 @@ def provider_company_table(
         
         #Comme toutes les colones d'un tableu doivent être de même
         #taille on fait un 2ème tableu pour le numero SIREN
-        buisness_number_table.add(Paragraph("N°SIREN", font="Helvetica-Bold", 
+        business_number_table.add(Paragraph("N°SIREN", font="Helvetica-Bold", 
                                     horizontal_alignment=Alignment.LEFT))
-        buisness_number_table.add(Paragraph(client_list[-1])) 
+        business_number_table.add(Paragraph(client_list[-1])) 
 
-        return table, buisness_number_table
+        return table, business_number_table
         
 
 def provider_individual_table(
         table : FlexibleColumnWidthTable, 
-        buisness_number_table : FlexibleColumnWidthTable, 
+        business_number_table : FlexibleColumnWidthTable, 
         provider_list: list,
         provider_icon_list: list, 
         client_list: list
@@ -316,10 +316,10 @@ def provider_individual_table(
             table.add(Paragraph(" "))
 
         #Un cleint physique n'a pas de numero SIREN
-        buisness_number_table.add(Paragraph(" "))
-        buisness_number_table.add(Paragraph(" "))     
+        business_number_table.add(Paragraph(" "))
+        business_number_table.add(Paragraph(" "))     
 
-        return table, buisness_number_table
+        return table, business_number_table
 
 def pdf_provider_inline(receipt: Union[Invoice, Estimate]):
     """
@@ -345,10 +345,10 @@ def pdf_provider_inline(receipt: Union[Invoice, Estimate]):
         table_01.add(dot_icon)
     
     table_01.add(small_mail_icon)
-    table_01.add(Paragraph(artisan.adr, font_size=Decimal(8)))
+    table_01.add(Paragraph(artisan.adress, font_size=Decimal(8)))
     table_01.add(dot_icon)
     table_01.add(small_phone_icon)
-    table_01.add(Paragraph(artisan.phone, font_size=Decimal(8)))
+    table_01.add(Paragraph(artisan.phone_number, font_size=Decimal(8)))
     table_01.add(dot_icon)
     table_01.add(small_person_icon)
     table_01.add(Paragraph(f"{artisan.first_name} {artisan.last_name}", 
@@ -356,7 +356,7 @@ def pdf_provider_inline(receipt: Union[Invoice, Estimate]):
     table_01.add(dot_icon)
     table_01.add(Paragraph("N°SIREN", font="Helvetica-Bold",
                     font_size=Decimal(8),horizontal_alignment=Alignment.LEFT))
-    table_01.add(Paragraph(artisan.buisness_number, font_size=Decimal(8)))
+    table_01.add(Paragraph(artisan.business_number, font_size=Decimal(8)))
 
 
     table_01.set_padding_on_all_cells(Decimal(1), Decimal(1), Decimal(1), 
@@ -381,10 +381,10 @@ def pdf_company_inline(receipt: Union[Invoice, Estimate]):
     table_01.add(Paragraph(client.email, font_size=Decimal(8)))
     table_01.add(dot_icon)
     table_01.add(small_mail_icon)
-    table_01.add(Paragraph(client.adr, font_size=Decimal(8)))
+    table_01.add(Paragraph(client.adress, font_size=Decimal(8)))
     table_01.add(dot_icon)
     table_01.add(small_phone_icon)
-    table_01.add(Paragraph(client.phone, font_size=Decimal(8)))
+    table_01.add(Paragraph(client.phone_number, font_size=Decimal(8)))
     table_01.add(dot_icon)
     table_01.add(small_person_icon)
     table_01.add(Paragraph(f"{client.first_name} {client.last_name}", 
@@ -392,7 +392,7 @@ def pdf_company_inline(receipt: Union[Invoice, Estimate]):
     table_01.add(dot_icon)
     table_01.add(Paragraph("N°SIREN", font="Helvetica-Bold",
                     font_size=Decimal(8),horizontal_alignment=Alignment.LEFT))
-    table_01.add(Paragraph(client.buisness_number, font_size=Decimal(8)))
+    table_01.add(Paragraph(client.business_number, font_size=Decimal(8)))
     table_01.set_padding_on_all_cells(Decimal(1), Decimal(1), Decimal(1), 
                                                                 Decimal(1))    		
     table_01.no_borders()
@@ -475,14 +475,14 @@ def pdf_articles_total(receipt: Union[Invoice, Estimate], currency: str,
     for article in art_list:  
         c = even if parity else odd 
         parity ^= True
-        table.add(TableCell(Paragraph(f"{article[0].title}", 
+        table.add(TableCell(Paragraph(f"{article.title}", 
                             respect_newlines_in_text=True), 
                                                     background_color=c))  
-        table.add(TableCell(Paragraph(f"{article[1]}"), background_color=c))  
-        table.add(TableCell(Paragraph(f"{article[0].price} {currency}"), 
+        table.add(TableCell(Paragraph(f"{article.quantity}"), background_color=c))  
+        table.add(TableCell(Paragraph(f"{article.price} {currency}"), 
                                                         background_color=c))   
         table.add(TableCell(Paragraph(
-                        f"{round(article[1] * article[0].price,2)} {currency}")
+                    f"{round(article.quantity * article.price,2)} {currency}")
                                                         , background_color=c))    
     #Si on a moins de 10 articles alors on rajoute des lignes vides
     # pour le style
@@ -624,4 +624,4 @@ if __name__ == "__main__":
                             note="Invoice de matériel informatiques")
 
     build_pdf(dev, 27, "exemple_devis.pdf")
-    build_pdf(fact, 490, "exemple_facture", inline=True, color= "#c44b0e")
+    build_pdf(fact, 490, "exemple_facture", inline=True)

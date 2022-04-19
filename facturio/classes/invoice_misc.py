@@ -105,7 +105,7 @@ class Receipt:
         """
         amount = 0
         for art in self.articles_list:
-            amount += art[0].price * art[1]
+            amount += art.price * art.quantity
         return round(amount,2)
     
     def total_of_taxes(self):

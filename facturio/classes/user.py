@@ -7,7 +7,7 @@ class User:
         company_name: str ,
         adress: str,
         phone_number: str,
-        buisness_number: str,
+        business_number: str,
         first_name: str,
         last_name: str,
         email: str = None,
@@ -23,12 +23,12 @@ class User:
         self.phone_number = phone_number
         self.first_name = first_name
         self.last_name = last_name
-        self.buisness_number = buisness_number
+        self.business_number = business_number
 
     def __str__(self):
         return f"{self.logo } | {self.company_name} | {self.email} | " \
                f"{self.adress}  | {self.phone_number} | "\
-               f"{self.first_name} {self.last_name} | {self.buisness_number}"
+               f"{self.first_name} {self.last_name} | {self.business_number}"
 
     def __repr__(self):
         return self.__str__()
@@ -38,7 +38,7 @@ class User:
         Renvoie une liste de toutes les variables de classes
         """
         return [self.logo, self.company_name, self.email, 
-self.adress, self.phone_number, self.first_name, self.last_name, self.buisness_number]
+self.adress, self.phone_number, self.first_name, self.last_name, self.business_number]
 
     def dump_to_field(self):
         """
@@ -46,7 +46,7 @@ self.adress, self.phone_number, self.first_name, self.last_name, self.buisness_n
         liés au client moral
         """
         return [self.company_name, self.email, self.adress, self.phone_number,
-             f"{self.first_name} {self.last_name}", self.buisness_number]
+             f"{self.first_name} {self.last_name}", self.business_number]
     @classmethod
     def from_dict(cls, data_dict):
         res = cls(data_dict["company_name"], data_dict["adress"],
