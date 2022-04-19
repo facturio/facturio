@@ -1,5 +1,5 @@
-from Invoice_classes.client import Client
-from Invoice_classes.article import Article
+from classes.client import Client
+from classes.article import Article
 clement = Client("Bazan", "Clement", "clement.bazan@email.com",
                  "AAAAAAAAAAAAAAAAAA", "0123456789")
 quentin = Client("Lombardo", "Quentin", "quentin.lombardo@email.com",
