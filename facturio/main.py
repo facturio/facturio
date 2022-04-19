@@ -19,7 +19,7 @@ class Window(Gtk.ApplicationWindow):
         self.set_vexpand(True)
         self.resize(960, 540)
         provider = Gtk.CssProvider()
-        provider.load_from_path("../main.css")
+        provider.load_from_path("./main.css")
         screen = Gdk.Screen.get_default()
         style_context = Gtk.StyleContext()
         style_context.add_provider_for_screen(screen, provider,
