@@ -1,5 +1,5 @@
-from classes.client import Client
-from classes.article import Article
+from facturio.classes.client import Client
+from facturio.classes.invoice_misc import Article
 clement = Client("Bazan", "Clement", "clement.bazan@email.com",
                  "AAAAAAAAAAAAAAAAAA", "0123456789")
 quentin = Client("Lombardo", "Quentin", "quentin.lombardo@email.com",
@@ -8,10 +8,10 @@ youssef = Client("Benjelloun", "Youssef",
                  "youssef.benjelloun@email.com",
                  "AAAAAAAAAAAAAAAAAAAAA", "0101010101")
 
-ordinateur = Article("ordinateur", 1684.33)
-cable_ethernet = Article("cable ethernet", 9.99)
-telephone = Article("telephone", 399.99)
-casque = Article("casque", 69.99)
+ordinateur = Article("ordinateur", 1684.33, 1)
+cable_ethernet = Article("cable ethernet", 9.99, 3)
+telephone = Article("telephone", 399.99, 2)
+casque = Article("casque", 69.99, 10)
 
 clients = [clement, quentin, youssef]
 articles = [ordinateur, cable_ethernet, telephone, casque]
