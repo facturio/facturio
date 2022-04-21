@@ -64,12 +64,15 @@ class InvoicePage(Gtk.ScrolledWindow):
         label.set_hexpand(True)
         label.set_use_markup(True)
         self.header_grid.attach(label, 1, 1, 4, 1)
-        logo_button = Gtk.Button.new_from_icon_name("image-x-generic-symbolic",
+        self.logo_button = Gtk.Button.new_from_icon_name("image-x-generic-symbolic",
                                                     Gtk.IconSize.BUTTON)
-        logo_button.set_label('+ Logo')
-        logo_button.set_always_show_image(True)
-        logo_button.set_hexpand(True)
-        self.header_grid.attach(logo_button, 7, 1, 2, 4)
+        self.logo_button.set_label('+ Logo')
+        self.logo_button.set_always_show_image(True)
+        self.logo_button.set_hexpand(True)
+        self.header_grid.attach(self.logo_button, 7, 1, 2, 4)
+        self.logo_fn = None
+        self.logo_button.connect("clicked", self._logo_dialog)
+
     def _init_client_grid(self):
         self.client_grid = Gtk.Grid(column_homogeneous=True,
                                     row_homogeneous=True, column_spacing=20,
@@ -350,7 +353,7 @@ class InvoicePage(Gtk.ScrolledWindow):
         self.user_data = {}
         for name, entry in self.user_entries.items():
             self.user_data[name] = entry.get_text()
-        self.user_data["logo"] = None
+        self.user_data["logo"] = self.logo_fn
 
         articles_dict = []
         for art_dict in self.article_list:
@@ -377,6 +380,21 @@ class InvoicePage(Gtk.ScrolledWindow):
         build_pdf(inv, 27, "exemple_avec_gui.pdf")
         import webbrowser
         webbrowser.open_new("exemple_avec_gui.pdf")
+
+    def _logo_dialog(self, *args):
+        file_chooser = Gtk.FileChooserNative(title="Selectionnez une image",
+                                             accept_label="Selectionner",
+                                             cancel_label="Annuler")
+        filter_ = Gtk.FileFilter()
+        filter_.set_name("Images")
+        filter_.add_pattern("*.jpg")
+        filter_.add_pattern("*.png")
+        filter_.add_pattern("*.jpeg")
+        file_chooser.set_filter(filter_)
+        if file_chooser.run() == Gtk.ResponseType.ACCEPT:
+           self.logo_fn = file_chooser.get_filename()
+           self.logo_button.set_sensitive(False)
+           self.logo_button.set_label(" Ajouté")
 
     def _put_percentage(self, spin_btn):
         """
