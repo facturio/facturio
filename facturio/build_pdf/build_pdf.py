@@ -1,11 +1,17 @@
 #Import de borb
 from borb.pdf import Document
 from borb.pdf import Page
-from borb.pdf import SingleColumnLayout
+#from borb.pdf import SingleColumnLayout
 from borb.pdf import Paragraph
 from borb.pdf import PDF
-from borb.pdf.canvas.layout.page_layout.multi_column_layout \
-                                        import SingleColumnLayout
+
+
+#######################################
+from borb.pdf.canvas.layout.page_layout.browser_layout \
+                                        import BrowserLayout
+from borb.pdf.canvas.layout.page_layout.page_layout import PageLayout
+#######################################
+
 from borb.pdf.canvas.layout.image.image import Image
 from borb.pdf.canvas.layout.table.fixed_column_width_table \
                             import FixedColumnWidthTable as Table
@@ -453,9 +459,7 @@ def pdf_articles_total(receipt: Union[Invoice, Estimate], currency: str,
     art_list = receipt.articles_list
     articles_nb = len(art_list)
     #Calcule du nombre de lignes que le tableau va prendre
-    rows_nb = articles_nb + 5
-    if(rows_nb < 15):
-        rows_nb = 15
+    rows_nb = 2*articles_nb + 5
     if(isinstance(receipt, Estimate)):
         rows_nb -= 1
 
@@ -475,25 +479,23 @@ def pdf_articles_total(receipt: Union[Invoice, Estimate], currency: str,
     for article in art_list:  
         c = even if parity else odd 
         parity ^= True
-        table.add(TableCell(Paragraph(f"{article.title}", 
-                            respect_newlines_in_text=True), 
+        table.add(TableCell(Paragraph(f"{article.title}"),
                                                     background_color=c))  
-        table.add(TableCell(Paragraph(f"{article.quantity}"), background_color=c))  
+        table.add(TableCell(Paragraph(f"{article.quantity}"), 
+                                                          background_color=c))  
+
         table.add(TableCell(Paragraph(f"{article.price} {currency}"), 
                                                         background_color=c))   
         table.add(TableCell(Paragraph(
                     f"{round(article.quantity * article.price,2)} {currency}")
-                                                        , background_color=c))    
-    #Si on a moins de 10 articles alors on rajoute des lignes vides
-    # pour le style
-    while(articles_nb < 10):
-        c = even if parity else odd 
-        parity ^= True
+                                                        , background_color=c))  
+        table.add(TableCell(Paragraph(f"{article.description}",
+                     font_size=Decimal(8)),  background_color=c))
         table.add(TableCell(Paragraph(" "), background_color=c)) 
         table.add(TableCell(Paragraph(" "), background_color=c)) 
         table.add(TableCell(Paragraph(" "), background_color=c)) 
-        table.add(TableCell(Paragraph(" "), background_color=c)) 
-        articles_nb += 1 
+   
+  
     
     #Calcul du sous total
     table.add(TableCell(Paragraph("Sous-total", font="Helvetica-Bold", 
@@ -554,53 +556,95 @@ def pdf_estimate_total(table: Table, receipt:Estimate, currency: str):
                     horizontal_alignment=Alignment.RIGHT)))   
     return table
 
+def pdf_advance_table(receipt:Invoice, currency: str, color: str):
+    """
+    Construit la table des acomptes pour les pdfs
+    """
+
+    #Entête du tableau
+    nb_of_advances = len(receipt.advances_list)
+    table = Table(number_of_rows= nb_of_advances + 2, number_of_columns =3)
+    for h in ["ACOMPTE", "DATE", "MONTANT"]:  
+        table.add(  
+            TableCell(  
+                Paragraph(h, font_color = HexColor("ffffff")),  
+                background_color = HexColor(color)
+            )  
+        )
+    i = 1
+    #Complétion des lignes du tableau des acomptes
+    for adv in receipt.advances_list:
+        table.add(TableCell(Paragraph(f"Acomptes n°{i}")))
+        table.add(TableCell(Paragraph(f"{adv.date_string()}")))
+        table.add(TableCell(Paragraph(f"{adv.amount} {currency}")))
+    
+    table.add(TableCell(Paragraph("Total", font="Helvetica-Bold", 
+                        horizontal_alignment=Alignment.RIGHT  ), col_span=2,))
+    table.add(TableCell(Paragraph(f"{round(receipt.total_of_advances())} "\
+                                  f"{currency} ", 
+                                       horizontal_alignment=Alignment.RIGHT)))
+    table.set_padding_on_all_cells(Decimal(2), 
+                                        Decimal(15), Decimal(2), Decimal(2)) 
+    return table
+    
+
+
+    
+    
 def build_pdf(receipt: Union[Invoice, Estimate], id: int,
     path: str ="output.pdf", color: str = "5f5f5f", currency: str = "€", 
-                   inline: bool = False, prominent_article_table: bool = False):
+                   inline: bool = False, prominent_article_table: bool = False,
+                   show_advances_table: bool = False):
     """
     Fonction d'assemblage du pdf
     """
     # Créer un document pdf
-    pdf = Document()
+    doc : Document = Document()
     # Créer une page pour le pdf
-    page = Page()
+    page : Page = Page()
+    # Ajout de Page au document
+    doc.append_page(page)
     #Disposition de la page
-    page_layout = SingleColumnLayout(page)
+    layout: PageLayout = BrowserLayout(page)
     #Calcul des marge
-    page_layout.vertical_margin = page.get_page_info().get_height() \
-                                                                * Decimal(0.02)
+    #page_layout.vertical_margin = page.get_page_info().get_height() \
+                                                               # * Decimal(0.02)
     #Construction de l'entête
-    page_layout.add(pdf_header(receipt, id))
+    layout.add(pdf_header(receipt, id))
 
     if(prominent_article_table):
         # Tableaux des articles et des tax
-        page_layout.add(pdf_articles_total(receipt, currency,color))
+        layout.add(pdf_articles_total(receipt, currency,color))
     # Informations du prestatire et du client
     if(inline):
-        page_layout.add(Paragraph("Prestataire", font="Helvetica-Bold", 
+        layout.add(Paragraph("Prestataire", font="Helvetica-Bold", 
                                                         font_size= Decimal(8)))
-        page_layout.add(pdf_provider_inline(receipt))
-        page_layout.add(Paragraph("Client", font="Helvetica-Bold", 
+        layout.add(pdf_provider_inline(receipt))
+        layout.add(Paragraph("Client", font="Helvetica-Bold", 
                                                         font_size= Decimal(8)))
-        page_layout.add(pdf_client_inline(receipt))
+        layout.add(pdf_client_inline(receipt))
    
     else:
         tb1, tb2 = pdf_provider_client(receipt)
-        page_layout.add(tb1)
-        page_layout.add(tb2)
+        layout.add(tb1)
+        layout.add(tb2)
 
     if(not prominent_article_table):
         # Tableaux des articles et des tax
-        page_layout.add(pdf_articles_total(receipt, currency, color))
+        layout.add(pdf_articles_total(receipt, currency, color))
+    
+    #On vérifie qu'il s'agit d'une facture
+    if(show_advances_table and isinstance(receipt, Invoice)):
+        layout.add(pdf_advance_table(receipt, currency, color))
     
     #On rajoute l'extension pdf si elle n'est pas déjà présente
     if(path[-4:] != ".pdf"):
         path += ".pdf"
     #On ajoute la page au pdf
-    pdf.append_page(page)
+    #pdf.append_page(page)
     #Écriture du pdf au chemin indiqué
     with open(path, "wb") as pdf_file_handle:
-        PDF.dumps(pdf_file_handle, pdf)
+        PDF.dumps(pdf_file_handle, doc)
     
 if __name__ == "__main__":
     artisan = User("Facturio", "15 rue des champs Cuers", "0734567221", 
@@ -611,12 +655,18 @@ if __name__ == "__main__":
                         
     client_moral = Company("LeRoy",  "LeRoy83@sfr.fr", "12 ZAC de La Crau",
                              "0345678910", "Ben", "Karim","287489404")
-    ordinateur = Article("ordinateur", 1684.33, 3)
-    cable_ethernet = Article("cable ethernet", 9.99, 10)
-    telephone = Article("telephone", 399.99, 1)
-    casque = Article("casque", 69.99, 6)
+    ordinateur = Article("ordinateur", 1684.33, 3,"Asus spire")
+    cable_ethernet = Article("cable ethernet", 9.99, 10,"15m")
+    telephone = Article("telephone", 399.99, 1,"téléphone clapet")
+    casque = Article("casque", 69.99, 6,"casque sans fils")
+    bureau = Article("Bureau", 500,2,"Bureau à 6pieds")
+    articles = [ordinateur, cable_ethernet, telephone, casque, bureau]
+    #articles = [ordinateur]
+    # for i in range(6):
+    #     articles.append(Article("truc",35))
     paiements = [Advance(1230.0), Advance(654)]
-    articles = [ordinateur, cable_ethernet, telephone, casque]
+    
+    print(len(articles))
     fact = Invoice(artisan, client_moral, articles, advances_list =paiements,
                         taxes = 0.2, note="Invoice de matériel informatiques",
                    date = 0, amount=100)
@@ -624,4 +674,5 @@ if __name__ == "__main__":
                             note="Invoice de matériel informatiques")
 
     build_pdf(dev, 27, "exemple_devis.pdf")
-    build_pdf(fact, 490, "exemple_facture", inline=True)
+    build_pdf(fact, 490, "exemple_facture", color="#de260d", 
+                show_advances_table=True)
