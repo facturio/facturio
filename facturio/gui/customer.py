@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 import gi
 from gui.page_gui import Page_Gui
+from gui.home import HeaderBarSwitcher
+from gui.add_customer import Add_Customer
 gi.require_version("Gtk", "3.0")
 from gi.repository import Gtk, Gdk, Gio, GdkPixbuf
 
@@ -14,8 +16,9 @@ class Customer(Page_Gui):
     |__| [E] |
     +--------+
     """
-    def __init__(self):
+    def __init__(self, header_bar: HeaderBarSwitcher):
         super().__init__()
+        self.header_bar = header_bar
         self.init_grid()
         self.title("Client")
         self.space()
@@ -35,7 +38,10 @@ class Customer(Page_Gui):
                   ("Exporter", (5,5,1,1)))
         for para in p_button:
             but = Gtk.Button(label=para[0])
+            but.connect("clicked", self.header_bar.active_button, "add_customer")
             self.grid.attach(but, *para[1])
+
+
 
     def add_result(self,res):
         """

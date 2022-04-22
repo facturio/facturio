@@ -5,7 +5,7 @@ from gi.repository import Gtk, Gdk, Gio, GdkPixbuf, OsmGpsMap
 
 class InfoPerson (Page_Gui):
     """
-    Classe IHM de le fenetre Map, elle permet soit d'afficher la page
+    Classe IHM de le fenetre d'affichage, elle permet soit d'afficher la page
     d'utilisateur soit la page d'un client
     +--------+
     |---  == |
