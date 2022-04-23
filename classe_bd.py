@@ -129,7 +129,8 @@ class Data_base:
 
     def selection_table(self,nom):
             self.cursor.execute("""select * from """+nom)
-            print(self.cursor.fetchall())
+
+            return self.cursor.fetchall()
 
     def delete_table(self,name, id):
             self.cursor.execute(""" DELETE FROM"""+name+""" WHERE id_"""+name+"""="""+str(id))
@@ -158,7 +159,7 @@ class Data_base:
                 if bool==1:
                     self.cursor.execute("""SELECT max(id_client) FROM client""")
                     self.connexion.commit()
-                    id_max=cursor.fetchall()
+                    id_max=self.cursor.fetchall()
 
                     liste_e=[id_max[0][0]]+liste[6:]
                     """ recuperation de id """
@@ -172,7 +173,7 @@ class Data_base:
     def insertion_invoice(self,liste):
             self.cursor.execute("""SELECT max(id_invoice_devis) FROM invoice_devis""")
             self.connexion.commit()
-            id_max=cursor.fetchall()
+            id_max=self.cursor.fetchall()
             self.cursor.execute("""INSERT INTO invoice(id_invoice,solde) VALUES(?,?)""",(id_max[0][0],liste[0]))
             self.connexion.commit()
 
@@ -187,3 +188,39 @@ class Data_base:
             le deuxieme pour id de fac_dev   """
             self.cursor.execute("""INSERT INTO art_dev(id_article,id_invoice_devis) VALUES(?,?)""",(liste))
             self.connexion.commit()
+
+    def update_client(self,liste,bool):
+        liste=liste[1:]+[liste[0]]
+
+        if bool==0:
+            self.cursor.execute("""UPDATE client SET
+            last_name=?,first_name=?,e_mail=?,address=?,phone=?,remark=?
+            WHERE id_client=?""",liste)
+        else:
+            self.cursor.execute("""UPDATE client SET
+            last_name=?,first_name=?,e_mail=?,address=?,phone=?,remark=?
+            WHERE id_client=?""",liste)
+        self.connexion.commit()
+
+    def update_user(self,liste):
+        liste=liste[1:]+[liste[0]]
+
+        self.cursor.execute("""UPDATE user SET logo=?,company_name=?,e_mail=?,
+        address=?,phone=?,num_SIREN=? WHERE id_user=?""",liste)
+        self.connexion.commit()
+
+    def update_deposit(self,liste):
+        liste=liste[1:]+[liste[0]]
+
+        self.cursor.execute("""UPDATE deposit SET date=?,amount=?, id_invoice=? WHERE id_deposit=?""",liste)
+        self.connexion.commit()
+
+    def update_invoice_dev(self,liste):
+        liste=liste[1:]+[liste[0]]
+        self.cursor.execute("""UPDATE invoice_devis SET amount=?,date=?,description=?,note=?,remark=?,id_client=?,id_user=? WHERE id_invoice_devis=?""",liste)
+        self.connexion.commit()
+
+    def update_article(self,liste):
+        liste=liste[1:]+[liste[0]]
+        self.cursor.execute("""UPDATE article SET name=?,description=?,price=? WHERE id_article=?""",liste)
+        self.connexion.commit()

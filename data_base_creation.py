@@ -8,20 +8,11 @@ from update import *
 from classe_bd import *
 
 from datetime import date
+"update company ne marche pas "
 
-"""
-a faire :
-
-update entreprise
-
-faire quant tout marche :
-delete une fonction
-list een objet
-tester avec note
-
-"""
 def main():
-    name_bdd='facturioooo'
+    #nom de ta bdd et création
+    name_bdd='facturio'
     bdd=Data_base(name_bdd)
 
     #pour la creation de notre bdd
@@ -36,62 +27,67 @@ def main():
 
     """--------------------------------- creation des table ----------"""
 
-    creation_table_article(cursor,connexion)
-    creation_table_user(cursor,connexion)
-    creation_table_client(cursor,connexion)
-    creation_table_company(cursor,connexion)
-    creation_table_invoice_devis(cursor,connexion)
-    creation_table_invoice(cursor,connexion)
-    creation_table_art_dev(cursor,connexion)
-    creation_table_deposit(cursor,connexion)
-
     """------------------------fonction insertion dans la bdd-------------------- """
-
+    # ordre name,description,price
     liste=["pull","un pull tres moche ",30]
     bdd.insertion_article(liste)
 
+    #ordre logo,company_name,e_mail,address,phone,num_SIREN
     liste=["logo.png","entreprise de reve","tomolivier283@gmail.com","avenue toto","0653536789","00543222"]
-    insertion_user(cursor,connexion,liste)
+    bdd.insertion_user(liste)
 
-    #booleen egale a 0 pour savoir si c'est un client et 1 pour une entreprise
+    #booleen egale a 0 pour savoir si c'est un client et 1 pour une entreprise(a voir)
+    #ordre last_name,first_name,e_mail,address,phone,remark+(company_name,num_SIRET)->entreprise
     liste=["bazan","clement","tomolivier283@gmail.com","avenue du paradi","0675849320","le plus bg","entreprise","12345678"]
     bool=1
-    insertion_client_or_company(cursor,connexion,liste,bool)
+    bdd.insertion_client_or_company(liste,bool)
 
     data=date.today()
-    #recuperation des id client et utilisateur
-    liste=[100.0,data,"acheter des vetement","10","de la merde",1,1]
-    insertion_invoice_dev(cursor,connexion,liste)
-    insertion_invoice(cursor,connexion,liste)
-    #id de facture
-    liste=["100",1]
-    insertion_deposit(cursor,connexion,liste)
-    #id article et id de fac_dev
-    liste=[1,1]
-    insertion_art_dev(cursor,connexion,liste)
-    """------------------- fonction update dans la bdd --------------------"""
 
+    #recuperation des id client et utilisateur
+    #ordre amount,date,description,note,remark,id_client,id_user / le 1,1 faut donc le changer
+    liste=[100.0,data,"acheter des vetement","10","de la merde",1,1]
+    bdd.insertion_invoice_dev(liste)
+    bdd.insertion_invoice(liste)
+
+    #le 1 corespond a id de facture
+    #la date je men occupe dans mes fonctions
+    #date,amount,id_invoice
+    liste=["100",1]
+    bdd.insertion_deposit(liste)
+
+    #id article et id de fac_dev
+    #odre id_article,id_invoice_devis
+    liste=[1,1]
+    bdd.insertion_art_dev(liste)
+    """------------------- fonction update dans la bdd --------------------"""
+    #les liste sont les même jai juste ajoute id au debut pour
+    #modifier la bonne ligne
     liste=["1","logo.png","prise de reve","tomolivier283@gmail.com","avenue toto","0653536789","00543222"]
-    update_user(cursor,connexion,liste)
+    bdd.update_user(liste)
     liste=["1","bazan","clement","tomolivier283@gmail.com","avenue du paradi","0675849320","le plus bg"]
-    update_client(cursor,connexion,liste,bool)
+    bdd.update_client(liste,bool)
     liste=[1,data,"100",1]
-    update_deposit(cursor,connexion,liste)
+    bdd.update_deposit(liste)
     liste=[1,"t-shirt","un pull tres moche ",40]
-    update_article(cursor,connexion,liste)
+    bdd.update_article(liste)
     liste=[1,100.0,data,"acheter des choses","10","de la merde",1,1]
-    update_invoice_dev(cursor,connexion,liste)
+    bdd.update_invoice_dev(liste)
     """--------------------fonction delete dans la bdd-------------------- """
 
-    #recuperation de la ligne client quon envoie dans la fonction
+    #la ligne que tu veux surprimmer sera normalement sous forme de liste
+    #donc on selectionne id dans la liste et le nom de la table
+    #normal :
+    #id=liste[0]
+    #test:
     id=1
     nom_table="client"
-    #delete_table(cursor,connexion,name,id)
+    #bdd.delete_table(name,id)
     """ ------------------------fonction selection--------------------------"""
-
+    #tu dis le nom de la table que tu veux voir
     name="client"
-    selection_table(cursor,connexion,name)
-
+    liste=bdd.selection_table(name)
+    print(liste)
     """ ------------------------------------------------------------------------"""
     #fermer la connexion
     connexion.close()
