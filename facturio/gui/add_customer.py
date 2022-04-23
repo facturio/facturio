@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+import sqlite3
 import gi
 from gui.page_gui import Page_Gui
 gi.require_version("Gtk", "3.0")
@@ -40,16 +41,30 @@ class Add_Customer(Page_Gui):
     def title__(self, ttl):
         bttl= Gtk.Box()
         self.tl = Gtk.Label()
-        self.tl.set_markup("<span font_weight=\"bold\" size=\"xx-large\">"+ttl+"</span>")
+        self.tl.set_markup("<span font_weight=\"bold\" size=\"xx-large\">"+ttl
+                           +"</span>")
         bttl.pack_start(self.tl, False, False, 0)
         self.grid.attach(bttl, 2, 1, 3, 1 )
 
+    def __add2bd(self, button):
+        """
+        Prend un boutton Gtk et un chemin vers la BD
+        sqlite et insert les info client
+        """
+        self.info={}
+        self.entry.set_text("")
+        for section, entry in self.client_entries.items():
+            print("sire=",self.client_entries["Siret "].get_text())
+            self.info[section] = entry.get_text()
+            entry.set_text("")
+        print(self.info)
 
     def client(self):
         """
         Affichage pour client
         """
-        self.imp = Gtk.Button(label="Ajouter")
+        self.imp = Gtk.Button.new_with_label(label="Ajouter")
+        self.imp.connect("clicked", self.__add2bd)
         self.grid.attach(self.cent, 1, 2, 2, 1)
         self.cent.attach(self.imp, 4, 8, 2, 1)
         self.first_name("test")
@@ -86,19 +101,23 @@ class Add_Customer(Page_Gui):
         label.set_hexpand(True)
         label.set_justify(Gtk.Justification.CENTER)
         self.cent.attach(label,*pos)
-        entry = Gtk.Entry()
-        self.cent.attach(entry,pos[0]+1,pos[1],2,1)
-        self.client_entries[c_txt[0]] = entry
+        self.entry = Gtk.Entry()
+        self.cent.attach(self.entry,pos[0]+1,pos[1],2,1)
         space = Gtk.Label()
         self.cent.attach(space,pos[0],pos[1]+1,3,1)
+        self.client_entries[c_txt[0]] = self.entry
+        connexion=sqlite3.connect('facturio.db')
+
 
     def last_name(self,adr):
         self.__creat_labelbox(("Nom ",adr),(0,2,1,1))
         return self
 
+
     def first_name(self,adr):
         self.__creat_labelbox(("Prenom ",adr),(0,4,1,1))
         return self
+
 
     def adrss(self,adr):
         self.__creat_labelbox(("Adresse ",adr),(0,6,1,1))
