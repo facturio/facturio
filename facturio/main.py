@@ -56,7 +56,8 @@ class Window(Gtk.ApplicationWindow):
     def initial_show(self):
         self.show_all()
         self.stack.set_visible_child_name("home_page")
-        self.header_bar.set_visible(True)
+        self.header_bar.set_visible(False)
+        self.invoice_page.calendar.set_visible(False)
 
 
 class App(Gtk.Application):

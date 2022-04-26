@@ -95,10 +95,14 @@ class Company(Client):
              f"{self.first_name} {self.last_name}", self.business_number]
     @classmethod
     def from_dict(cls, data_dict):
-        res = cls(data_dict["company_name"], data_dict["email"],
-                  data_dict["adress"], data_dict["phone_number"],
-                  data_dict["first_name"], data_dict["last_name"],
-                  data_dict["business_number"], data_dict["note"])
+        res = cls(company_name=data_dict["company_name"],
+                  email=data_dict["email"],
+                  adress=data_dict["adress"],
+                  phone_number=data_dict["phone_number"],
+                  first_name=data_dict["first_name"],
+                  last_name=data_dict["last_name"],
+                  business_number=data_dict["business_number"],
+                  note=data_dict["note"])
         return res
         
 

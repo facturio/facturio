@@ -1,21 +1,24 @@
 #!/usr/bin/env python3
 import gi
 gi.require_version("Gtk", "3.0")
-from gi.repository import Gtk, Gdk
-from classes.client import Company
-from classes.user import User
+from gi.repository import Gtk, Gdk, GObject
+from facturio.classes.client import Company, Client
+from facturio.classes.user import User
+from facturio.classes.invoice_misc import Article, Invoice, Advance, Estimate
+from facturio.build_pdf.build_pdf import build_pdf
+from datetime import datetime
+
 
 class InvoicePage(Gtk.ScrolledWindow):
     def __init__(self):
         super().__init__()
-        self.total_labels = []
         self.main_grid = Gtk.Grid(column_homogeneous=False,
                                   row_homogeneous=False, column_spacing=20,
                                   row_spacing=20)
-        self.__init_header_grid()
-        self.__init_user_grid()
-        self.__init_client_grid()
-        self.__union_user_client_grid()
+        self._init_header_grid()
+        self._init_user_grid()
+        self._init_client_grid()
+        self._union_user_client_grid()
         self.main_grid.attach(self.header_grid, 2, 1, 1, 1)
         self.main_grid.attach(self.user_client_grid, 2, 2, 1, 1)
         # spaces sur les cotes
@@ -29,48 +32,31 @@ class InvoicePage(Gtk.ScrolledWindow):
         sep = Gtk.HSeparator()
         self.main_grid.attach(sep, 2, 3, 1, 1)
 
-        self.article_header()
-        self.initial_article_row()
+        self._article_header()
+        self._first_article_row()
         self.main_grid.attach(self.article_grid, 2, 4, 1, 1)
-        self.plus_btn_box()
+        self._plus_btn_row()
 
         sep = Gtk.HSeparator()
         self.main_grid.attach(sep, 2, 5, 1, 1)
 
-        self.__init_total_grid()
+        self._init_total_grid()
         self.total_grid.set_halign(Gtk.Align.END)
 
-        self.__init_taxes_grid()
-        self.__union_taxes_total_grid()
+        self._init_taxes_grid()
+        self._union_taxes_total_grid()
         self.main_grid.attach(self.taxes_total_grid, 2, 6, 1, 1)
 
         sep = Gtk.HSeparator()
         self.main_grid.attach(sep, 2, 7, 1, 1)
 
         self.button = Gtk.Button(label='Créer')
-        self.button.connect("clicked", self.test)
+        self.button.connect("clicked", self._gen_invoice)
         self.button.set_halign(Gtk.Align.END)
         self.main_grid.attach(self.button, 2, 8, 1, 1)
         self.add(self.main_grid)
 
-    def test(self, btn):
-        self.client_data = {}
-        for name, entry in self.client_entries.items():
-            self.client_data[name] = entry.get_text()
-        self.client_data["note"] = None
-        company = Company.from_dict(self.client_data)
-        self.user_data = {}
-        for name, entry in self.user_entries.items():
-            self.user_data[name] = entry.get_text()
-        self.user_data["logo"] = None
-        for art_dict in self.article_list:
-            for name, entry in art_dict.items():
-                print(name, entry.get_text())
-
-        user = User.from_dict(self.user_data)
-        print(company, user)
-
-    def __init_header_grid(self):
+    def _init_header_grid(self):
         """Facture texte et logo"""
         self.header_grid = Gtk.Grid(row_homogeneous=True,
                                     column_homogeneous=True)
@@ -78,13 +64,16 @@ class InvoicePage(Gtk.ScrolledWindow):
         label.set_hexpand(True)
         label.set_use_markup(True)
         self.header_grid.attach(label, 1, 1, 4, 1)
-        logo_button = Gtk.Button.new_from_icon_name("image-x-generic-symbolic",
+        self.logo_button = Gtk.Button.new_from_icon_name("image-x-generic-symbolic",
                                                     Gtk.IconSize.BUTTON)
-        logo_button.set_label('+ Logo')
-        logo_button.set_always_show_image(True)
-        logo_button.set_hexpand(True)
-        self.header_grid.attach(logo_button, 7, 1, 2, 4)
-    def __init_client_grid(self):
+        self.logo_button.set_label('+ Logo')
+        self.logo_button.set_always_show_image(True)
+        self.logo_button.set_hexpand(True)
+        self.header_grid.attach(self.logo_button, 7, 1, 2, 4)
+        self.logo_fn = None
+        self.logo_button.connect("clicked", self._logo_dialog)
+
+    def _init_client_grid(self):
         self.client_grid = Gtk.Grid(column_homogeneous=True,
                                     row_homogeneous=True, column_spacing=20,
                                     row_spacing=20)
@@ -161,7 +150,7 @@ class InvoicePage(Gtk.ScrolledWindow):
         button = Gtk.Button(label="Sauvegarder client")
         self.client_grid.attach(button, 1, 11, 2, 1)
 
-    def __init_user_grid(self):
+    def _init_user_grid(self):
         self.user_grid = Gtk.Grid(column_homogeneous=True,
                                   row_homogeneous=True, column_spacing=20,
                                   row_spacing=20)
@@ -236,14 +225,14 @@ class InvoicePage(Gtk.ScrolledWindow):
         button = Gtk.Button(label="Charger utilisateur")
         self.user_grid.attach(button, 3, 11, 2, 1)
 
-    def __init_taxes_grid(self):
+    def _init_taxes_grid(self):
         self.taxes_grid = Gtk.Grid(row_spacing=20)
         label = Gtk.Label("Tax")
         adj = Gtk.Adjustment(value=21, lower=0, upper=100, step_increment=1)
         self.spin_btn = Gtk.SpinButton(adjustment=adj, climb_rate=1, digits=2)
-        self.spin_btn.connect("output", self.put_percentage)
-        self.spin_btn.connect("change-value", self.modify_taxed_price)
-        self.spin_btn.connect("value-changed", self.modify_taxed_price)
+        self.spin_btn.connect("output", self._put_percentage)
+        self.spin_btn.connect("change-value", self._modify_tax_fields)
+        self.spin_btn.connect("value-changed", self._modify_tax_fields)
         self.taxes_grid.attach(label, 1,1,1,1)
         space = Gtk.Label("")
         space.set_hexpand(True)
@@ -253,33 +242,55 @@ class InvoicePage(Gtk.ScrolledWindow):
         label = Gtk.Label("Date")
         self.taxes_grid.attach(label, 1,2,1,1)
         vbox = Gtk.HBox()
-        date_entry = Gtk.Entry(placeholder_text="dd/mm/yyyy")
+        self.date_entry = Gtk.Entry(placeholder_text="dd/mm/yyyy")
         # self.taxes_grid.attach(date_entry, 3,2,1,1)
         self.show_calendar = Gtk.ToggleButton(label="Montrer calendrier")
-        vbox.pack_start(date_entry, True, True, 0)
+        vbox.pack_start(self.date_entry, True, True, 0)
         vbox.pack_start(self.show_calendar , True, True, 5)
-        self.init_calendar()
-        self.show_calendar.connect("clicked", self.test2)
+        self._init_calendar()
+        self.show_calendar.connect("clicked", self._wcalendar_logic)
         self.taxes_grid.attach(vbox, 3,2,1,1)
-    def init_calendar(self):
-        self.calendar_vbox = Gtk.VBox()
-        validate_btn = Gtk.Button(label="Valider")
-        calendar = Gtk.Calendar()
-        self.calendar_vbox.pack_start(calendar, True, True, 10)
-        self.calendar_vbox.pack_start(validate_btn, True, True, 0)
-        self.taxes_grid.attach(self.calendar_vbox, 3,3,1,1)
-    def test2(self, btn):
-        if self.show_calendar.get_active():
-            self.calendar_vbox.hide()
-        else:
-            print("here")
-            self.calendar_vbox.show_all()
-            self.do_scroll_child(self, Gtk.ScrollType.END, False)
 
+    def _init_calendar(self):
+        self.calendar = Gtk.Calendar()
+        self.calendar.connect("day-selected-double-click", self._wcalendar_logic)
+        self.calendar.connect("size-allocate", self._scroll_down)
+        self.taxes_grid.attach(self.calendar, 3,3,1,1)
+        adj = self.get_vadjustment()
+        # variable pour gerer le scroll down lors de la activation de la datej
+        self.activated_btn = False
+        # variable pour gerer les signals indesirables
+        self.second_signal = False
 
+    def _init_total_grid(self):
+        self.total_grid = Gtk.Grid(column_homogeneous=True,
+                                   row_homogeneous=True, column_spacing=20,
+                                   row_spacing=20)
+        self.label= Gtk.Label("Subtotal")
+        self.label.set_xalign(0)
+        self.total_grid.attach(self.label, 1, 1, 1, 1)
+        self.tax_label = Gtk.Label("Tax (21%)")
+        self.tax_label.set_xalign(0)
+        self.total_grid.attach(self.tax_label, 1, 2, 1, 1)
+        self.label = Gtk.Label("Total")
+        self.label.set_xalign(0)
+        self.total_grid.attach(self.label, 1, 3, 1, 1)
 
+        self.space = Gtk.Label("")
+        self.total_grid.attach(self.space, 2, 1, 1, 3)
 
-    def __union_taxes_total_grid(self):
+        self.sub_total = Gtk.Label("0.00 €")
+        self.sub_total.set_xalign(1)
+        self.total_grid.attach(self.sub_total, 3, 1, 1, 1)
+
+        self.total_taxes = Gtk.Label("0.00 €")
+        self.total_taxes.set_xalign(1)
+        self.total_grid.attach(self.total_taxes, 3, 2, 1, 1)
+
+        self.total = Gtk.Label("0.00 €")
+        self.total.set_xalign(1)
+        self.total_grid.attach(self.total, 3, 3, 1, 1)
+    def _union_taxes_total_grid(self):
         self.taxes_total_grid= Gtk.Grid(row_homogeneous=False,
                                         column_homogeneous=False)
         self.taxes_total_grid.attach(self.taxes_grid, 1, 1, 1, 1)
@@ -291,32 +302,145 @@ class InvoicePage(Gtk.ScrolledWindow):
         space = Gtk.Label("")
         space.set_hexpand(True)
         self.taxes_total_grid.attach(space, 4, 1, 1, 1)
+        self.total_grid.set_valign(Gtk.Align.END)
         self.taxes_total_grid.attach(self.total_grid, 5, 1, 1, 1)
 
-    def __union_user_client_grid(self):
+    def _union_user_client_grid(self):
         self.user_client_grid = Gtk.Grid(column_spacing = 20)
         self.user_client_grid.attach(self.user_grid, 1, 1, 1, 1)
         self.user_client_grid.attach(self.client_grid, 2, 1, 1, 1)
 
-    def put_percentage(self, spin_box):
-        adjustement = spin_box.get_adjustment()
-        value = spin_box.get_value()
-        spin_box.set_text(f"{value} %")
+    def _wcalendar_logic(self, btn):
+        """
+        Montre et cache le widget de calendrier selon les cas de utilisation
+        """
+        # deuxieme signal indesirable
+        if self.second_signal:
+            self.second_signal = False
+        else:
+            if self.calendar.get_visible():
+                # get date renvoi en tuple en format american
+                date = (list(self.calendar.get_date()))
+                date.reverse()
+                # update date entry
+                self.date_entry.set_text(f"{date[0]}/{date[1]}/{date[2]}")
+                self.calendar.hide()
+                # set active cree un nouveau appel a cette function qu'on empeche
+                # grace a la variable second_signal
+                self.second_signal = True
+                self.show_calendar.set_active(False)
+            else:
+                self.calendar.show()
+                self.activated_btn = True
 
-    def modify_taxed_price(self, spin_box= None):
-        if spin_box == None:
-            spin_box = self.spin_btn
-        adjustement = spin_box.get_adjustment()
+    def _scroll_down(self, *args):
+        """
+        scroll la barre jusqu'en bas lorsque on affiche le calendrier
+        """
+        # scroll down seulement si le button pour montrer le calendrier
+        # a ete presse'
+        if self.activated_btn:
+            adj = self.get_vadjustment()
+            adj.set_value(adj.get_upper())
+            self.activated_btn = False
+
+    def _gen_invoice(self, btn):
+        self.client_data = {}
+        for name, entry in self.client_entries.items():
+            self.client_data[name] = entry.get_text()
+        self.client_data["note"] = None
+        company = Company.from_dict(self.client_data)
+        self.user_data = {}
+        for name, entry in self.user_entries.items():
+            self.user_data[name] = entry.get_text()
+        self.user_data["logo"] = self.logo_fn
+
+        articles_dict = []
+        for art_dict in self.article_list:
+            dict_ = {}
+            for name, entry in art_dict.items():
+                dict_[name] = entry.get_text()
+                if name == "price" or name == "quantity" :
+                    dict_[name] = int(entry.get_text())
+            articles_dict.append(dict_)
+
+        art_instances = []
+        for art_dict in articles_dict:
+            art_instances.append(Article.from_dict(art_dict))
+
+        date_text = self.date_entry.get_text()
+        date = datetime.strptime(date_text, "%d/%m/%Y")
+        epoch_date = date.timestamp()
+        user = User.from_dict(self.user_data)
+
+        tax = self.spin_btn.get_adjustment().get_value()/100
+        total = float(self.total.get_text()[:-2])
+        inv = Invoice(user=user, client=company, articles_list=art_instances,
+                      date=epoch_date, taxes=tax, amount=total)
+        build_pdf(inv, 27, "exemple_avec_gui.pdf")
+        import webbrowser
+        webbrowser.open_new("exemple_avec_gui.pdf")
+
+    def _logo_dialog(self, *args):
+        file_chooser = Gtk.FileChooserNative(title="Selectionnez une image",
+                                             accept_label="Selectionner",
+                                             cancel_label="Annuler")
+        filter_ = Gtk.FileFilter()
+        filter_.set_name("Images")
+        filter_.add_pattern("*.jpg")
+        filter_.add_pattern("*.png")
+        filter_.add_pattern("*.jpeg")
+        file_chooser.set_filter(filter_)
+        if file_chooser.run() == Gtk.ResponseType.ACCEPT:
+           self.logo_fn = file_chooser.get_filename()
+           self.logo_button.set_sensitive(False)
+           self.logo_button.set_label(" Ajouté")
+
+    def _put_percentage(self, spin_btn):
+        """
+        ajoute un pourcentage a la fin pour les taxes
+        """
+        adjustement = spin_btn.get_adjustment()
+        value = spin_btn.get_value()
+        spin_btn.set_text(f"{value} %")
+    def _modify_tax_fields(self, spin_btn=None):
+        """
+        modifie le porcentage des taxes ainsi que la valeur et le total
+        """
+        if spin_btn == None:
+            spin_btn = self.spin_btn
+        adjustement = spin_btn.get_adjustment()
         value = adjustement.get_value()
         if value.is_integer():
             value = int(value)
         self.tax_label.set_text(f"Tax ({value}%)")
         sub_total_val = float(self.sub_total.get_text()[:-2])
-        res = round((value/100+1) * sub_total_val, 2)
-        self.price_with_taxes.set_text(f"{res} €")
-        self.put_percentage(spin_box)
+        res = round((value/100) * sub_total_val, 2)
+        self.total_taxes.set_text(f"{res} €")
+        self._put_percentage(spin_btn)
+        self._modify_total()
 
-    def article_header(self):
+    def _modify_sub_total(self):
+        """
+        modifie le sous total
+        """
+        total = 0
+        for label in self.total_articles:
+            print(label.get_text())
+            total += float(label.get_text()[:-2])
+        self.sub_total.set_text(f"{total} €")
+        self._modify_tax_fields()
+        self._modify_total()
+
+    def _modify_total(self):
+        sub_total = float(self.sub_total.get_text()[:-2])
+        total_taxes = float(self.total_taxes.get_text()[:-2])
+        self.total.set_text(f"{round(sub_total + total_taxes, 2)} €")
+
+    def _article_header(self):
+        """
+        Entete pour l'ajout des articles
+        """
         self.article_grid = Gtk.Grid(column_homogeneous=False,
                                      row_homogeneous=True,
                              column_spacing=20, row_spacing=20)
@@ -342,81 +466,13 @@ class InvoicePage(Gtk.ScrolledWindow):
         self.label = Gtk.Label("Somme")
         self.article_grid.attach(self.label, 6, 1, 1, 1)
 
-    def plus_btn_box(self):
-        self.plus_btn_row = 5
-        button = Gtk.Button.new_from_icon_name("list-add-symbolic",
-                                                    Gtk.IconSize.BUTTON)
-        self.article_grid.attach(button, 1, 5, 1, 1)
-
-        button.connect("clicked", self.new_article_row)
-
-    def new_article_row(self, btn=None):
-        i = self.plus_btn_row
-        self.plus_btn_row += 3
-        for _ in range(3):
-            self.article_grid.insert_row(i)
-        row_widgets = []
-        article_entries = {}
-        button = Gtk.Button.new_from_icon_name("window-close-symbolic",
-                                                    Gtk.IconSize.BUTTON)
-        row_widgets.append(button)
-        self.article_grid.attach(button, 1, i, 1, 1)
-        self.btns[button] = i
-        button.connect("clicked", self.des_widgets)
-
-        title_entry = Gtk.Entry(placeholder_text="Nom de l'article")
-        self.article_grid.attach(title_entry , 2, i, 2, 1)
-        row_widgets.append(title_entry)
-        article_entries["title"] = title_entry
-
-        price_entry = Gtk.Entry(placeholder_text="0.00")
-        price_entry.set_alignment(1)
-        self.article_grid.attach(price_entry , 4, i, 1, 1)
-        row_widgets.append(price_entry)
-        article_entries["price"] = price_entry
-
-        qty_entry = Gtk.Entry(placeholder_text="1")
-        qty_entry.set_alignment(1)
-        self.article_grid.attach(qty_entry , 5, i, 1, 1)
-        row_widgets.append(qty_entry)
-        article_entries["quantity"] = qty_entry
-
-        label = Gtk.Label("0.00 €")
-        self.total_labels.append(label)
-        self.article_grid.attach(label, 6, i, 1, 1)
-        row_widgets.append(label)
-
-        price_entry.connect("changed", self.modify_label, article_entries,
-                            label)
-        qty_entry.connect("changed", self.modify_label, article_entries, label)
-
-        des_entry = Gtk.Entry(placeholder_text="Détails additionnels")
-        # self.entry.set_hexpand(True)
-        self.article_grid.attach(des_entry , 2, i+1, 2, 2)
-        row_widgets.append(des_entry)
-        article_entries["description"] = des_entry
-        self.article_list.append(article_entries)
-
-        # self.row_box.pack_start(self.article_grid, True, True, 0)
-        for wid in row_widgets:
-            wid.set_visible(True)
-
-    def modify_label(self, entry, entries: dict, label):
-        price = int(entries["price"].get_text())
-        qty = int(entries["quantity"].get_text())
-        label.set_text(f"{price * qty} €")
-        self.modify_total()
-
-    def modify_total(self):
-        total = 0
-        for label in self.total_labels:
-            print(label.get_text())
-            total += int(label.get_text()[:-2])
-        self.sub_total.set_text(f"{total} $")
-        self.modify_taxed_price()
-
-    def initial_article_row(self):
+    def _first_article_row(self):
+        """
+        premier ligne des article different des autres car pas de button
+        supprimer
+        """
         self.article_list = []
+        self.total_articles= []
         article_entries = {}
         left_space= Gtk.Label("")
         left_space.set_hexpand(True)
@@ -437,63 +493,110 @@ class InvoicePage(Gtk.ScrolledWindow):
         article_entries["quantity"] = qty_entry
 
         label = Gtk.Label("0.00 €")
-        self.total_labels.append(label)
+        self.total_articles.append(label)
         self.article_grid.attach(label, 6, 2, 1, 1)
 
         des_entry = Gtk.Entry(placeholder_text="Détails additionnels")
         self.article_grid.attach(des_entry, 2, 3, 2, 2)
         article_entries["description"] = des_entry
 
-        price_entry.connect("changed", self.modify_label, article_entries,
+        price_entry.connect("changed", self._update_total_article, article_entries,
                             label)
-        qty_entry.connect("changed", self.modify_label, article_entries, label)
+        qty_entry.connect("changed", self._update_total_article, article_entries, label)
         self.article_list.append(article_entries)
 
+    def _plus_btn_row(self):
+        """
+        Ajoute un lige avec un button plus
+        """
+        self.plus_btn_row = 5
+        button = Gtk.Button.new_from_icon_name("list-add-symbolic",
+                                                    Gtk.IconSize.BUTTON)
+        self.article_grid.attach(button, 1, 5, 1, 1)
 
-    def __init_total_grid(self):
-        self.total_grid = Gtk.Grid(column_homogeneous=True,
-                                     row_homogeneous=True,
-                             column_spacing=20, row_spacing=20)
-        self.label= Gtk.Label("Subtotal")
-        self.label.set_xalign(0)
-        self.total_grid.attach(self.label, 1, 1, 1, 1)
-        self.tax_label = Gtk.Label("Tax (21%)")
-        self.tax_label.set_xalign(0)
-        self.total_grid.attach(self.tax_label, 1, 2, 1, 1)
-        self.label = Gtk.Label("Total")
-        self.label.set_xalign(0)
-        self.total_grid.attach(self.label, 1, 3, 1, 1)
-        self.label = Gtk.Label("Montant Du")
-        self.label.set_xalign(0)
-        self.total_grid.attach(self.label, 1, 4, 1, 1)
+        button.connect("clicked", self._new_article)
 
-        self.space = Gtk.Label("")
-        self.total_grid.attach(self.space, 2, 1, 1, 3)
+    def _new_article(self, btn=None):
+        """
+        insere une nouvelle formulaire pour ajouter un article
+        """
+        i = self.plus_btn_row
+        self.plus_btn_row += 3
+        for _ in range(3):
+            self.article_grid.insert_row(i)
+        row_widgets = []
+        article_entries = {}
+        button = Gtk.Button.new_from_icon_name("window-close-symbolic",
+                                                    Gtk.IconSize.BUTTON)
+        row_widgets.append(button)
+        self.article_grid.attach(button, 1, i, 1, 1)
+        self.btns[button] = i
+        button.connect("clicked", self._remove_article_form)
 
-        self.sub_total = Gtk.Label("0.00 €")
-        self.sub_total.set_xalign(1)
-        self.total_grid.attach(self.sub_total, 3, 1, 1, 1)
+        title_entry = Gtk.Entry(placeholder_text="Nom de l'article")
+        self.article_grid.attach(title_entry , 2, i, 2, 1)
+        row_widgets.append(title_entry)
+        article_entries["title"] = title_entry
 
-        self.price_with_taxes = Gtk.Label("0.00 €")
-        self.price_with_taxes.set_xalign(1)
-        self.total_grid.attach(self.price_with_taxes, 3, 2, 1, 1)
+        price_entry = Gtk.Entry(placeholder_text="0.00")
+        price_entry.set_alignment(1)
+        self.article_grid.attach(price_entry , 4, i, 1, 1)
+        row_widgets.append(price_entry)
+        article_entries["price"] = price_entry
 
-        self.label = Gtk.Label("0.00 €")
-        self.label.set_xalign(1)
-        self.total_grid.attach(self.label, 3, 3, 1, 1)
-        self.label = Gtk.Label("0.00 €")
-        self.label.set_xalign(1)
-        self.total_grid.attach(self.label, 3, 4, 1, 1)
+        qty_entry = Gtk.Entry(placeholder_text="1")
+        qty_entry.set_alignment(1)
+        self.article_grid.attach(qty_entry , 5, i, 1, 1)
+        row_widgets.append(qty_entry)
+        article_entries["quantity"] = qty_entry
 
-    def update_dict(self, i):
+        label = Gtk.Label("0.00 €")
+        self.total_articles.append(label)
+        self.article_grid.attach(label, 6, i, 1, 1)
+        row_widgets.append(label)
+
+        price_entry.connect("changed", self._update_total_article, article_entries,
+                            label)
+        qty_entry.connect("changed", self._update_total_article, article_entries, label)
+
+        des_entry = Gtk.Entry(placeholder_text="Détails additionnels")
+        # self.entry.set_hexpand(True)
+        self.article_grid.attach(des_entry , 2, i+1, 2, 2)
+        row_widgets.append(des_entry)
+        article_entries["description"] = des_entry
+        self.article_list.append(article_entries)
+
+        # self.row_box.pack_start(self.article_grid, True, True, 0)
+        for wid in row_widgets:
+            wid.set_visible(True)
+
+    def _update_total_article(self, entry, entries: dict, label):
+        """
+        Met a jour le total prix * quantite
+        """
+        price = float(entries["price"].get_text())
+        qty = int(entries["quantity"].get_text())
+        label.set_text(f"{round(price * qty, 2)} €")
+        self._modify_sub_total()
+
+    def _update_dict(self, i):
+        """
+        mis a jour du dictionaire liant chaque button supprimer a la ligne
+        dans la grille
+        """
         for btn, row in self.btns.items():
             if row > i:
                 self.btns[btn] = row-3
 
-    def des_widgets(self, btn ):
+    def _remove_article_form(self, btn):
+        """
+        supprime le formulaire article correspondant au button
+        """
         line = self.btns.pop(btn)
+        self.total_articles.pop(line//3)
         self.article_grid.remove_row(line)
         self.article_grid.remove_row(line)
         self.article_grid.remove_row(line)
-        self.update_dict(line)
+        self._update_dict(line)
         self.plus_btn_row -= 3
+        self._modify_sub_total()
