@@ -2,6 +2,7 @@
 import sqlite3
 import gi
 from gui.page_gui import Page_Gui
+from db.db import Data_base
 gi.require_version("Gtk", "3.0")
 from gi.repository import Gtk, Gdk, Gio, GdkPixbuf
 
@@ -19,6 +20,7 @@ class Add_Customer(Page_Gui):
                                   row_homogeneous=False, column_spacing=20,
                                   row_spacing=20)
         self.client_entries={}
+        self.db= Data_base("facturio")
         self.__init_grid()
         self.title__("Ajouter Client")
         self.__space_info()
@@ -54,10 +56,9 @@ class Add_Customer(Page_Gui):
         self.info={}
         self.entry.set_text("")
         for section, entry in self.client_entries.items():
-            print("sire=",self.client_entries["Siret "].get_text())
             self.info[section] = entry.get_text()
             entry.set_text("")
-        print(self.info)
+        self.db.insertion_client_or_company(list(self.info.values())[:-1],0)
 
     def client(self):
         """
@@ -102,6 +103,7 @@ class Add_Customer(Page_Gui):
         label.set_justify(Gtk.Justification.CENTER)
         self.cent.attach(label,*pos)
         self.entry = Gtk.Entry()
+        #self.entry.set_hexpand(True)
         self.cent.attach(self.entry,pos[0]+1,pos[1],2,1)
         space = Gtk.Label()
         self.cent.attach(space,pos[0],pos[1]+1,3,1)
