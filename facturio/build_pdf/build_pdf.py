@@ -747,7 +747,7 @@ def build_pdf(receipt: Union[Invoice, Estimate], id: int,
 if __name__ == "__main__":
     artisan = User("Facturio", "15 rue des champs Cuers", "0734567221", 
                         "128974654", "Tom", "Pommier", "facturio@gmail.com",
-                                                            "logo.jpg")
+                                                            "back.jpg")
     client_physique = Client("Lombardo", "Quentin", 
         "quentin.lombardo@email.com", "HLM Sainte-Muse Toulon", "0678905324")
                         
