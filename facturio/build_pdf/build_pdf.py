@@ -1,11 +1,17 @@
 #Import de borb
 from borb.pdf import Document
 from borb.pdf import Page
-from borb.pdf import SingleColumnLayout
+#from borb.pdf import SingleColumnLayout
 from borb.pdf import Paragraph
 from borb.pdf import PDF
-from borb.pdf.canvas.layout.page_layout.multi_column_layout \
-                                        import SingleColumnLayout
+
+
+#######################################
+from borb.pdf.canvas.layout.page_layout.browser_layout \
+                                        import BrowserLayout
+from borb.pdf.canvas.layout.page_layout.page_layout import PageLayout
+#######################################
+
 from borb.pdf.canvas.layout.image.image import Image
 from borb.pdf.canvas.layout.table.fixed_column_width_table \
                             import FixedColumnWidthTable as Table
@@ -264,8 +270,8 @@ def provider_company_table(
         #taille on fait un 2ème tableu pour le numero SIREN
         business_number_table.add(Paragraph("N°SIREN", font="Helvetica-Bold", 
                                     horizontal_alignment=Alignment.LEFT))
-        business_number_table.add(Paragraph(client_list[-1])) 
-
+        business_number_table.add(Paragraph(client_list[-1], 
+                                                    padding_left=Decimal(2))) 
         return table, business_number_table
         
 def provider_individual_table(
@@ -449,62 +455,107 @@ def pdf_articles_total(receipt: Union[Invoice, Estimate], currency: str,
     art_list = receipt.articles_list
     articles_nb = len(art_list)
     #Calcule du nombre de lignes que le tableau va prendre
-    rows_nb = articles_nb + 5
-    if(rows_nb < 15):
-        rows_nb = 15
+    
+    total_part = 4
     if(isinstance(receipt, Estimate)):
-        rows_nb -= 1
-
-    table = Table(number_of_rows=rows_nb, number_of_columns=4)  
+        total_part -= 1
+    
+    rows_nb = 2 * articles_nb + total_part + 1
+    if(articles_nb > 5):
+        # Premier tableau avec l'entete
+        table_array = [Table(number_of_rows=11, number_of_columns=4)]
+        current_rows_nb = rows_nb - (11+total_part)
+        # Tableaux intermédiaires
+        while(current_rows_nb > 10):
+            table_array.append(Table(number_of_rows=10, number_of_columns=4,))
+            current_rows_nb -= 10
+        # Tableaux avec les totaux
+        table_array.append(Table(number_of_rows=current_rows_nb + total_part, 
+                                                         number_of_columns=4))
+    else:
+        table_array = [Table(number_of_rows=rows_nb, number_of_columns=4)]
+     
     for h in ["DESCRIPTION", "QUANTITÉ", "PRIX UNITAIRE", "TOTAL"]:  
-        table.add(  
+        table_array[0].add(  
             TableCell(  
                 Paragraph(h, font_color = HexColor("ffffff")),  
                 background_color = HexColor(color),  
             )  
-        ) 
+        )
+
     #Couleur différente pour chaque lignes qui se suivent 
     odd = HexColor(rgb_to_hex(*shade_color(hex_to_rgb(color),1.6)))  
     even = HexColor("FFFFFF")  
     #Variable pour savoir la parité de la ligne
     parity = True
-    for article in art_list:  
+    list_art = receipt.articles_list
+    cpt_art = 0
+    #Construction des tableaux intermédiaires
+    for i in range(len(table_array)-1):
+        for j in range(5):
+            c = even if parity else odd 
+            parity ^= True
+            table_array[i].add(TableCell(Paragraph(
+                        f"{list_art[cpt_art].title}"), background_color=c))  
+            table_array[i].add(TableCell(Paragraph(
+                f"{list_art[cpt_art].quantity}"), background_color=c))  
+
+            table_array[i].add(TableCell(Paragraph(
+            f"{list_art[cpt_art].price} {currency}"), background_color=c))   
+            table_array[i].add(TableCell(Paragraph(
+ f"{round(list_art[cpt_art].quantity * list_art[cpt_art].price,2)} {currency}")
+                                                        , background_color=c))  
+            table_array[i].add(TableCell(Paragraph(
+                                        f"{list_art[cpt_art].description}",
+                        font_size=Decimal(8)),  background_color=c))
+            table_array[i].add(TableCell(Paragraph(" "), background_color=c)) 
+            table_array[i].add(TableCell(Paragraph(" "), background_color=c)) 
+            table_array[i].add(TableCell(Paragraph(" "), background_color=c))
+            cpt_art+=1
+        table_array[i].set_padding_on_all_cells(Decimal(2), 
+                                        Decimal(15), Decimal(2), Decimal(2)) 
+            
+    left_art = articles_nb - cpt_art
+
+    # Derniere table
+    while(left_art > 0):
         c = even if parity else odd 
         parity ^= True
-        table.add(TableCell(Paragraph(f"{article.title}", 
-                            respect_newlines_in_text=True), 
-                                                    background_color=c))  
-        table.add(TableCell(Paragraph(f"{article.quantity}"), background_color=c))  
-        table.add(TableCell(Paragraph(f"{article.price} {currency}"), 
-                                                        background_color=c))   
-        table.add(TableCell(Paragraph(
-                    f"{round(article.quantity * article.price,2)} {currency}")
-                                                        , background_color=c))    
-    #Si on a moins de 10 articles alors on rajoute des lignes vides
-    # pour le style
-    while(articles_nb < 10):
-        c = even if parity else odd 
-        parity ^= True
-        table.add(TableCell(Paragraph(" "), background_color=c)) 
-        table.add(TableCell(Paragraph(" "), background_color=c)) 
-        table.add(TableCell(Paragraph(" "), background_color=c)) 
-        table.add(TableCell(Paragraph(" "), background_color=c)) 
-        articles_nb += 1 
-    
-    #Calcul du sous total
-    table.add(TableCell(Paragraph("Sous-total", font="Helvetica-Bold", 
-                        horizontal_alignment=Alignment.RIGHT,), col_span=3,))  
-    table.add(TableCell(Paragraph(f"{receipt.subtotal()} {currency}", 
+        table_array[-1].add(TableCell(Paragraph(f"{list_art[cpt_art].title}"),
+                                                        background_color=c))  
+        table_array[-1].add(TableCell(Paragraph(
+                        f"{list_art[cpt_art].quantity}"), background_color=c))  
+
+        table_array[-1].add(TableCell(Paragraph(
+                                    f"{list_art[cpt_art].price} {currency}"), 
+                                                          background_color=c))   
+        table_array[-1].add(TableCell(Paragraph(
+ f"{round(list_art[cpt_art].quantity * list_art[cpt_art].price,2)} {currency}")
+                                                        , background_color=c))  
+        table_array[-1].add(TableCell(Paragraph(
+        f"{list_art[cpt_art].description}", font_size=Decimal(8)),  
+                                                        background_color=c))
+        table_array[-1].add(TableCell(Paragraph(" "), background_color=c)) 
+        table_array[-1].add(TableCell(Paragraph(" "), background_color=c)) 
+        table_array[-1].add(TableCell(Paragraph(" "), background_color=c))
+        cpt_art += 1
+        left_art -= 1
+
+    table_array[-1].add(TableCell(Paragraph("Sous-total", 
+        font="Helvetica-Bold", horizontal_alignment=Alignment.RIGHT), 
+                                                                col_span=3,))  
+    table_array[-1].add(TableCell(Paragraph(f"{receipt.subtotal()} {currency}", 
                                         horizontal_alignment=Alignment.RIGHT)))
-
     if(isinstance(receipt, Invoice)):
-        table = pdf_invoice_total(table, receipt, currency) 
-    elif(isinstance(receipt, Estimate)):
-        table = pdf_estimate_total(table, receipt, currency) 
+        table_array[-1] = pdf_invoice_total(table_array[-1], receipt, currency) 
 
-    table.set_padding_on_all_cells(Decimal(2), 
+    elif(isinstance(receipt, Estimate)):
+        table_array[-1] = pdf_estimate_total(table_array[-1], receipt, 
+                                                                    currency) 
+
+    table_array[-1].set_padding_on_all_cells(Decimal(2), 
                                         Decimal(15), Decimal(2), Decimal(2))
-    return table
+    return table_array
 
 def pdf_invoice_total(table: Table, receipt:Invoice, currency: str):
     """
@@ -534,7 +585,6 @@ def pdf_invoice_total(table: Table, receipt:Invoice, currency: str):
 def pdf_estimate_total(table: Table, receipt:Estimate, currency: str):
     """
     Construit la partie liée aux taxes pour les factures
-
     """
     #Calcul de la partie taxe
     table.add(TableCell(Paragraph(f"Taxes ({receipt.taxes*100}%)", 
@@ -550,53 +600,145 @@ def pdf_estimate_total(table: Table, receipt:Estimate, currency: str):
                     horizontal_alignment=Alignment.RIGHT)))   
     return table
 
+def pdf_advance_table(receipt:Invoice, currency: str, color: str):
+    """
+    Construit la table des acomptes pour les pdf
+    """
+    #Entête du tableau
+    adv_tab = receipt.advances_list
+    nb_of_advances = len(receipt.advances_list)
+    nb_of_rows = nb_of_advances + 2
+    if(nb_of_advances > 10):
+        #Premier tableau avec l'entete
+        table_array = [Table(number_of_rows=11, number_of_columns=3)]
+        current_rows_nb = nb_of_rows - 12
+        #Tableaux intermédiaires
+        while(current_rows_nb > 10):
+            table_array.append(Table(number_of_rows=10, number_of_columns=3))
+            current_rows_nb -= 10
+        #Tableaux avec les totaux
+        table_array.append(Table(number_of_rows=current_rows_nb + 1,
+                                                          number_of_columns=3))
+    else:
+        table_array = [Table(number_of_rows=nb_of_rows, number_of_columns=3)]
+    #Entete
+    for h in ["ACOMPTE", "DATE", "MONTANT"]:  
+        table_array[0].add(  
+            TableCell(  
+                Paragraph(h, font_color = HexColor("ffffff")),  
+                background_color = HexColor(color)
+            )  
+        )
+    cpt_adv = 0
+    #Tableau intermediaires
+    for i in range(len(table_array)-1):
+        for j in range(10):
+            table_array[i].add(TableCell(Paragraph(f"Acomptes n°{cpt_adv+1}")))
+            table_array[i].add(TableCell(Paragraph(
+                                         f"{adv_tab[cpt_adv].date_string()}")))
+            table_array[i].add(TableCell(Paragraph(
+                                    f"{adv_tab[cpt_adv].amount} {currency}")))
+            cpt_adv+=1
+        table_array[i].set_padding_on_all_cells(Decimal(2), 
+                                        Decimal(15), Decimal(2), Decimal(2))
+    left_adv = nb_of_advances - cpt_adv
+    #Derniere table
+    while(left_adv > 0):
+        table_array[-1].add(TableCell(Paragraph(f"Acomptes n°{cpt_adv+1}")))
+        table_array[-1].add(TableCell(Paragraph(
+                                         f"{adv_tab[cpt_adv].date_string()}")))
+        table_array[-1].add(TableCell(Paragraph(
+                                    f"{adv_tab[cpt_adv].amount} {currency}")))
+        cpt_adv += 1
+        left_adv -= 1
+    #Complétion des lignes du tableau des acomptes 
+    table_array[-1].add(TableCell(Paragraph("Total", font="Helvetica-Bold", 
+                        horizontal_alignment=Alignment.RIGHT  ), col_span=2,))
+    table_array[-1].add(TableCell(Paragraph(
+        f"{round(receipt.total_of_advances())} {currency} ", 
+                                       horizontal_alignment=Alignment.RIGHT)))
+    table_array[-1].set_padding_on_all_cells(Decimal(2), 
+                                        Decimal(15), Decimal(2), Decimal(2)) 
+    return table_array
+      
 def build_pdf(receipt: Union[Invoice, Estimate], id: int,
     path: str ="output.pdf", color: str = "5f5f5f", currency: str = "€", 
-                   inline: bool = False, prominent_article_table: bool = False):
+                   inline: bool = False, prominent_article_table: bool = False,
+                                            show_advances_table: bool = False):
     """
     Fonction d'assemblage du pdf
     """
     # Créer un document pdf
-    pdf = Document()
+    doc = Document()
     # Créer une page pour le pdf
-    page = Page()
+    page_array  = [Page()]
+    # Ajout de Page au document
+    doc.append_page(page_array[0])
     #Disposition de la page
-    page_layout = SingleColumnLayout(page)
+    layout_array = [BrowserLayout(page_array[0])]
     #Calcul des marge
-    page_layout.vertical_margin = page.get_page_info().get_height() \
-                                                                * Decimal(0.02)
+    #page_layout.vertical_margin = page.get_page_info().get_height() \
+                                                               # * Decimal(0.02)
     #Construction de l'entête
-    page_layout.add(pdf_header(receipt, id))
+    layout_array[-1].add(pdf_header(receipt, id))
 
     if(prominent_article_table):
-        # Tableaux des articles et des tax
-        page_layout.add(pdf_articles_total(receipt, currency,color))
+        # Tableaux des articles et des taxes
+        arr_tb = pdf_articles_total(receipt, currency, color)
+        i = 0
+        for tab in arr_tb:
+            if(i == 2):
+                page_array.append(Page())
+                doc.append_page(page_array[-1])
+                layout_array.append(BrowserLayout(page_array[-1]))
+            layout_array[-1].add(tab)
+            i = (i+1)%3
     # Informations du prestatire et du client
     if(inline):
-        page_layout.add(Paragraph("Prestataire", font="Helvetica-Bold", 
+        layout_array[-1].add(Paragraph("Prestataire", font="Helvetica-Bold", 
                                                         font_size= Decimal(8)))
-        page_layout.add(pdf_provider_inline(receipt))
-        page_layout.add(Paragraph("Client", font="Helvetica-Bold", 
+        layout_array[-1].add(pdf_provider_inline(receipt))
+        layout_array[-1].add(Paragraph("Client", font="Helvetica-Bold", 
                                                         font_size= Decimal(8)))
-        page_layout.add(pdf_client_inline(receipt))
+        layout_array[-1].add(pdf_client_inline(receipt))
    
     else:
         tb1, tb2 = pdf_provider_client(receipt)
-        page_layout.add(tb1)
-        page_layout.add(tb2)
+        layout_array[-1].add(tb1)
+        layout_array[-1].add(tb2)
 
     if(not prominent_article_table):
-        # Tableaux des articles et des tax
-        page_layout.add(pdf_articles_total(receipt, currency, color))
+        # Tableaux des articles et des taxes
+        arr_tb = pdf_articles_total(receipt, currency, color)
+        i = 0
+        for tab in arr_tb:
+            if(i == 2):
+                page_array.append(Page())
+                doc.append_page(page_array[-1])
+                layout_array.append(BrowserLayout(page_array[-1]))
+            layout_array[-1].add(tab)
+            i = (i+1)%3
+    
+    #On vérifie qu'il s'agit d'une facture
+    if(show_advances_table and isinstance(receipt, Invoice)):
+        adv_tab = pdf_advance_table(receipt, currency, color)
+        i = 0
+        for tab in adv_tab:
+            if(i == 2):
+                page_array.append(Page())
+                doc.append_page(page_array[-1])
+                layout_array.append(BrowserLayout(page_array[-1]))
+            layout_array[-1].add(tab)
+            i = (i+1)%3
     
     #On rajoute l'extension pdf si elle n'est pas déjà présente
     if(path[-4:] != ".pdf"):
         path += ".pdf"
     #On ajoute la page au pdf
-    pdf.append_page(page)
+    #pdf.append_page(page)
     #Écriture du pdf au chemin indiqué
     with open(path, "wb") as pdf_file_handle:
-        PDF.dumps(pdf_file_handle, pdf)
+        PDF.dumps(pdf_file_handle, doc)
     
 if __name__ == "__main__":
     artisan = User("Facturio", "15 rue des champs Cuers", "0734567221", 
@@ -607,12 +749,39 @@ if __name__ == "__main__":
                         
     client_moral = Company("LeRoy",  "LeRoy83@sfr.fr", "12 ZAC de La Crau",
                              "0345678910", "Ben", "Karim","287489404")
-    ordinateur = Article("ordinateur", 1684.33, 3)
-    cable_ethernet = Article("cable ethernet", 9.99, 10)
-    telephone = Article("telephone", 399.99, 1)
-    casque = Article("casque", 69.99, 6)
+
+    
+    ordinateur = Article("ordinateur", 1684.33, 3,"Asus spire")
+    cable_ethernet = Article("cable ethernet", 9.99, 10,"15m")
+    telephone = Article("telephone", 399.99, 1,"téléphone clapet")
+    casque = Article("casque", 69.99, 6,"casque sans fils")
+    bureau = Article("Bureau", 500,2,"Bureau à 6pieds")
+
     paiements = [Advance(1230.0), Advance(654)]
-    articles = [ordinateur, cable_ethernet, telephone, casque]
+    
+    # desc = ""
+    # nom_artc = ""
+    # for i in range(2):
+    #     nom_artc += 15*"a" +" "
+    # for i in range(4):
+    #     desc+= 25*"a" + " "
+    
+    # ordinateur = Article(nom_artc, 1684.33, 3, desc)
+    # cable_ethernet = Article(nom_artc, 9.99, 10, desc)
+    # telephone = Article(nom_artc, 399.99, 1,desc)
+    # casque = Article(nom_artc, 69.99, 6, desc)
+    # bureau = Article(nom_artc, 500,2,desc)
+    
+
+
+    articles = [ordinateur, cable_ethernet, telephone, casque, bureau]
+    #articles = [ordinateur]
+    # for i in range(10):
+    #     paiements.append(Advance(78,2009 ))
+    # for i in range(6):
+    #     articles.append(Article("truc",35))
+    
+    
     fact = Invoice(artisan, client_moral, articles, advances_list =paiements,
                         taxes = 0.2, note="Invoice de matériel informatiques",
                    date = 1230, amount=100)
@@ -620,4 +789,5 @@ if __name__ == "__main__":
                             note="Invoice de matériel informatiques")
 
     build_pdf(dev, 27, "exemple_devis.pdf")
-    build_pdf(fact, 490, "exemple_facture", inline=True)
+    build_pdf(fact, 490, "exemple_facture", color="#de260d", 
+                show_advances_table=True)
