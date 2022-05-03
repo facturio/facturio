@@ -753,20 +753,39 @@ if __name__ == "__main__":
                         
     client_moral = Company("LeRoy",  "LeRoy83@sfr.fr", "12 ZAC de La Crau",
                              "0345678910", "Ben", "Karim","287489404")
+
+    
     ordinateur = Article("ordinateur", 1684.33, 3,"Asus spire")
     cable_ethernet = Article("cable ethernet", 9.99, 10,"15m")
     telephone = Article("telephone", 399.99, 1,"téléphone clapet")
     casque = Article("casque", 69.99, 6,"casque sans fils")
     bureau = Article("Bureau", 500,2,"Bureau à 6pieds")
+
+    paiements = [Advance(1230.0), Advance(654)]
+    
+    # desc = ""
+    # nom_artc = ""
+    # for i in range(2):
+    #     nom_artc += 15*"a" +" "
+    # for i in range(4):
+    #     desc+= 25*"a" + " "
+    
+    # ordinateur = Article(nom_artc, 1684.33, 3, desc)
+    # cable_ethernet = Article(nom_artc, 9.99, 10, desc)
+    # telephone = Article(nom_artc, 399.99, 1,desc)
+    # casque = Article(nom_artc, 69.99, 6, desc)
+    # bureau = Article(nom_artc, 500,2,desc)
+    
+
+
     articles = [ordinateur, cable_ethernet, telephone, casque, bureau]
     #articles = [ordinateur]
-    for i in range(6):
-        articles.append(Article("truc",35))
-    paiements = [Advance(1230.0), Advance(654)]
-    for i in range(10):
-        paiements.append(Advance(78,2009 ))
+    # for i in range(10):
+    #     paiements.append(Advance(78,2009 ))
+    # for i in range(6):
+    #     articles.append(Article("truc",35))
     
-    print(len(articles))
+    
     fact = Invoice(artisan, client_moral, articles, advances_list =paiements,
                         taxes = 0.2, note="Invoice de matériel informatiques",
                    date = 0, amount=100)
