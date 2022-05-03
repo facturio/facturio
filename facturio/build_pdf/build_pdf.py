@@ -448,7 +448,7 @@ def pdf_articles_total(receipt: Union[Invoice, Estimate], currency: str,
     """
     art_list = receipt.articles_list
     articles_nb = len(art_list)
-    #Calcule du nombre de lignes que le tableau va prendre
+    # Calcule du nombre de lignes que le tableau va prendre
     rows_nb = articles_nb + 5
     if(rows_nb < 15):
         rows_nb = 15
@@ -463,10 +463,10 @@ def pdf_articles_total(receipt: Union[Invoice, Estimate], currency: str,
                 background_color = HexColor(color),  
             )  
         ) 
-    #Couleur différente pour chaque lignes qui se suivent 
+    # Couleur différente pour chaque lignes qui se suivent
     odd = HexColor(rgb_to_hex(*shade_color(hex_to_rgb(color),1.6)))  
     even = HexColor("FFFFFF")  
-    #Variable pour savoir la parité de la ligne
+    # Variable pour savoir la parité de la ligne
     parity = True
     for article in art_list:  
         c = even if parity else odd 
@@ -480,18 +480,18 @@ def pdf_articles_total(receipt: Union[Invoice, Estimate], currency: str,
         table.add(TableCell(Paragraph(
                     f"{round(article.quantity * article.price,2)} {currency}")
                                                         , background_color=c))    
-    #Si on a moins de 10 articles alors on rajoute des lignes vides
+    # Si on a moins de 10 articles alors on rajoute des lignes vides
     # pour le style
     while(articles_nb < 10):
         c = even if parity else odd 
         parity ^= True
-        table.add(TableCell(Paragraph(" "), background_color=c)) 
-        table.add(TableCell(Paragraph(" "), background_color=c)) 
-        table.add(TableCell(Paragraph(" "), background_color=c)) 
-        table.add(TableCell(Paragraph(" "), background_color=c)) 
+        table.add(TableCell(Paragraph(" "), background_color=c))
+        table.add(TableCell(Paragraph(" "), background_color=c))
+        table.add(TableCell(Paragraph(" "), background_color=c))
+        table.add(TableCell(Paragraph(" "), background_color=c))
         articles_nb += 1 
-    
-    #Calcul du sous total
+
+    # Calcul du sous total
     table.add(TableCell(Paragraph("Sous-total", font="Helvetica-Bold", 
                         horizontal_alignment=Alignment.RIGHT,), col_span=3,))  
     table.add(TableCell(Paragraph(f"{receipt.subtotal()} {currency}", 
