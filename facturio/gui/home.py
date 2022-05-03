@@ -1,7 +1,7 @@
 import gi
 gi.require_version("Gtk", "3.0")
 from gi.repository import Gtk, Gio
-from gui.omnisearch_2 import FacturioOmnisearch
+from gui.omnisearch import FacturioOmnisearch
 from facturio import examples
 
 class ButtonIcon(Gtk.RadioButton):
