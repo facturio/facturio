@@ -1,74 +1,46 @@
-"""Module d'autocomplétion."""
+#!/usr/bin/env python3
+"""Module de création de champs d'autocomplétion."""
+
 import facturio.examples as examples
-import re
 import gi
+import re
 gi.require_version('Gtk', '3.0')
+
 from gi.repository import Gtk  # noqa: E402
-
-class ItemRow(Gtk.ListBoxRow):
-    """Classe container d'une ligne de resultat de recherche."""
-
-    def __init__(self, data):
-        """Ajoute un label au resultat de recherche."""
-        super().__init__()
-        self.data = data
-        self.add(Gtk.Label(label=data))
 
 
 class FacturioOmnisearch(Gtk.SearchEntry):
-    """Barre Omnisearch de Facturio, liste tout ce qui peut etre recherche."""
-
-    box = Gtk.Box(orientation=1, spacing=6)
-    results = Gtk.ListBox()
-
-    def __init__(self, *args, **kwargs):
-        """Initialise la recherche et le container des resultats."""
+    """Classe qui crée un nouveau champ de complétion."""
+    def __init__(self, list, *args, **kwargs):
+        """Paramètres: Fonction qui transforme un objet en chaîne, et liste d'objets."""
         super().__init__(*args, **kwargs)
 
-        self.connect("search-changed", self.on_search_changed)
-        self.connect("stop-search", self.on_stop_search)
+        self.completion = Gtk.EntryCompletion()
+        self.set_completion(self.completion)
 
-        self.results.connect("row-activated", self.on_row_activated)
+        self.complist = Gtk.ListStore(str)
+        [self.complist.append([str(i)]) for i in list]
 
-        self.box.pack_start(self, False, True, 0)
-        self.box.pack_start(self.results, False, True, 0)
+        self.completion.set_model(self.complist)
+        self.completion.set_match_func(facturio_match_func)
 
-    def on_search_changed(self, entry):
-        """Met a jour la liste des resultats."""
-        for row in self.results.get_children():
-            self.results.remove(row)
+        self.completion.set_inline_selection(True)
+        self.completion.set_inline_completion(False)
+        self.completion.set_text_column(0)
 
-        if entry.get_text() != "":
-            for item in complete(examples.clients+examples.articles, entry.get_text()):
-                self.results.add(ItemRow(item))
-
-        self.results.show_all()
-
-    def on_stop_search(self, entry):
-        """Nettoie la liste des resultats."""
-        for row in self.results.get_children():
-            self.results.remove(row)
-
-    def on_row_activated(self, list_box, row):
-        """Montre le resultat selectionne."""
-        print(vars(row.data))
-
-
-def complete(items, text):
-    """Affiche les items correspondant a la saisie text."""
-    req = re.compile(".*" + re.escape(text) + ".*", re.IGNORECASE)
-    res = []
-
-    for item in items:
-        if any([req.match(str(el)) for el in vars(item).values()]):
-            res.append(item)
-
-    return res
-
+def facturio_match_func(completion, key, iter, *user_data):
+    k = re.compile('.*' + re.escape(key) + '.*')
+    return re.match(k, completion.props.model.get_value(iter, 0))
 
 if __name__ == '__main__':
     win = Gtk.Window()
-    win.add(FacturioOmnisearch(placeholder_text="Recherche").box)
-    win.connect("destroy", Gtk.main_quit)
+    box = Gtk.Box(orientation=1, spacing=6)
+
+    fn = FacturioOmnisearch(examples.clients)
+
+    box.add(fn)
+
+    win.add(box)
+    win.connect('delete-event', Gtk.main_quit)
     win.show_all()
     Gtk.main()
