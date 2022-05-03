@@ -28,41 +28,41 @@ from borb.pdf.canvas.layout.layout_element import LayoutElement
 from decimal import Decimal
 from pathlib import Path
 from typing import Union
-from facturio.classes.invoice_misc import Advance, Article, Invoice, \
-                                              Estimate
+from facturio.classes.invoice_misc import Advance, Article, Invoice, Estimate
 from facturio.classes.client import Company, Client
 from facturio.classes.user import User
+
 #Layout Element pour l'insertion d'icônes dans le pdf
 mail_icon: LayoutElement = Image(
-    image=Path("icons/mail.png"),
+    image=Path("build_pdf/icons/mail.png"),
     width=Decimal(10),
     height=Decimal(10),
     padding_top=Decimal(5),
     padding_left=Decimal(3)
 )
 email_icon: LayoutElement = Image(
-    image=Path("icons/email.png"),
+    image=Path("build_pdf/icons/email.png"),
     width=Decimal(10),
     height=Decimal(10),
     padding_top=Decimal(5),
     padding_left=Decimal(3)
 )
 phone_icon: LayoutElement = Image(
-    image=Path("icons/phone.png"),
+    image=Path("build_pdf/icons/phone.png"),
     width=Decimal(10),
     height=Decimal(10),
     padding_top=Decimal(5),
     padding_left=Decimal(3)
 )
 business_icon: LayoutElement = Image(
-    image=Path("icons/business.png"),
+    image=Path("build_pdf/icons/business.png"),
     width=Decimal(10),
     height=Decimal(10),
     padding_top=Decimal(5),
     padding_left=Decimal(3)
 )
 person_icon: LayoutElement = Image(
-    image=Path("icons/person.png"),
+    image=Path("build_pdf/icons/person.png"),
     width=Decimal(10),
     height=Decimal(10),
     padding_top=Decimal(5),
@@ -70,7 +70,7 @@ person_icon: LayoutElement = Image(
 )
 
 dot_icon: LayoutElement = Image(
-    image=Path("icons/dot.png"),
+    image=Path("build_pdf/icons/dot.png"),
     width=Decimal(3),
     height=Decimal(3),
     padding_top=Decimal(5),
@@ -79,7 +79,7 @@ dot_icon: LayoutElement = Image(
 
 
 small_phone_icon: LayoutElement = Image(
-    image=Path("icons/phone.png"),
+    image=Path("build_pdf/icons/phone.png"),
     width=Decimal(7),
     height=Decimal(7),
     padding_top=Decimal(3),
@@ -87,14 +87,14 @@ small_phone_icon: LayoutElement = Image(
 )
 
 small_mail_icon: LayoutElement = Image(
-    image=Path("icons/mail.png"),
+    image=Path("build_pdf/icons/mail.png"),
     width=Decimal(7),
     height=Decimal(7),
     padding_top=Decimal(3),
     padding_left=Decimal(3)
 )
 small_email_icon: LayoutElement = Image(
-    image=Path("icons/email.png"),
+    image=Path("build_pdf/icons/email.png"),
     width=Decimal(7),
     height=Decimal(7),
     padding_top=Decimal(3),
@@ -102,7 +102,7 @@ small_email_icon: LayoutElement = Image(
 )
 
 small_person_icon: LayoutElement = Image(
-    image=Path("icons/person.png"),
+    image=Path("build_pdf/icons/person.png"),
     width=Decimal(7),
     height=Decimal(7),
     padding_top=Decimal(3),
@@ -110,7 +110,7 @@ small_person_icon: LayoutElement = Image(
 )
 
 small_business_icon: LayoutElement = Image(
-    image=Path("icons/business.png"),
+    image=Path("build_pdf/icons/business.png"),
     width=Decimal(7),
     height=Decimal(7),
     padding_top=Decimal(3),
@@ -182,8 +182,7 @@ def pdf_header(receipt: Union[Invoice, Estimate], id: int):
     table.no_borders()
     return table
 
-
-def pdf_provider_client(receipt: Union[Estimate,Invoice]):   
+def pdf_provider_client(receipt: Union[Estimate,Invoice]):
     """
     Retourne une table liée aux informations du prestataire et du client
     """
@@ -275,7 +274,6 @@ def provider_company_table(
                                                     padding_left=Decimal(2))) 
         return table, business_number_table
         
-
 def provider_individual_table(
         table : FlexibleColumnWidthTable, 
         business_number_table : FlexibleColumnWidthTable, 
@@ -357,7 +355,7 @@ def pdf_provider_inline(receipt: Union[Invoice, Estimate]):
     table_01.add(Paragraph(artisan.phone_number, font_size=Decimal(8)))
     table_01.add(dot_icon)
     table_01.add(small_person_icon)
-    table_01.add(Paragraph(f"{artisan.first_name} {artisan.last_name}", 
+    table_01.add(Paragraph(f"{artisan.first_name} {artisan.last_name}", font="Helvetica",
                                                         font_size=Decimal(8)))
     table_01.add(dot_icon)
     table_01.add(Paragraph("N°SIREN", font="Helvetica-Bold",
@@ -370,7 +368,6 @@ def pdf_provider_inline(receipt: Union[Invoice, Estimate]):
     table_01.no_borders()
 
     return table_01
-
 
 def pdf_company_inline(receipt: Union[Invoice, Estimate]):
     """
@@ -404,7 +401,6 @@ def pdf_company_inline(receipt: Union[Invoice, Estimate]):
     table_01.no_borders()
 
     return table_01
-
 
 def pdf_individual_inline(receipt: Union[Invoice, Estimate]):
     """
@@ -746,8 +742,8 @@ def build_pdf(receipt: Union[Invoice, Estimate], id: int,
     
 if __name__ == "__main__":
     artisan = User("Facturio", "15 rue des champs Cuers", "0734567221", 
-                        "128974654", "Tom", "Pommier", "facturio@gmail.com",
-                                                            "back.jpg")
+                        "128974654", "Tom", "Pommier", "facturio@gmail.com")
+                                                            
     client_physique = Client("Lombardo", "Quentin", 
         "quentin.lombardo@email.com", "HLM Sainte-Muse Toulon", "0678905324")
                         
@@ -788,7 +784,7 @@ if __name__ == "__main__":
     
     fact = Invoice(artisan, client_moral, articles, advances_list =paiements,
                         taxes = 0.2, note="Invoice de matériel informatiques",
-                   date = 0, amount=100)
+                   date = 1230, amount=100)
     dev = Estimate(artisan, client_physique, articles, taxes=0,
                             note="Invoice de matériel informatiques")
 
