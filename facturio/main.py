@@ -52,7 +52,6 @@ class Window(Gtk.ApplicationWindow):
 
         self.add(self.stack)
 
-
     def initial_show(self):
         self.show_all()
         self.stack.set_visible_child_name("home_page")

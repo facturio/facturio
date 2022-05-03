@@ -1,5 +1,5 @@
 """Module d'autocomplétion."""
-import examples
+import facturio.examples as examples
 import re
 import gi
 gi.require_version('Gtk', '3.0')
