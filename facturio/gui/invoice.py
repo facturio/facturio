@@ -492,7 +492,7 @@ class InvoicePage(Gtk.ScrolledWindow):
                 if not self.valid_email(entry.get_text()) and data != "":
                     self.set_error(entry)
                     error = False
-            elif data == "":
+            if data == "":
                 self.set_error(entry)
                 error = False
         return error
@@ -518,7 +518,7 @@ class InvoicePage(Gtk.ScrolledWindow):
                     if not self.valid_email(entry.get_text()) and data != "":
                         self.set_error(entry)
                         error = False
-                elif data == "":
+                if data == "":
                     self.set_error(entry)
                     error = False
         return error
