@@ -1,6 +1,7 @@
 import gi
 gi.require_version("Gtk", "3.0")
 from gi.repository import Gtk, Gio
+from gui.omnisearch import FacturioOmnisearch
 
 class ButtonIcon(Gtk.RadioButton):
     """
@@ -112,6 +113,7 @@ class HomePage(Gtk.Box):
         self.header_bar = header_bar
         self.grid = Gtk.Grid(column_homogeneous=True, row_homogeneous=True,
                              column_spacing=20, row_spacing=20)
+        self.overlay = Gtk.Overlay()
         # ajout d'un space sur le logo Facturio
         space = Gtk.Label(label="")
         self.grid.attach(space,1,1,10,1)
@@ -122,14 +124,16 @@ class HomePage(Gtk.Box):
         space = Gtk.Label(label="")
         self.grid.attach(space,1,4,10,1)
         # ajout de la search bar
-        self.searchbar = Gtk.SearchEntry()
-        self.grid.attach(self.searchbar, 3, 3, 6, 1)
+        self.searchbar = FacturioOmnisearch(placeholder_text="Recherche").box
+        # self.grid.attach(self.searchbar, 3, 3, 6, 1)
+        self.overlay.add_overlay(self.searchbar)
         # creation des buttons
         self.__init_buttons()
         #ajout d'un space au dessous des buttons
         space = Gtk.Label(label="")
         self.grid.attach(space, 1, 7, 10, 2)
-        self.pack_start(self.grid, True, True, 0)
+        self.overlay.add(self.grid)
+        self.pack_start(self.overlay, True, True, 0)
 
 
     def __init_buttons(self):
