@@ -47,7 +47,7 @@ class HeaderBarSwitcher(Gtk.HeaderBar):
 
         # box contenant tout les buttons du centre
         self.box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL)
-        Gtk.StyleContext.add_class(self.box.get_style_context(), "linked")
+        # Gtk.StyleContext.add_class(self.box.get_style_context(), "linked")
         # création des buttons et ajout dans self.box
         self.__init_buttons()
         self.set_custom_title(self.box)
