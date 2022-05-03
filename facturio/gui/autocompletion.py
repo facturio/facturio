@@ -3,6 +3,7 @@
 
 import facturio.examples as examples
 import gi
+import re
 gi.require_version('Gtk', '3.0')
 
 from gi.repository import Gtk  # noqa: E402
@@ -24,8 +25,6 @@ class FacturioEntryCompletion(Gtk.Entry):
 
         self.set_completion(self.completion)
 
-        self.completion_dict = dict((func(item), item) for item in completions)
-
         self.completion_list = Gtk.ListStore(str)
         [self.completion_list.append([func(item)]) for item in completions]
 
@@ -33,10 +32,10 @@ class FacturioEntryCompletion(Gtk.Entry):
         self.completion.set_text_column(0)
         self.completion.connect('match-selected', self.on_match_selected)
 
-    def on_match_selected(self, entry_completion, model, iter):
-        obj = self.completion_dict[self.props.text]
+    def on_match_selected(self, completion, model, iter):
+        txt = completion.props.model.get_value(iter, 0)
         for comp in self.to_update:
-            comp.props.text = comp.func(obj)
+            comp.props.text = txt
 
 if __name__ == '__main__':
     win = Gtk.Window()
