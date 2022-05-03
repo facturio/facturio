@@ -11,14 +11,14 @@ import re
 from datetime import date
 
 
-
-
-
 class InvoicePage(Gtk.ScrolledWindow):
     """Page pour la creation invoice."""
 
     def __init__(self):
         super().__init__()
+        # user = User("Facturio INC", "BENJELLOUN", "Youssef", "yb@gmail.com",
+        #             "427 Boulevard des armaris 83100 Toulon", "07 67 31 58 20",
+        #             "12348921 2341")
         self.main_grid = Gtk.Grid(column_homogeneous=False,
                                   row_homogeneous=False, column_spacing=20,
                                   row_spacing=20)
@@ -91,8 +91,8 @@ class InvoicePage(Gtk.ScrolledWindow):
         self.logo_fn = None
         self.logo_button.connect("clicked", self._logo_dialog)
 
-    def test(self, entry):
-        if entry == self.client_switch:
+    def _switch_private_company(self, entry):
+        if entry == self.private_switch:
             self.client_entries["company_name"].hide()
             self.client_labels["company_name"].hide()
             self.client_entries["business_number"].hide()
@@ -130,14 +130,14 @@ class InvoicePage(Gtk.ScrolledWindow):
         label.set_use_markup(True)
         hbox = Gtk.HBox()
         # hbox.pack_start(label, True, True, 10)
-        self.client_switch = Gtk.RadioButton(label="Particulier")
-        self.company_switch = Gtk.RadioButton(group=self.client_switch,
+        self.private_switch = Gtk.RadioButton(label="Particulier")
+        self.company_switch = Gtk.RadioButton(group=self.private_switch,
                                               label="Entreprise")
-        self.company_switch.connect("clicked", self.test)
-        self.client_switch.connect("clicked", self.test)
-        self.client_switch.set_mode(False)
+        self.company_switch.connect("clicked", self._switch_private_company)
+        self.private_switch.connect("clicked", self._switch_private_company)
+        self.private_switch.set_mode(False)
         self.company_switch.set_mode(False)
-        hbox.pack_start(self.client_switch, True, True, 0)
+        hbox.pack_start(self.private_switch, True, True, 0)
         hbox.pack_start(self.company_switch, True, True, 0)
         Gtk.StyleContext.add_class(hbox.get_style_context(), "linked")
 
@@ -232,8 +232,13 @@ class InvoicePage(Gtk.ScrolledWindow):
 
         button = Gtk.Button(label="Sauvegarder client")
         self.client_grid.attach(button, 1, 11, 2, 1)
-    # def _get_active_btn(self):
-    #     self.client_switch.get_group
+
+    def _load_user_entries(self):
+        user = User.get_instance()
+        for name, entry in self.user_entries.items():
+            entry.set_text(user.get_attr(name))
+            entry.set_sensitive(False)
+
     def allow_only_phone(self, entry, string, *args):
         for char in string:
             if not char.isdigit() and char != " " and char != "-":
@@ -340,11 +345,56 @@ class InvoicePage(Gtk.ScrolledWindow):
         self.user_grid.attach(entry, 2, 10, 3, 1)
         self.user_entries["business_number"] = entry
 
-        button = Gtk.Button(label="Sauvegarder utilisateur")
-        self.user_grid.attach(button, 1, 11, 2, 1)
+        self.save_user_btn = Gtk.Button(label="Sauvegarder utilisateur")
+        self.save_user_btn.connect("clicked", self._save_user)
+        self.user_grid.attach(self.save_user_btn, 1, 11, 2, 1)
 
-        button = Gtk.Button(label="Charger utilisateur")
-        self.user_grid.attach(button, 3, 11, 2, 1)
+        self.update_user_btn = Gtk.Button(label="Modifier utilisateur")
+        self.update_user_btn.connect("clicked", self._update_user)
+        self.user_grid.attach(self.update_user_btn, 3, 11, 2, 1)
+        if User.exits():
+            self._load_user_entries()
+            self.logo_button.set_label(" Ajouté")
+            self.logo_button.set_sensitive(False)
+            self.save_user_btn.set_sensitive(False)
+        else:
+            self.update_user_btn.set_sensitive(False)
+
+
+
+    def _save_user(self, btn):
+        self.reset_context(btn)
+        if self._validate_user_entries() is False:
+            return
+        if User.exits():
+            user = User.get_instance()
+            for name, entry in self.user_entries.items():
+                user.set_attr(name, entry.get_text())
+        else:
+            user_data = {}
+            for name, entry in self.user_entries.items():
+                user_data[name] = entry.get_text()
+            user_data["logo"] = self.logo_fn
+            User.from_dict(user_data)
+
+        # ihm modif
+        user = User.get_instance()
+        for entry in self.user_entries.values():
+            entry.set_sensitive(False)
+        self.logo_button.set_sensitive(False)
+        self.logo_button.set_label(" Ajouté")
+        self.update_user_btn.set_sensitive(True)
+        self.save_user_btn.set_sensitive(False)
+        return
+
+    def _update_user(self, btn):
+        user = User.get_instance()
+        for name, entry in self.user_entries.items():
+            entry.set_sensitive(True)
+        self.logo_button.set_label(" Changer image")
+        self.logo_button.set_sensitive(True)
+        self.update_user_btn.set_sensitive(False)
+        self.save_user_btn.set_sensitive(True)
 
     def reset_context(self, entry):
         context = entry.get_style_context()
@@ -479,7 +529,6 @@ class InvoicePage(Gtk.ScrolledWindow):
 
     def set_error(self, entry):
         print(entry)
-        data = entry.get_text()
         context = entry.get_style_context()
         context.add_class("entry_error")
 
@@ -500,7 +549,7 @@ class InvoicePage(Gtk.ScrolledWindow):
     def _validate_client_entries(self):
         """Renvoi True si les donnees saisis sont valides."""
         error = True
-        if self.client_switch.get_active():
+        if self.private_switch.get_active():
             for name, entry in self.client_entries.items():
                 data = entry.get_text()
                 if name == "email":
@@ -559,6 +608,10 @@ class InvoicePage(Gtk.ScrolledWindow):
         error_found = False
         if self._validate_user_entries() is False:
             error_found = True
+        else:
+            if self.save_user_btn.get_sensitive():
+                self.set_error(self.save_user_btn)
+                error_found = True
         if self._validate_client_entries() is False:
             error_found = True
         if self._validate_article_entries() is False:
@@ -577,10 +630,10 @@ class InvoicePage(Gtk.ScrolledWindow):
             self._raise_error()
             return
 
-        self.user_data = {}
-        for name, entry in self.user_entries.items():
-            self.user_data[name] = entry.get_text()
-        self.user_data["logo"] = self.logo_fn
+        # self.user_data = {}
+        # for name, entry in self.user_entries.items():
+        #     self.user_data[name] = entry.get_text()
+        # self.user_data["logo"] = self.logo_fn
 
         self.client_data = {}
         self.client_data["note"] = None
@@ -589,7 +642,7 @@ class InvoicePage(Gtk.ScrolledWindow):
                 self.client_data[name] = entry.get_text()
             client = Company.from_dict(self.client_data)
         else:
-            assert(self.client_switch.get_active())
+            assert(self.private_switch.get_active())
             names = ("first_name", "last_name", "adress", "email",
                      "phone_number")
             for name in names:
@@ -624,7 +677,7 @@ class InvoicePage(Gtk.ScrolledWindow):
         date_text = self.date_entry.get_text()
         date = datetime.strptime(date_text, "%d/%m/%Y")
         epoch_date = date.timestamp()
-        user = User.from_dict(self.user_data)
+        user = User.get_instance()
 
         tax = self.spin_btn.get_adjustment().get_value() / 100
         total = float(self.total.get_text()[:-2])
@@ -647,7 +700,7 @@ class InvoicePage(Gtk.ScrolledWindow):
         file_chooser.set_filter(filter_)
         if file_chooser.run() == Gtk.ResponseType.ACCEPT:
            self.logo_fn = file_chooser.get_filename()
-           self.logo_button.set_sensitive(False)
+           # self.logo_button.set_sensitive(False)
            self.logo_button.set_label(" Ajouté")
 
     def _put_percentage(self, spin_btn):
