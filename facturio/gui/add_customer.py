@@ -16,8 +16,10 @@ class Add_Customer(Page_Gui):
     +--------+
     """
     def __init__(self):
+        self.list_att_par=["Nom ","Prenom ","Mail ","Adresse ",
+                           "Numero ","Remarque "]
         super().__init__()
-        self.is_pro=False
+        self.is_pro=True
         self.cent = Gtk.Grid(column_homogeneous=False,
                                   row_homogeneous=False, column_spacing=20,
                                   row_spacing=20)
@@ -29,10 +31,6 @@ class Add_Customer(Page_Gui):
         self.__space_info()
         self.client()
         self.__swicth_client()
-        self.client_entries["nom d'entreprise "].hide()
-        self.client_label["nom d'entreprise "].hide()
-        self.client_entries["Siret "].hide()
-        self.client_label["Siret "].hide()
 
 
     def __init_grid(self):
@@ -63,12 +61,20 @@ class Add_Customer(Page_Gui):
         Prend un boutton Gtk et un chemin vers la BD
         sqlite et insert les info client
         """
-        self.info={}
+        self.info=[]
         self.entry.set_text("")
-        for section, entry in self.client_entries.items():
-            self.info[section] = entry.get_text()
-            entry.set_text("")
-        self.db.insertion_client_or_company(list(self.info.values())[:-1],0)
+        for i in self.list_att_par:
+            self.info.append(self.client_entries[i].get_text())
+            self.client_entries[i].set_text("")
+        if self.is_pro:
+            self.info.append(self.client_entries["Entreprise "].get_text())
+            self.client_entries["Entreprise "].set_text("")
+            self.info.append(self.client_entries["Siret "].get_text())
+            self.client_entries["Siret "].set_text("")
+            print(self.info)
+            self.db.insertion_client_or_company(self.info, 1)
+        else:
+            self.db.insertion_client_or_company(self.info, 0)
 
 
     def __swicth_client(self):
@@ -86,22 +92,21 @@ class Add_Customer(Page_Gui):
         self.cent.attach(switch_box, 0, 1, 1, 1)
 
 
-
     def on_button_toggled(self, button, pro):
         if button.get_active() and pro=="1":
+            self.is_pro=True
             print(self.client_entries)
-            print("pro")
-            self.client_entries["nom d'entreprise "].show()
-            self.client_label["nom d'entreprise "].show()
+            self.client_entries["Entreprise "].show()
+            self.client_label["Entreprise "].show()
             self.client_label["Siret "].show()
             self.client_entries["Siret "].show()
             self.is_pro=True
         elif button.get_active():
-            self.client_entries["nom d'entreprise "].hide()
-            self.client_label["nom d'entreprise "].hide()
+            self.is_pro=False
+            self.client_entries["Entreprise "].hide()
+            self.client_label["Entreprise "].hide()
             self.client_entries["Siret "].hide()
             self.client_label["Siret "].hide()
-            print("not pro")
 
 
     def client(self):
@@ -111,15 +116,15 @@ class Add_Customer(Page_Gui):
         self.imp = Gtk.Button.new_with_label(label="Ajouter")
         self.imp.connect("clicked", self.__add2bd)
         self.grid.attach(self.cent, 1, 2, 2, 1)
-        self.cent.attach(self.imp, 2, 13, 3, 1)
-        #self.first_name("test")
-        self.last_name("test")
-        self.adrss("test")
-        self.mails("test")
-        self.nums("test")
-        self.entreprise_name("test")
-        self.siret("test")
-        self.rmq("test")
+        self.cent.attach(self.imp, 1, 16, 5, 1)
+        self.first_name()
+        self.last_name()
+        self.adrss()
+        self.mails()
+        self.nums()
+        self.entreprise_name()
+        self.siret()
+        self.rmq()
 
 
     def __space_info(self):
@@ -137,82 +142,76 @@ class Add_Customer(Page_Gui):
         self.grid.attach(spaceh, 0, 0, 5, 1)
 
 
-    def __creat_labelbox(self,c_txt,pos,show=True):
+    def __creat_labelbox(self,c_txt,pos):
         """
         prend un couple de chaine de charactere ainsi que un
         tuple de postion et affhiche un label avec une boite
         """
         label = Gtk.Label()
-        label.set_markup("<b>"+c_txt[0]+"</b>:")
+        label.set_markup("<b>"+c_txt+"</b>:")
         label.set_hexpand(True)
         label.set_justify(Gtk.Justification.CENTER)
-        self.client_label[c_txt[0]] = label
+        print(c_txt)
+        self.client_label[c_txt] = label
         self.cent.attach(label,*pos)
         self.entry = Gtk.Entry()
         self.entry.set_hexpand(True)
-        #self.entry.set_hexpand(True)
         self.cent.attach(self.entry,pos[0]+1,pos[1],2,1)
         space = Gtk.Label()
         self.cent.attach(space,pos[0],pos[1]+1,3,1)
-        self.client_entries[c_txt[0]] = self.entry
+        self.client_entries[c_txt] = self.entry
 
 
-    def last_name(self,adr):
-        self.__creat_labelbox(("Prenom ",adr),(0,3,1,1))
+    def last_name(self):
+        self.__creat_labelbox("Prenom ",(0,3,1,1))
         return self
 
 
-    def first_name(self,adr):
-        self.__creat_labelbox(("Nom ",adr),(0,5,1,1))
+    def first_name(self):
+        self.__creat_labelbox("Nom ",(3,3,1,1))
         return self
 
 
-    def adrss(self,adr):
-        self.__creat_labelbox(("Mail ",adr),(3,7,1,1))
+    def adrss(self):
+        self.__creat_labelbox("Mail ",(3,5,1,1))
         return self
 
 
-    def mails(self,mail):
-        self.__creat_labelbox(("adresse ",mail),(0,7,1,1))
+    def mails(self):
+        self.__creat_labelbox("Adresse ",(0,7,1,1))
         return self
 
 
-    def nums(self,n):
-        self.__creat_labelbox(("Numero ",n),(3,3,1,1))
+    def nums(self):
+        self.__creat_labelbox("Numero ",(0,5,1,1))
         return self
 
 
-    def entreprise(self,ent):
-        self.__creat_labelbox(("Remarque ",ent),(3,5,1,1))
+    def entreprise(self):
+        self.__creat_labelbox("Remarque ",(3,5,1,1))
         return self
 
-    def entreprise_name(self,ent):
-        self.__creat_labelbox(("nom d'entreprise ",ent),(3,9,1,1),False)
+
+    def entreprise_name(self):
+        self.__creat_labelbox("Entreprise ",(3,7,1,1))
         return self
 
-    def siret(self,sir):
-        self.__creat_labelbox(("Siret ",sir),(0,9,1,1),False)
+
+    def siret(self):
+        self.__creat_labelbox("Siret ",(0,11,1,1))
         return self
 
-    def rmq(self,sir):
+
+    def rmq(self):
         label = Gtk.Label()
         label.set_markup("<b>Remarque</b>:")
         label.set_hexpand(True)
         label.set_justify(Gtk.Justification.CENTER)
-        self.client_label["remarque"] = label
-        self.cent.attach(label,0,10,1,1)
+        self.client_label["Remarque "] = label
+        self.cent.attach(label,0,13,1,1)
         self.entry = Gtk.Entry()
         self.entry.set_hexpand(True)
-        self.cent.attach(self.entry,1,10,5,3)
+        self.client_entries["Remarque "] = self.entry
+        self.cent.attach(self.entry,1,13,5,3)
         return self
-
-
-    def commentaire(self,adr):
-        boxcom= Gtk.Box()
-        boxcom.set_name("box_afficher")
-        self.com = Gtk.Label(label=adr)
-        self.com.set_line_wrap(True)
-        self.com.set_max_width_chars(32)
-        boxcom.pack_start(self.com, False, False, 0)
-        self.grid.attach(boxcom, 4, 10, 3, 3 )
 
