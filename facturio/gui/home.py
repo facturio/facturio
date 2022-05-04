@@ -1,6 +1,8 @@
 import gi
 gi.require_version("Gtk", "3.0")
 from gi.repository import Gtk, Gio
+from gui.omnisearch import FacturioOmnisearch
+from facturio import examples
 
 class ButtonIcon(Gtk.RadioButton):
     """
@@ -45,7 +47,7 @@ class HeaderBarSwitcher(Gtk.HeaderBar):
 
         # box contenant tout les buttons du centre
         self.box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL)
-        Gtk.StyleContext.add_class(self.box.get_style_context(), "linked")
+        # Gtk.StyleContext.add_class(self.box.get_style_context(), "linked")
         # création des buttons et ajout dans self.box
         self.__init_buttons()
         self.set_custom_title(self.box)
@@ -117,7 +119,7 @@ class HomePage(Gtk.Box):
         space = Gtk.Label(label="")
         self.grid.attach(space,1,4,10,1)
         self.title("Facturio")
-        self.searchbar = Gtk.SearchEntry()
+        self.searchbar = FacturioOmnisearch(examples.clients, placeholder_text="Recherche")
         self.grid.attach(self.searchbar, 3, 3, 6, 1)
         # creation des buttons
         self.__init_buttons()

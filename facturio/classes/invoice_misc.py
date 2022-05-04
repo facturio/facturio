@@ -8,8 +8,8 @@ class Article:
     Classe contenant toutes les informations liées à un article
     """
 
-    def __init__(self, title: str,  price: float, quantity: int,
-                 description: str = None):
+    def __init__(self, title: str,  price: float, quantity: int = 1,
+                 description: str = " "):
         self.title = title
         self.description = description
         self.price = price
@@ -57,7 +57,7 @@ class Advance:
         """
         Retourne la date sous forme de chaîne de caractères
         """
-        return time.strftime("%d/%m/%Y  %H:%M:%S",time.localtime(self.date))
+        return time.strftime("%d/%m/%Y",time.localtime(self.date))
 
     def dump_to_list(self):
         """
@@ -77,12 +77,16 @@ class Receipt:
                  amount: float, note: str = None):
         self.user = user 
         self.client = client  
-        self.date = date
         self.articles_list = articles_list
         self.taxes = taxes
         self.amount = amount 
         self.note = note
-           
+        
+        if date:
+            self.date = date
+        else:
+            self.date = int(time.time())
+        
     def __str__(self):
         return f"User :\n{self.user}\nClient :\n" \
         f"{self.client}\nDate :\n {self.date_string()}\nListe des articles :"\
@@ -105,7 +109,7 @@ class Receipt:
         """
         amount = 0
         for art in self.articles_list:
-            amount += art[0].price * art[1]
+            amount += art.price * art.quantity
         return round(amount,2)
     
     def total_of_taxes(self):
@@ -124,7 +128,7 @@ class Receipt:
         """
         Retourne la date sous forme de chaîne de caractères
         """
-        return time.strftime("%d/%m/%Y  %H:%M:%S",time.localtime(self.date))
+        return time.strftime("%d/%m/%Y",time.localtime(self.date))
             
 
 class Invoice(Receipt):

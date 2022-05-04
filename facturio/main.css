@@ -7,32 +7,10 @@
 /* box { */
 /*     background-color: yellow; */
 /* } */
+
 /* label { */
 /*     background-color: green; */
-/* } */
 
-
-#box_afficher{
-  background-color: rgba(10, 10, 10, 0.8);
-  border-radius: 5px;
+.entry_error{
+    border-color: Red;
 }
-
-#name{
-  background-color: rgba(232, 232, 232, 0.8);
-  border-radius: 5px;
-}
-
-#lg{
-  border: 10px solid rgba(246, 246, 246, 0.8);
-  border-radius: 5px;
-}
-
-button{
-  border-radius: 5px;
-}
-
-entry.search{
-  border-radius: 5px;
-}
-
-
