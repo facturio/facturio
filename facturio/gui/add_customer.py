@@ -6,6 +6,7 @@ from db.db import Data_base
 gi.require_version("Gtk", "3.0")
 from gi.repository import Gtk, Gdk, Gio, GdkPixbuf
 
+
 class Add_Customer(Page_Gui):
     """
     Classe IHM de le fenetre d'ajoute d'un client
@@ -16,6 +17,7 @@ class Add_Customer(Page_Gui):
     """
     def __init__(self):
         super().__init__()
+        self.is_pro=False
         self.cent = Gtk.Grid(column_homogeneous=False,
                                   row_homogeneous=False, column_spacing=20,
                                   row_spacing=20)
@@ -25,6 +27,7 @@ class Add_Customer(Page_Gui):
         self.title__("Ajouter Client")
         self.__space_info()
         self.client()
+        self.__swicth_client()
 
 
     def __init_grid(self):
@@ -40,13 +43,15 @@ class Add_Customer(Page_Gui):
         self.grid.set_column_spacing(20)
         return self
 
+
     def title__(self, ttl):
         bttl= Gtk.Box()
         self.tl = Gtk.Label()
         self.tl.set_markup("<span font_weight=\"bold\" size=\"xx-large\">"+ttl
                            +"</span>")
         bttl.pack_start(self.tl, False, False, 0)
-        self.grid.attach(bttl, 2, 1, 3, 1 )
+        self.grid.attach(bttl, 1, 1, 3, 1 )
+
 
     def __add2bd(self, button):
         """
@@ -60,6 +65,30 @@ class Add_Customer(Page_Gui):
             entry.set_text("")
         self.db.insertion_client_or_company(list(self.info.values())[:-1],0)
 
+
+    def dic2list(self,dic):
+        pass
+
+
+    def __swicth_client(self):
+        switch_box=Gtk.HBox()
+        particulier = Gtk.RadioButton.new_with_label_from_widget(None, "particulier")
+        particulier.connect("toggled", self.on_button_toggled, "1")
+        self.cent.attach(particulier, 0, 1, 1, 1)
+        pro = Gtk.RadioButton.new_from_widget(particulier)
+        pro.set_label("pro")
+        pro.connect("toggled", self.on_button_toggled, "1")
+        switch_box.pack_start(particulier, True, True, 0)
+        switch_box.pack_start(pro, True, True, 0)
+        self.cent.attach(switch_box, 1, 1, 1, 1)
+
+
+    def on_button_toggled(self, button, name):
+        if button.get_active():
+            print("toggled")
+            self.is_pro=True
+
+
     def client(self):
         """
         Affichage pour client
@@ -67,13 +96,15 @@ class Add_Customer(Page_Gui):
         self.imp = Gtk.Button.new_with_label(label="Ajouter")
         self.imp.connect("clicked", self.__add2bd)
         self.grid.attach(self.cent, 1, 2, 2, 1)
-        self.cent.attach(self.imp, 4, 8, 2, 1)
-        self.first_name("test")
+        self.cent.attach(self.imp, 4, 9, 2, 1)
+        #self.first_name("test")
         self.last_name("test")
         self.adrss("test")
         self.mails("test")
         self.nums("test")
-        self.entreprise("test")
+        sep = Gtk.HSeparator()
+        self.cent.attach(sep, 1, 8, 4, 1)
+        self.entreprise_name("test")
         self.siret("test")
 
 
@@ -92,7 +123,7 @@ class Add_Customer(Page_Gui):
         self.grid.attach(spaceh, 0, 0, 5, 1)
 
 
-    def __creat_labelbox(self,c_txt,pos):
+    def __creat_labelbox(self,c_txt,pos,show=True):
         """
         prend un couple de chaine de charactere ainsi que un
         tuple de postion et affhiche un label avec une boite
@@ -108,41 +139,45 @@ class Add_Customer(Page_Gui):
         space = Gtk.Label()
         self.cent.attach(space,pos[0],pos[1]+1,3,1)
         self.client_entries[c_txt[0]] = self.entry
-        connexion=sqlite3.connect('facturio.db')
+        if show:
+            pass
 
 
     def last_name(self,adr):
-        self.__creat_labelbox(("Nom ",adr),(0,2,1,1))
+        self.__creat_labelbox(("Prenom ",adr),(0,3,1,1))
         return self
 
 
     def first_name(self,adr):
-        self.__creat_labelbox(("Prenom ",adr),(0,4,1,1))
+        self.__creat_labelbox(("Nom ",adr),(0,5,1,1))
         return self
 
 
     def adrss(self,adr):
-        self.__creat_labelbox(("Adresse ",adr),(0,6,1,1))
+        self.__creat_labelbox(("Mail ",adr),(3,7,1,1))
         return self
 
 
     def mails(self,mail):
-        self.__creat_labelbox(("Mail ",mail),(0,8,1,1))
+        self.__creat_labelbox(("adresse ",mail),(0,7,1,1))
         return self
 
 
     def nums(self,n):
-        self.__creat_labelbox(("Numero ",n),(3,2,1,1))
+        self.__creat_labelbox(("Numero ",n),(3,3,1,1))
         return self
 
 
     def entreprise(self,ent):
-        self.__creat_labelbox(("entreprise ",ent),(3,4,1,1))
+        self.__creat_labelbox(("Remarque ",ent),(3,5,1,1))
         return self
 
+    def entreprise_name(self,ent):
+        self.__creat_labelbox(("nom d'entreprise ",ent),(3,9,1,1),False)
+        return self
 
     def siret(self,sir):
-        self.__creat_labelbox(("Siret ",sir),(3,6,1,1))
+        self.__creat_labelbox(("Siret ",sir),(0,9,1,1),False)
         return self
 
 

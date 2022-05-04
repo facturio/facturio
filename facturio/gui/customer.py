@@ -36,11 +36,14 @@ class Customer(Page_Gui):
         """
         p_button=(("Importer", (5,3,1,1)), ("Plus", (5,4,1,1)),
                   ("Exporter", (5,5,1,1)))
-        for para in p_button:
-            but = Gtk.Button(label=para[0])
-            but.connect("clicked", self.header_bar.active_button, "add_customer")
-            self.grid.attach(but, *para[1])
-
+        but = Gtk.Button.new_from_icon_name("list-add-symbolic",
+                                                    Gtk.IconSize.BUTTON)
+        but.connect("clicked", self.header_bar.active_button, "add_customer")
+        self.grid.attach(but, *p_button[1][1])
+        but = Gtk.Button(label=p_button[0][0])
+        self.grid.attach(but, *p_button[0][1])
+        but = Gtk.Button(label=p_button[2][0])
+        self.grid.attach(but, *p_button[2][1])
 
 
     def add_result(self,res):
