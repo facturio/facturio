@@ -16,8 +16,10 @@ class History(Page_Gui):
     ||------||
     +--------+
     """
-    def __init__(self):
-        super().__init__()
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.grid = Gtk.Grid(column_homogeneous=True, row_homogeneous=True,
+                             column_spacing=20, row_spacing=20)
         (
             self.init_grid()
                 .title("Historique")
@@ -25,5 +27,4 @@ class History(Page_Gui):
                 .space()
                 .init_result(["Nom", "date", "Description"],
                           (1,4,5,10))
-                .add(self.grid)
         )

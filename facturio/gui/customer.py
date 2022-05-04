@@ -26,8 +26,6 @@ class Customer(Page_Gui):
         self.__summon_button()
         self.init_result(["Nom","Entreprise","Adresse",""],
                          (1,4,4,10))
-        self.add_result(["test","test","test"])
-        self.add_result(["test1","test2","test3"])
 
 
     def __summon_button(self):
