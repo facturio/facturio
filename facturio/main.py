@@ -2,12 +2,13 @@ import gi
 gi.require_version("Gtk", "3.0")
 from gi.repository import Gtk, Gdk, Gio, GObject
 import sys
-from gui.invoice  import InvoicePage
-from gui.home import HomePage, HeaderBarSwitcher
-from gui.customer import Customer
-from gui.history import History
-from gui.map import Map
-from gui.display_info import InfoPerson
+from facturio.gui.invoice  import InvoicePage
+from facturio.gui.home import HomePage, HeaderBarSwitcher
+from facturio.gui.customer import Customer
+from facturio.gui.add_customer import Add_Customer
+from facturio.gui.history import History
+from facturio.gui.map import Map
+from facturio.gui.display_info import InfoPerson
 
 
 class Window(Gtk.ApplicationWindow):
@@ -41,13 +42,15 @@ class Window(Gtk.ApplicationWindow):
         self.stack.add_named(self.main_page, "home_page")
         self.invoice_page = InvoicePage()
         self.stack.add_named(self.invoice_page, "invoice_page")
-        self.customer_page = Customer()
+        self.add_customer = Add_Customer()
+        self.stack.add_named(self.add_customer, "add_customer")
+        self.customer_page = Customer(self.header_bar)
         self.stack.add_named(self.customer_page, "customer_page")
         self.history_page = History()
         self.stack.add_named(self.history_page, "history_page")
         self.map_page = Map()
         self.stack.add_named(self.map_page, "map_page")
-        self.user_page = InfoPerson(True)
+        self.user_page = InfoPerson(True,"T.Olivier")
         self.stack.add_named(self.user_page, "user_page")
 
         self.add(self.stack)
