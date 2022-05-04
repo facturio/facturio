@@ -2,6 +2,8 @@
 import gi
 gi.require_version("Gtk", "3.0")
 from gi.repository import Gtk
+from facturio.gui.omnisearch import FacturioOmnisearch
+from facturio import examples
 
 class Page_Gui(Gtk.ScrolledWindow):
     """
@@ -36,7 +38,7 @@ class Page_Gui(Gtk.ScrolledWindow):
         Invoque la barre de recherche
         a cette emplacement
         """
-        searchbar = Gtk.SearchEntry()
+        searchbar = FacturioOmnisearch(examples.clients, placeholder_text="Recherche")
         self.grid.attach(searchbar, *l_attach)
         return self
 

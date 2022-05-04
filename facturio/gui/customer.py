@@ -20,7 +20,7 @@ class Customer(Page_Gui):
         super().__init__()
         self.header_bar = header_bar
         self.init_grid()
-        self.title("Client")
+        self.title("Clients")
         self.space()
         self.search((1,3,4,1))
         self.__summon_button()
