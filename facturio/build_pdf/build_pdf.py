@@ -462,14 +462,14 @@ def pdf_articles_total(receipt: Union[Invoice, Estimate], currency: str,
     
     rows_nb = 2 * articles_nb + total_part + 1
     if(articles_nb > 5):
-        #Premier tableau avec l'entete
+        # Premier tableau avec l'entete
         table_array = [Table(number_of_rows=11, number_of_columns=4)]
         current_rows_nb = rows_nb - (11+total_part)
-        #Tableaux intermédiaires
+        # Tableaux intermédiaires
         while(current_rows_nb > 10):
             table_array.append(Table(number_of_rows=10, number_of_columns=4,))
             current_rows_nb -= 10
-        #Tableaux avec les totaux
+        # Tableaux avec les totaux
         table_array.append(Table(number_of_rows=current_rows_nb + total_part, 
                                                          number_of_columns=4))
     else:
@@ -517,7 +517,7 @@ def pdf_articles_total(receipt: Union[Invoice, Estimate], currency: str,
             
     left_art = articles_nb - cpt_art
 
-    #Derniere table
+    # Derniere table
     while(left_art > 0):
         c = even if parity else odd 
         parity ^= True
