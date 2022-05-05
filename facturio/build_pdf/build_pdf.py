@@ -150,7 +150,7 @@ def pdf_header(receipt: Union[Invoice, Estimate], id: int):
     table = FlexibleColumnWidthTable(number_of_rows= 2, number_of_columns=4) 
     ### Première ligne
     #Insertion du logo si il existe
-    if(receipt.user.logo != None):
+    if(receipt.user.logo):
         table.add(TableCell(   
         Image(        
         image=Path(receipt.user.logo),        
@@ -217,7 +217,7 @@ def pdf_provider_client(receipt: Union[Estimate,Invoice]):
     
     #Si le champ email pour l'utilisateur n'est pas remplit,
     #On supprime l'élément dans la liste
-    if(provider_list[1] == None):
+    if(provider_list[1]):
         del provider_icon_list[1]
         del provider_list[1]
     #On appelle une fonction si le client est une entité morale
@@ -291,7 +291,7 @@ def provider_individual_table(
         for i in range(3, 0, -1):
             #On supprime tous les champs optionnels qui n'ont pas été
             #remplit
-            if(client_list[i] == None):
+            if(client_list[i]):
                 del client_icon_list[i]
                 del client_list[i]
         i = 0
@@ -417,7 +417,7 @@ def pdf_individual_inline(receipt: Union[Invoice, Estimate]):
     #On supprime tous les champs optionnels qui n'ont pas été
     #remplit
     for i in range(2, -1, -1):
-        if(client_list[i] == None):
+        if(client_list[i]):
             del client_icon_list[i]
             del client_list[i]
 
