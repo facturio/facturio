@@ -10,7 +10,8 @@ class Client:
         email: str = None,
         adress: str = None,
         phone_number: str = None,
-        note: str = None
+        note: str = None,
+        id_: int = None
     ):
         """
         Les attributs sont initialisés selon leur ordre d'apparition
@@ -23,15 +24,21 @@ class Client:
         self.adress = adress
         self.phone_number = phone_number
         self.note = note
+        self.id_ = id_
 
     def __str__(self):
-        return f"{self.first_name} | {self.last_name} | {self.email} | " \
-               f"{self.adress}  | {self.phone_number} | {self.note}"
+        return (f"{self.id_} | {self.first_name} | {self.last_name} "
+                f"| {self.email} | {self.adress}  | {self.phone_number} "
+                f"| {self.note}")
 
     def __repr__(self):
         return self.__str__()
 
     def dump_to_list(self):
+        """Renvoie une liste de toutes les variables de classes."""
+        return [self.first_name, self.last_name, self.email, self.adress,
+                self.phone_number, self.note]
+    def to_list(self):
         """Renvoie une liste de toutes les variables de classes."""
         return [self.first_name, self.last_name, self.email, self.adress,
                 self.phone_number, self.note]
@@ -70,20 +77,31 @@ class Company(Client):
         adress: str,
         phone_number: str,
         business_number: str,
-        note: str = None
+        note: str = None,
+        id_: int = None
     ):
         """
         Les attributs sont initialisés selon leur ordre d'apparition
         dans le pdf
         """
-        super().__init__(first_name, last_name, email, adress, phone_number, note)
+        super().__init__(first_name, last_name, email, adress, phone_number,
+                         note, id_)
         self.company_name = company_name
         self.business_number = business_number
 
     def __str__(self):
-        return (f"{self.company_name} | {self.email} | {self.adress} | "
+        return (f"{self.id_} | {self.company_name} | {self.email} |"
+                f" {self.adress} | "
                 f"{self.phone_number} | {self.business_number} | "
                 f"{self.first_name} | {self.last_name} | {self.note}")
+
+    def to_list_client(self):
+        """Methode to liste de client."""
+        return super().to_list()
+
+    def to_list(self):
+        return [self.company_name, self.email, self.adress, self.phone_number,
+             self.first_name, self.last_name, self.business_number, self.note]
 
     def __repr__(self):
         return self.__str__()
@@ -117,7 +135,7 @@ class Company(Client):
 
 
 if __name__ == "__main__":
-    client_moral = Client("Lombardo", "Quentin",
+    client_moral = Client("Quentin","Lombardo",
         "quentin.lombardo@email.com", "HLM Sainte-Muse Toulon", "0678905324")
     print(client_moral.dump_to_list())
 

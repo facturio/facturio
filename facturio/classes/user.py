@@ -8,8 +8,8 @@ class User:
     def __init__(
         self,
         company_name: str,
-        last_name: str,
         first_name: str,
+        last_name: str,
         email: str,
         adress: str,
         phone_number: str,
