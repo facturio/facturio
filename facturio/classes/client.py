@@ -74,7 +74,7 @@ class Company(Client):
     def __str__(self):
         return f"{self.company_name} | {self.email} | {self.adress} | " \
                f"{self.phone_number} | {self.business_number} | "\
-               f"{self.first_name} | {self.last_name} | {self.note}"
+               f"{self.first_name} {self.last_name} | {self.note}"
 
     def __repr__(self):
         return self.__str__()

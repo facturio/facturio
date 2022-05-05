@@ -35,9 +35,17 @@ def random_companyname()->str:
     with open("datasets/companynames.txt","r") as f:
         return choice([n[:-1] for n in f.readlines()])
 
-def random_articles(nb_articles: int):
+def random_date()->int:
     """
-    Return an array of arrays containing article information
+    Return a random date in Unix format
+    """
+    with open("datasets/unix_date.txt","r") as f:
+        return int(choice([n[:-1] for n in f.readlines()]))
+
+
+def create_random_articles(nb_articles: int):
+    """
+    Return an array of articles
     """
     with open("datasets/articles.txt","r") as f:
         article_list = choices([n[:-1].split('\t') for n in f.readlines()],
@@ -47,9 +55,9 @@ def random_articles(nb_articles: int):
             float(article_list[i][2]), int(article_list[i][1]),"blank description")
         return article_list
 
-def random_advances(nb_advances: int):
+def create_random_advances(nb_advances: int):
     """
-    Return an array of arrays containing advances information
+    Return an array of advances
     """
     with open("datasets/advances.txt","r") as f:
         advance_list = choices([n[:-1].split('\t') for n in f.readlines()],
@@ -60,7 +68,7 @@ def random_advances(nb_advances: int):
         return advance_list
 
 
-def create_phone_number() ->str:
+def create_random_phone_number() ->str:
     """
     Create randomly a phone number
     """
@@ -69,7 +77,7 @@ def create_phone_number() ->str:
         phone_number += str(randint(0,9))
     return phone_number
 
-def create_email_adress(firstname: str, lastname: str) -> str:
+def create_random_email_adress(firstname: str, lastname: str) -> str:
     """
     Create a mail adress from a firstname and last name:
     """
@@ -77,37 +85,84 @@ def create_email_adress(firstname: str, lastname: str) -> str:
     extension = ["fr", "us", "uk", "gr", "jp"]
     return f"{firstname}.{lastname}@.{choice(domain)}.{choice(extension)}"
 
-def create_buisness_number() -> str:
+def create_random_business_number() -> str:
     """
-    Create randomly a buisness number
+    Create randomly a business number
     """
-    buisness_number = ""
+    business_number = ""
     for i in range(17):
-        buisness_number += str(randint(0,9))
-    return buisness_number
+        business_number += str(randint(0,9))
+    return business_number
 
-def create_client(is_company: bool = True):
+def create_random_client(is_company: bool = True):
     """
-    Return an array containing client information
+    Return a random client
     """
     first_name = random_firstname()
     last_name = random_lastname()
     adress = random_adress()
-    phone_number = create_phone_number()
-    email = create_email_adress(first_name, last_name)
+    phone_number = create_random_phone_number()
+    email = create_random_email_adress(first_name, last_name)
     # Procédures différents pour une client particulier
     if(is_company):
         company_name = random_companyname()
-        buisness_number = create_buisness_number()
+        business_number = create_random_business_number()
         return Company(company_name, first_name, last_name, email, adress,
-        phone_number, buisness_number)
+        phone_number, business_number)
     else:
         return Client(first_name, last_name, email, adress, phone_number)
 
+def create_random_user():
+    """
+    Return a random user
+    """
+    company_name = random_companyname()
+    first_name = random_firstname()
+    last_name = random_lastname()
+    adress = random_adress()
+    phone_number = create_random_phone_number()
+    business_number = create_random_business_number()
+    email = create_random_email_adress(first_name, last_name)
+    return User(company_name, adress, phone_number, business_number, first_name, last_name,
+    email)
+
+def create_random_invoice():
+    """
+    Return a random invoice
+    """
+    user = create_random_user()
+    client = create_random_client()
+    articles = create_random_articles(5)
+    date = random_date()
+    taxes = 0.2
+    amount = 0
+    advances = create_random_advances(2)
+    return Invoice(user, client, articles, date, taxes, amount, advances)
+
+def create_random_estimate():
+    """
+    Return a random estimate
+    """
+    user = create_random_user()
+    client = create_random_client()
+    articles = create_random_articles(5)
+    date = random_date()
+    taxes = 0.2
+    amount = 0
+    return Estimate(user, client, articles, date, taxes, amount)
+
+
 if __name__ == "__main__":
     print()
-    print(random_articles(5))
+    print(create_random_articles(5))
     print()
-    print(random_advances(5))
+    print(create_random_advances(5))
     print()
-    
+    print(create_random_user())
+    print()
+    print(create_random_client())
+    print() 
+    print(create_random_invoice())
+    print()
+    print(create_random_estimate())
+    print()
