@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 import gi
-from gui.page_gui import PageGui
-from gui.home import HeaderBarSwitcher
-from gui.add_customer import Add_Customer
+from facturio.gui.page_gui import PageGui
+from facturio.gui.home import HeaderBarSwitcher
+from facturio.gui.add_customer import Add_Customer
+from facturio.db.db import Data_base
 gi.require_version("Gtk", "3.0")
-from db.db import Data_base
 from gi.repository import Gtk, Gdk, Gio, GdkPixbuf
 
 class Customer(PageGui):

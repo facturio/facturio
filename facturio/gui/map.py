@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 import gi
-from gui.page_gui import PageGui
+from facturio.gui.page_gui import PageGui
 gi.require_version("Gtk", "3.0")
 gi.require_version("OsmGpsMap", "1.0")
 import concurrent.futures
-from db.db import Data_base
+from facturio.db.db import Data_base
 from geopy.geocoders import Nominatim
 from gi.repository import Gtk, Gdk, Gio, GdkPixbuf, OsmGpsMap
 

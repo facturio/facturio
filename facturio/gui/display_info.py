@@ -3,6 +3,7 @@ gi.require_version("Gtk", "3.0")
 gi.require_version("OsmGpsMap", "1.0")
 from facturio.gui.page_gui import PageGui
 from gi.repository import Gtk, Gdk, Gio, GdkPixbuf, OsmGpsMap
+from facturio import __path__
 
 class InfoPerson (PageGui):
     """
@@ -58,7 +59,7 @@ class InfoPerson (PageGui):
         self.nums("test")
         self.entreprise("test")
         self.siret("test")
-        self.logo("../icons/Moi.png")
+        self.logo(__path__[0] + "/icons/Moi.png")
         self.commentaire("ldhfskjv xbvhxknvkhxfvkjzx vjgcxbv jlkmc jcbui jmcljbuxvn kjxvhofxv dvudhvbdhkvn kbhvdubn kfuhvxovnludhvod")
 
 
