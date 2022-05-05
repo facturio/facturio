@@ -1,17 +1,184 @@
 #!/usr/bin/env python3
 import gi
 gi.require_version("Gtk", "3.0")
-from gi.repository import Gtk, GObject
+from gi.repository import Gtk, GObject, Gdk
 from facturio.classes.client import Company, Client
 from facturio.classes.user import User
 from facturio.classes.invoice_misc import Article, Invoice, Advance, Estimate
+from facturio.gui.home import HeaderBarSwitcher
 from facturio.build_pdf.build_pdf import build_pdf
 from datetime import datetime
 import re
 from datetime import date
 
-
 class InvoicePage(Gtk.ScrolledWindow):
+    def __init__(self):
+        super().__init__()
+        # client | date | solde restant
+        self.grid = Gtk.Grid( row_homogeneous=True,
+                             column_spacing=20, row_spacing=20)
+        self._init_treeview()
+
+        print("xd")
+        header_bar = HeaderBarSwitcher.get_instance()
+        print("from invoice headerbar ", header_bar)
+        self.hb = header_bar
+        hbox = Gtk.HBox()
+        self.paid_switch = Gtk.RadioButton(label="Acquitee")
+        self.not_paid_switch = Gtk.RadioButton(group=self.paid_switch,
+                                               label="Non acquitee")
+        self.paid_switch.set_mode(False)
+        self.not_paid_switch.set_mode(False)
+        hbox.pack_start(self.paid_switch, True, True, 0)
+        hbox.pack_start(self.not_paid_switch, True, True, 0)
+        Gtk.StyleContext.add_class(hbox.get_style_context(), "linked")
+
+        vbox = Gtk.VBox()
+        create_btn = Gtk.Button(label="Creer nouvelle facture")
+        create_btn.connect("clicked", self.switch_to_create_invoice)
+        export_btn = Gtk.Button(label="Exporter PDF")
+        add_advance_btn = Gtk.Button(label="Ajouter acompte")
+        delete_btn = Gtk.Button(label="Supprimer")
+        update_style_btn = Gtk.Label(label="Style PDF")
+
+        color_btn = Gtk.ColorButton()
+        vbox.pack_start(create_btn, True, True, 5)
+        vbox.pack_start(add_advance_btn, True, True, 5)
+        vbox.pack_start(delete_btn, True, True, 5)
+        vbox.pack_start(export_btn, True, True, 5)
+        vbox.pack_start(update_style_btn, True, True, 5)
+        color = Gdk.RGBA()
+        color.parse("#5f5f5f")
+        color_btn.set_rgba(color)
+
+        vbox1 = Gtk.VBox()
+        rb = Gtk.RadioButton(label="Lignes")
+        rb1 = Gtk.RadioButton(group=rb, label="Colonnes")
+
+        vbox1.pack_start(rb, True, True, 0)
+        vbox1.pack_start(rb1, True, True, 0)
+        # update_style_btn.connect("clicked", self.style_update_window)
+        hbox1 = Gtk.HBox()
+        hbox1.pack_start(color_btn, True, True, 5)
+        hbox1.pack_start(vbox1, True, True, 5)
+
+        vbox.pack_start(hbox1, True, True, 5)
+
+        # self.grid.attach(hbox, 1, 1, 1, 1)
+        self.treeview.set_hexpand(True)
+        self.treeview.set_vexpand(True)
+        # self.grid.attach(self.treeview, 1, 2, 2, 7)
+        # self.grid.attach(vbox, 11, 2, 1, 3)
+
+
+        main_grid = Gtk.Grid(column_spacing=20, row_spacing=20)
+        vspace = Gtk.Label(label="")
+        vspace.set_hexpand(True)
+        vspace.set_vexpand(True)
+        main_grid.attach(vspace, 1, 1, 1, 1)
+
+        vspace = Gtk.Label(label="")
+        vspace.set_hexpand(True)
+        vspace.set_vexpand(True)
+        main_grid.attach(vspace, 5, 1, 1, 1)
+
+        hbox.set_halign(Gtk.Align.START)
+
+        search = Gtk.SearchEntry()
+
+        main_grid.attach(search, 2, 1, 3, 1)
+        main_grid.attach(hbox, 2, 2, 1, 1)
+
+        main_grid.attach(self.treeview, 2, 3, 2, 9)
+        main_grid.attach(vbox, 4, 3, 1, 1)
+
+        self.add(main_grid)
+
+    def switch_to_create_invoice(self, *args):
+        hb = HeaderBarSwitcher.get_instance()
+        hb.active_button(page="create_invoice_page")
+
+
+    def style_update_window(self, *args):
+        self.set_sensitive(False)
+        box = Gtk.VBox()
+        rb = Gtk.RadioButton(label="Lignes")
+        rb1 = Gtk.RadioButton(group=rb, label="Colonnes")
+        window = Gtk.Window(title="Modifier Style", type=Gtk.WindowType.TOPLEVEL)
+        color_chooser = Gtk.ColorChooserWidget(show_editor=False)
+        box.pack_start(color_chooser, True, True, 5)
+        box.pack_start(rb, True, True, 5)
+        box.pack_start(rb1, True, True, 5)
+        window.add(box)
+        window.show_all()
+
+    def _init_treeview(self):
+        self.store = Gtk.ListStore(str, str, str, float)
+
+        self.store.append(["Prenom", "nom", "11/23/1900", 123.4])
+        self.store.append(["Prenom1", "nom1", "11/23/1700", 323.4])
+        self.store.append(["Prenom2", "nom2", "11/23/1800", 423.4])
+
+        self.treeview = Gtk.TreeView(model=self.store, headers_clickable=True)
+        renderer_text = Gtk.CellRendererText()
+        column_text = Gtk.TreeViewColumn("Prenom", renderer_text, text=0)
+        column_text.set_clickable(True)
+        column_text.set_resizable(True)
+        column_text.get_button().connect("clicked", self.sort_first_name)
+        self.treeview.append_column(column_text)
+
+        renderer_text = Gtk.CellRendererText()
+        column_text = Gtk.TreeViewColumn("Nom", renderer_text, text=1)
+        column_text.set_clickable(True)
+        column_text.set_resizable(True)
+        column_text.get_button().connect("clicked", self.sort_last_name)
+        self.treeview.append_column(column_text)
+
+        # column_text.set_clickable(True)
+        # column_text.get_button().connect("clicked", self.sort_first_name)
+
+        # renderer_text = Gtk.CellRendererText()
+        column_text = Gtk.TreeViewColumn("Date", renderer_text, text=2)
+        column_text.set_clickable(True)
+        column_text.get_button().connect("clicked", self.sort_date)
+        self.treeview.append_column(column_text)
+
+        # renderer_text = Gtk.CellRendererText()
+        column_text= Gtk.TreeViewColumn("Solde restant", renderer_text, text=3)
+        column_text.set_clickable(True)
+        column_text.get_button().connect("clicked", self.sort_balance)
+        self.treeview.append_column(column_text)
+
+        renderer_text = Gtk.CellRendererText()
+        invisible_column = Gtk.TreeViewColumn("", renderer_text)
+        invisible_column.set_expand(True)
+        self.treeview.append_column(invisible_column)
+
+        renderer_text = Gtk.CellRendererText()
+        column_text = Gtk.TreeViewColumn(title="Rafraichir",
+                                         cell_renderer=renderer_text)
+        column_text.get_button().connect("clicked", self.refresh_store)
+        column_text.set_clickable(True)
+        # column_text.set_halign(Gtk.Align.END)
+        # column_text.set_widget(btn)
+        # btn.show()
+        self.treeview.append_column(column_text)
+
+    def on_combo_changed(self, widget, path, text):
+        self.liststore_hardware[path][1] = text
+
+    def sort_first_name(self, *args):
+        raise NotImplementedError()
+    def sort_last_name(self, *args):
+        raise NotImplementedError()
+    def sort_date(self, *args):
+        raise NotImplementedError()
+    def sort_balance(self, *args):
+        raise NotImplementedError()
+    def refresh_store(self, *args):
+        raise NotImplementedError()
+
+class CreateInvoicePage(Gtk.ScrolledWindow):
     """Page pour la creation invoice."""
 
     def __init__(self):
@@ -29,7 +196,6 @@ class InvoicePage(Gtk.ScrolledWindow):
         self.main_grid.attach(self.header_grid, 2, 1, 1, 1)
         self.main_grid.attach(self.user_client_grid, 2, 2, 1, 1)
         # spaces sur les cotes
-
         spacel = Gtk.Label("")
         spacel.set_hexpand(True)
         self.main_grid.attach(spacel, 1, 1, 1, 3)

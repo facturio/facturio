@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 import gi
 from gui.page_gui import Page_Gui
-from gui.home import HeaderBarSwitcher
 from gui.add_customer import Add_Customer
 gi.require_version("Gtk", "3.0")
 from gi.repository import Gtk, Gdk, Gio, GdkPixbuf
+from gui.headerbar import HeaderBarSwitcher
 
 class Customer(Page_Gui):
     """
@@ -16,9 +16,9 @@ class Customer(Page_Gui):
     |__| [E] |
     +--------+
     """
-    def __init__(self, header_bar: HeaderBarSwitcher):
+    def __init__(self):
         super().__init__()
-        self.header_bar = header_bar
+        self.header_bar = HeaderBarSwitcher.get_instance()
         self.init_grid()
         self.title("Clients")
         self.space()
