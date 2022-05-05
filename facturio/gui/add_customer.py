@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
 import sqlite3
 import gi
-from gui.page_gui import Page_Gui
+from gui.page_gui import PageGui
 from db.db import Data_base
 gi.require_version("Gtk", "3.0")
 from gi.repository import Gtk, Gdk, Gio, GdkPixbuf
 
 
-class Add_Customer(Page_Gui):
+class Add_Customer(PageGui):
     """
     Classe IHM de le fenetre d'ajoute d'un client
     +--------+

@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
 import gi
-from gui.page_gui import Page_Gui
+from gui.page_gui import PageGui
 from gui.home import HeaderBarSwitcher
 from gui.add_customer import Add_Customer
 gi.require_version("Gtk", "3.0")
 from db.db import Data_base
 from gi.repository import Gtk, Gdk, Gio, GdkPixbuf
 
-class Customer(Page_Gui):
+class Customer(PageGui):
     """
     Classe IHM de le fenetre client. Elle permet d'importer, exporter,
     creer.

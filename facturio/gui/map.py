@@ -1,12 +1,13 @@
 #!/usr/bin/env python3
 import gi
-from gui.page_gui import Page_Gui
+from gui.page_gui import PageGui
 gi.require_version("Gtk", "3.0")
 gi.require_version("OsmGpsMap", "1.0")
+from db.db import Data_base
 from geopy.geocoders import Nominatim
 from gi.repository import Gtk, Gdk, Gio, GdkPixbuf, OsmGpsMap
 
-class Map(Page_Gui):
+class Map(PageGui):
     """
     Classe IHM de la fenetre Map, elle permet de chercher un client
     et d'afficher ca position sur une
@@ -30,7 +31,10 @@ class Map(Page_Gui):
                 .search((1,3,5,1))
                 .__init_map()
         )
-        self.print_all_customer(["Paris","Toulon","Montlucon"])
+        list_client= self.db.selection_table("client")
+        list_adress=[client[4] for client in list_client ]
+        print(list_adress)
+        self.print_all_customer(list_adress)
 
 
     def __init_map(self):
@@ -51,6 +55,9 @@ class Map(Page_Gui):
         """
         geolocator = Nominatim(user_agent="Nominatim")
         location = geolocator.geocode(adrss)
+        if location == None:
+            print("adresse non trouver :", adrss)
+            return None
         x, y = location.latitude, location.longitude
         return (x,y)
 
@@ -76,7 +83,8 @@ class Map(Page_Gui):
         icone a chquene de leur adresse
         """
         for adresse in l_adress:
-            x,y= self.__get_gps(adresse)
-            marker = GdkPixbuf.Pixbuf.new_from_file_at_size("../icons/poi.png", 25, 25)
-            self.osm.image_add(x, y, marker)
+            if self.__get_gps(adresse)!= None:
+                x,y= self.__get_gps(adresse)
+                marker = GdkPixbuf.Pixbuf.new_from_file_at_size("../icons/poi.png", 25, 25)
+                self.osm.image_add(x, y, marker)
         return self

@@ -7,7 +7,7 @@ from db.db import Data_base
 from facturio.gui.omnisearch import FacturioOmnisearch
 from facturio import examples
 
-class Page_Gui(Gtk.ScrolledWindow):
+class PageGui(Gtk.ScrolledWindow):
     """
     Classe servant de socle commun de methode
     gtk pour les page gui de Facturio

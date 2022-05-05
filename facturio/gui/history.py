@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 import gi
 gi.require_version("Gtk", "3.0")
-from gui.page_gui import Page_Gui
+from gui.page_gui import PageGui
 from gi.repository import Gtk
 
-class History(Page_Gui):
+class History(PageGui):
     """
     Classe IHM de le fenetre Historique. Elle permet de chercher
     un devis ou une facture
