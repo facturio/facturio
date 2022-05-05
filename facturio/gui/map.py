@@ -76,7 +76,7 @@ class Map(PageGui):
         """
         x,y= self.__get_gps(adrss)
         self.osm.set_center_and_zoom(x, y, 17)
-        marker = GdkPixbuf.Pixbuf.new_from_file_at_size(__path__ + "/data/icons/poi.png", 50, 50)
+        marker = GdkPixbuf.Pixbuf.new_from_file_at_size(__path__[0] + "/data/icons/poi.png", 50, 50)
         self.osm.image_add(x, y, marker)
         return self
 
@@ -91,6 +91,6 @@ class Map(PageGui):
                 future = executor.submit(self.__get_gps, adresse)
                 x,y = future.result()
                 if x!= None:
-                    marker = GdkPixbuf.Pixbuf.new_from_file_at_size(__path__ + "/data/icons/poi.png", 25, 25)
+                    marker = GdkPixbuf.Pixbuf.new_from_file_at_size(__path__[0] + "/data/icons/poi.png", 25, 25)
                     self.osm.image_add(x, y, marker)
         return self
