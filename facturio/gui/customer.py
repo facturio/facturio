@@ -3,6 +3,8 @@ import gi
 from gui.page_gui import PageGui
 from gui.home import HeaderBarSwitcher
 from gui.add_customer import Add_Customer
+from gui.omnisearch import FacturioOmnisearch
+from gui.autocompletion import FacturioEntryCompletion
 gi.require_version("Gtk", "3.0")
 from db.db import Data_base
 from gi.repository import Gtk, Gdk, Gio, GdkPixbuf
@@ -20,21 +22,44 @@ class Customer(PageGui):
     def __init__(self, header_bar: HeaderBarSwitcher):
         super().__init__()
         self.header_bar = header_bar
-        self.init_grid()
+        self.__init_grid()
         self.title("Clients")
-        self.space()
-        self.search((1,3,4,1))
+        self.__space_info()
+        self.search_bar_client()
         self.__summon_button()
-        self.init_result(["Nom","Entreprise","Adresse",""],
-                         (1,4,4,10))
 
+
+    def __space_info(self):
+        """
+        Ajoute les espace
+        pour l'ergonomie
+        """
+        spacel = Gtk.Label("")
+        self.grid.attach(spacel, 0, 1, 1, 1)
+        spacer = Gtk.Label("")
+        self.grid.attach(spacer, 10, 2, 1, 1)
+        spaceb = Gtk.Label("")
+
+
+    def __init_grid(self):
+        """
+        Propriete de la Grid Gtk
+        voir doc
+        """
+        self.grid = Gtk.Grid()
+        self.add(self.grid)
+        self.grid.set_column_homogeneous(True)
+        self.grid.set_row_homogeneous(False)
+        self.grid.set_row_spacing(20)
+        self.grid.set_column_spacing(20)
+        return self
 
     def __summon_button(self):
         """
         Invoque les boutons: Importer,Exporter,Creer
         """
-        p_button=(("Importer", (5,3,1,1)), ("Plus", (5,4,1,1)),
-                  ("Exporter", (5,5,1,1)))
+        p_button=(("Importer", (4,3,1,1)), ("Plus", (4,4,1,1)),
+                  ("Exporter", (4,5,1,1)))
         but = Gtk.Button.new_from_icon_name("list-add-symbolic",
                                                     Gtk.IconSize.BUTTON)
         but.connect("clicked", self.header_bar.active_button, "add_customer")
@@ -93,6 +118,16 @@ class Customer(PageGui):
                 else:
                     print("section incorrect :",clients)
             filechooserdialog.destroy()
+
+
+    def search_bar_client(self):
+        """
+        Affiche tout les clients de la base de donner
+        """
+        list_client= self.db.selection_table("client",)
+        searchbar = FacturioOmnisearch(list_client)
+        searchbar.go_to=True
+        self.grid.attach(searchbar, 1,3,2,1)
 
 
     def add_result(self,res):

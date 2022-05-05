@@ -32,6 +32,7 @@ class FacturioEntryCompletion(Gtk.Entry):
         self.completion.set_text_column(0)
         self.completion.connect('match-selected', self.on_match_selected)
 
+
     def on_match_selected(self, completion, model, iter):
         txt = completion.props.model.get_value(iter, 0)
         for comp in self.to_update:

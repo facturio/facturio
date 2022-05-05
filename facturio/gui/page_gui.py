@@ -5,6 +5,7 @@ from gi.repository import Gtk
 import re
 from db.db import Data_base
 from facturio.gui.omnisearch import FacturioOmnisearch
+from facturio.gui.autocompletion import FacturioEntryCompletion
 from facturio import examples
 
 class PageGui(Gtk.ScrolledWindow):
@@ -14,6 +15,7 @@ class PageGui(Gtk.ScrolledWindow):
     """
 
     def __init__(self) -> None:
+        self.liste_customer= Gtk.ListStore(str, str, str)
         self.db= Data_base("facturio")
         super().__init__()
 
@@ -75,7 +77,7 @@ class PageGui(Gtk.ScrolledWindow):
     def title(self, ttl):
         facturio_label = Gtk.Label(label=ttl)
         facturio_label.set_markup("<span font_weight=\"bold\" size=\"xx-large\">"+ttl+"</span>")
-        self.grid.attach(facturio_label, 0, 2, 6, 1 )
+        self.grid.attach(facturio_label, 1, 2, 1, 1 )
         return self
 
 
@@ -110,7 +112,6 @@ class PageGui(Gtk.ScrolledWindow):
         a la methode add_result
         """
         l_customer= []
-        self.liste_customer= Gtk.ListStore(str, str, str)
         for customer in l_customer:
             self.liste_customer.append(customer)
         self.treeview = Gtk.TreeView(model=self.liste_customer)

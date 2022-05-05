@@ -141,9 +141,7 @@ class Add_Customer(PageGui):
         self.grid.attach(spacel, 0, 1, 1, 1)
         spacer = Gtk.Label("")
         spacer.set_hexpand(True)
-        self.grid.attach(spacer, 3, 2, 2, 1)
-        spaceh = Gtk.Label("")
-        self.grid.attach(spaceh, 0, 0, 5, 1)
+        self.grid.attach(spacer, 3, 1, 1, 1)
 
 
     def __creat_labelbox(self,c_txt,pos):
