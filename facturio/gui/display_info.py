@@ -59,7 +59,7 @@ class InfoPerson (PageGui):
         self.nums("test")
         self.entreprise("test")
         self.siret("test")
-        self.logo(__path__[0] + "/icons/Moi.png")
+        self.logo(__path__[0] + "/data/icons/Moi.png")
         self.commentaire("ldhfskjv xbvhxknvkhxfvkjzx vjgcxbv jlkmc jcbui jmcljbuxvn kjxvhofxv dvudhvbdhkvn kbhvdubn kfuhvxovnludhvod")
 
 
