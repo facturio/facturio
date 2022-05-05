@@ -3,6 +3,7 @@ import gi
 from gui.page_gui import PageGui
 gi.require_version("Gtk", "3.0")
 gi.require_version("OsmGpsMap", "1.0")
+import concurrent.futures
 from db.db import Data_base
 from geopy.geocoders import Nominatim
 from gi.repository import Gtk, Gdk, Gio, GdkPixbuf, OsmGpsMap
@@ -57,8 +58,9 @@ class Map(PageGui):
         location = geolocator.geocode(adrss)
         if location == None:
             print("adresse non trouver :", adrss)
-            return None
+            return (None,None)
         x, y = location.latitude, location.longitude
+        print((x,y))
         return (x,y)
 
 
@@ -83,8 +85,10 @@ class Map(PageGui):
         icone a chquene de leur adresse
         """
         for adresse in l_adress:
-            if self.__get_gps(adresse)!= None:
-                x,y= self.__get_gps(adresse)
-                marker = GdkPixbuf.Pixbuf.new_from_file_at_size("../icons/poi.png", 25, 25)
-                self.osm.image_add(x, y, marker)
+            with concurrent.futures.ThreadPoolExecutor() as executor:
+                future = executor.submit(self.__get_gps, adresse)
+                x,y = future.result()
+                if x!= None:
+                    marker = GdkPixbuf.Pixbuf.new_from_file_at_size("../icons/poi.png", 25, 25)
+                    self.osm.image_add(x, y, marker)
         return self
