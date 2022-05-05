@@ -1,10 +1,19 @@
+facturio/build_pdf/*.pdf
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
 *$py.class
 
+tox.ini
 # C extensions
 *.so
+
+# client extensions
+*clt
+
+#pdf
+*.pdf
 
 # Distribution / packaging
 .Python

@@ -2,7 +2,7 @@
 
 def selection_client(cursor,conenxion,liste,bool):
     cursor.execute("""select * from client""")
-    print(cursor.fetchall())
+    return cursor.fetchall()
 def selection_utilisateur(cursor,conenxion,liste):
     cursor.execute("""select * from utilisateur""")
     print(cursor.fetchall())

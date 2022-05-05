@@ -10,4 +10,7 @@
 
 /* label { */
 /*     background-color: green; */
-/* } */
+
+.entry_error{
+    border-color: Red;
+}
