@@ -30,7 +30,7 @@ class Client:
 
     def __repr__(self):
         return self.__str__()
-    
+
     def dump_to_list(self):
         """Renvoie une liste de toutes les variables de classes."""
         return [self.first_name, self.last_name, self.email, self.adress,
@@ -64,8 +64,8 @@ class Company(Client):
     def __init__(
         self,
         company_name: str,
-        last_name: str,
         first_name: str,
+        last_name: str,
         email: str,
         adress: str,
         phone_number: str,
@@ -84,7 +84,7 @@ class Company(Client):
         return (f"{self.company_name} | {self.email} | {self.adress} | "
                 f"{self.phone_number} | {self.business_number} | "
                 f"{self.first_name} | {self.last_name} | {self.note}")
-        
+
     def __repr__(self):
         return self.__str__()
 
@@ -113,11 +113,11 @@ class Company(Client):
                   business_number=data_dict["business_number"],
                   note=data_dict["note"])
         return res
-        
+
 
 
 if __name__ == "__main__":
-    client_moral = Client("Lombardo", "Quentin", 
+    client_moral = Client("Lombardo", "Quentin",
         "quentin.lombardo@email.com", "HLM Sainte-Muse Toulon", "0678905324")
     print(client_moral.dump_to_list())
 
