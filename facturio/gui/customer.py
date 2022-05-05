@@ -1,9 +1,14 @@
 #!/usr/bin/env python3
 import gi
+from facturio.gui.page_gui import PageGui
+from facturio.gui.home import HeaderBarSwitcher
+from facturio.gui.add_customer import Add_Customer
+from facturio.db.db import Data_base
 gi.require_version("Gtk", "3.0")
 from gi.repository import Gtk, Gdk, Gio, GdkPixbuf
+from gui.headerbar import HeaderBarSwitcher
 
-class Customer(Gtk.ScrolledWindow):
+class Customer(PageGui):
     """
     Classe IHM de le fenetre client. Elle permet d'importer, exporter,
     creer.
@@ -15,77 +20,77 @@ class Customer(Gtk.ScrolledWindow):
     """
     def __init__(self):
         super().__init__()
+        self.header_bar = HeaderBarSwitcher.get_instance()
         self.init_grid()
-        facturio_label = Gtk.Label(label="Client")
-        self.grid.attach(facturio_label, 3, 2, 6, 1 )
+        self.title("Clients")
         self.space()
-        self.search((3,4,4,1))
-        self.summon_button()
-        self.init_result(["Nom","Entreprise","Adresse"])
+        self.search((1,3,4,1))
+        self.__summon_button()
+        self.init_result(["Nom","Entreprise","Adresse",""],
+                         (1,4,4,10))
 
 
-    def space(self):
-        """
-        Ajoute les espace pour l'ergonomie
-        """
-        spaceh = Gtk.Label(label="")
-        self.grid.attach(spaceh,1,1,10,10)
-        spacef = Gtk.Label(label="")
-        self.grid.attach(spacef,7,5,1,1)
-
-    def search(self, l_attach):
-        """
-        Prend un emplacement et invoque la barre de recherche
-        a cette emplacement
-        """
-        searchbar = Gtk.SearchEntry()
-        self.grid.attach(searchbar, *l_attach)
-
-
-    def summon_button(self):
+    def __summon_button(self):
         """
         Invoque les boutons: Importer,Exporter,Creer
         """
-        p_button=(("Importer", (7,4,2,1)), ("Plus", (7,5,2,1)),
-                  ("Exporter", (7,6,2,1)))
-        for para in p_button:
-            but = Gtk.Button(label=para[0])
-            self.grid.attach(but, *para[1])
+        p_button=(("Importer", (5,3,1,1)), ("Plus", (5,4,1,1)),
+                  ("Exporter", (5,5,1,1)))
+        but = Gtk.Button.new_from_icon_name("list-add-symbolic",
+                                                    Gtk.IconSize.BUTTON)
+        but.connect("clicked", self.header_bar.active_button, "add_customer")
+        self.grid.attach(but, *p_button[1][1])
+        but = Gtk.Button.new_from_icon_name("document-save-symbolic",
+                                                    Gtk.IconSize.BUTTON)
+        self.grid.attach(but, *p_button[0][1])
+        but = Gtk.Button.new_from_icon_name("document-open-symbolic",
+                                                    Gtk.IconSize.BUTTON)
+        but.connect("clicked", self.file_explorer)
+        self.grid.attach(but, *p_button[2][1])
 
 
-    def init_result(self,para):
+    def file_explorer(self,button):
         """
-        Initialise la barre de recherche et permet l'ajout grace a la methode
-        add_result
+        ouvrent un explorateur de fichier et ajoute la
+        bd le contenue du fichier en *.clt
         """
-        l_client = []
-        self.liste_client = Gtk.ListStore(str, str, str)
-        for client in l_client:
-            self.liste_client.append(client)
-        self.treeview = Gtk.TreeView(model=self.liste_client)
-        for i, column_title in enumerate(para):
-            renderer = Gtk.CellRendererText()
-            column = Gtk.TreeViewColumn(column_title, renderer, text=i)
-            self.treeview.append_column(column)
-        self.scrollable_treelist = Gtk.ScrolledWindow()
-        self.grid.attach(self.scrollable_treelist, 3, 5, 4, 10)
-        self.scrollable_treelist.add(self.treeview)
+        filechooserdialog = Gtk.FileChooserDialog(title=" Importer client",
+             parent=None,
+             action=Gtk.FileChooserAction.OPEN)
+        filechooserdialog.add_buttons("_Open", Gtk.ResponseType.OK)
+        filechooserdialog.add_buttons("_Cancel", Gtk.ResponseType.CANCEL)
+        filechooserdialog.set_default_response(Gtk.ResponseType.OK)
+        filter_ = Gtk.FileFilter()
+        filter_.set_name("Client")
+        filter_.add_pattern("*.clt")
+        filechooserdialog.set_filter(filter_)
+        response = filechooserdialog.run()
+        if response == Gtk.ResponseType.OK:
+            is_coorect=True
+            l_clients=[[]]
+            with open(filechooserdialog.get_filename(), 'r') as f:
+                lines=f.readlines()
+                for line in lines:
+                    line=line.strip('\n')
+                    if line=="#" and len(l_clients)!=1:
+                        break
+                    elif line == "-":
+                        l_clients.append([])
+                    elif line != "#":
+                        l_clients[len(l_clients)-1].append(line)
+                for clients in l_clients:
+                    if self.is_valid_for_db(clients[1:]):
+                        self.db.insertion_client_or_company(clients[1:],
+                                                        clients[0])
+                    else:
+                        print("section incorrect :",clients)
+            print("File selected: %s" % filechooserdialog.get_filename())
+            print(l_clients)
+        filechooserdialog.destroy()
+
 
     def add_result(self,res):
         """
         Prend une liste de 3 str et les ajoute aux resultat de la barre
         """
-        self.liste_client.append(res)
-
-    def init_grid(self):
-        """
-        Propriete de la Grid Gtk
-        voir doc
-        """
-        self.grid = Gtk.Grid()
-        self.add(self.grid)
-        self.grid.set_column_homogeneous(True)
-        self.grid.set_row_homogeneous(True)
-        self.grid.set_row_spacing(20)
-        self.grid.set_column_spacing(20)
-
+        self.liste_customer.append(res)

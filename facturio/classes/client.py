@@ -10,7 +10,7 @@ class Client:
         email: str = None,
         adress: str = None,
         phone_number: str = None,
-        note: str =None
+        note: str = None
     ):
         """
         Les attributs sont initialisés selon leur ordre d'apparition
@@ -32,9 +32,7 @@ class Client:
         return self.__str__()
 
     def dump_to_list(self):
-        """
-        Renvoie une liste de toutes les variables de classes
-        """
+        """Renvoie une liste de toutes les variables de classes."""
         return [self.first_name, self.last_name, self.email, self.adress,
                 self.phone_number, self.note]
 
@@ -46,10 +44,22 @@ class Client:
         return [f"{self.first_name} {self.last_name}", self.email, self.adress,
                 self.phone_number]
 
+    @classmethod
+    def from_dict(cls, data_dict):
+        res = cls(email=data_dict["email"],
+                  adress=data_dict["adress"],
+                  phone_number=data_dict["phone_number"],
+                  first_name=data_dict["first_name"],
+                  last_name=data_dict["last_name"],
+                  note=data_dict["note"])
+        return res
+
+
 class Company(Client):
     """
     Classe contenant toutes les informations liées à un client moral
     """
+
 
     def __init__(
         self,
@@ -61,7 +71,6 @@ class Company(Client):
         phone_number: str,
         business_number: str,
         note: str = None
-
     ):
         """
         Les attributs sont initialisés selon leur ordre d'apparition
@@ -72,9 +81,9 @@ class Company(Client):
         self.business_number = business_number
 
     def __str__(self):
-        return f"{self.company_name} | {self.email} | {self.adress} | " \
-               f"{self.phone_number} | {self.business_number} | "\
-               f"{self.first_name} | {self.last_name} | {self.note}"
+        return (f"{self.company_name} | {self.email} | {self.adress} | "
+                f"{self.phone_number} | {self.business_number} | "
+                f"{self.first_name} | {self.last_name} | {self.note}")
 
     def __repr__(self):
         return self.__str__()
@@ -95,10 +104,14 @@ class Company(Client):
              f"{self.first_name} {self.last_name}", self.business_number]
     @classmethod
     def from_dict(cls, data_dict):
-        res = cls(data_dict["company_name"], data_dict["email"],
-                  data_dict["adress"], data_dict["phone_number"],
-                  data_dict["first_name"], data_dict["last_name"],
-                  data_dict["business_number"], data_dict["note"])
+        res = cls(company_name=data_dict["company_name"],
+                  email=data_dict["email"],
+                  adress=data_dict["adress"],
+                  phone_number=data_dict["phone_number"],
+                  first_name=data_dict["first_name"],
+                  last_name=data_dict["last_name"],
+                  business_number=data_dict["business_number"],
+                  note=data_dict["note"])
         return res
 
 
