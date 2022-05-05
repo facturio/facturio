@@ -27,10 +27,8 @@ class HeaderBarSwitcher(Gtk.HeaderBar):
 
     def get_instance():
         """Renvoie le singleton."""
-        print("before from headerbar switcher ", HeaderBarSwitcher.__instance)
         if HeaderBarSwitcher.__instance is None:
             HeaderBarSwitcher.__instance = HeaderBarSwitcher()
-        print("after from headerbar switcher ", HeaderBarSwitcher.__instance)
         return HeaderBarSwitcher.__instance
 
     def __init__(self):
@@ -98,7 +96,6 @@ class HeaderBarSwitcher(Gtk.HeaderBar):
         """
         if page is None:
             raise ValueError
-            print(page)
         if self.stack:
             self.stack.set_visible_child_name(page)
 

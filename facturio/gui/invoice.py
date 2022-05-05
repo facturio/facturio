@@ -19,9 +19,7 @@ class InvoicePage(Gtk.ScrolledWindow):
                              column_spacing=20, row_spacing=20)
         self._init_treeview()
 
-        print("xd")
         header_bar = HeaderBarSwitcher.get_instance()
-        print("from invoice headerbar ", header_bar)
         self.hb = header_bar
         hbox = Gtk.HBox()
         self.paid_switch = Gtk.RadioButton(label="Acquitee")

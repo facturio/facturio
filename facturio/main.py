@@ -38,7 +38,6 @@ class Window(Gtk.ApplicationWindow):
 
         # Création de la header bar et ajout a l'écran
         self.header_bar = HeaderBarSwitcher.get_instance()
-        print("from main headerbar ", self.header_bar)
         self.header_bar.set_stack(self.stack)
         self.set_titlebar(self.header_bar)
 
