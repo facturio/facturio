@@ -148,18 +148,14 @@ def pdf_header(receipt: Union[Invoice, Estimate], id: int):
     # Initialisation d'une table avec des colones flexibles
     table = FlexibleColumnWidthTable(number_of_rows=2, number_of_columns=4)
     ### Première ligne
-    # Insertion du logo si il existe
-    if receipt.user.logo != None:
-        table.add(
-            TableCell(
-                Image(
-                    image=Path(receipt.user.logo),
-                    width=Decimal(75),
-                    height=Decimal(75),
-                ),
-                row_span=2,
-            )
-        )
+    #Insertion du logo si il existe
+    if(receipt.user.logo):
+        table.add(TableCell(   
+        Image(        
+        image=Path(receipt.user.logo),        
+        width=Decimal(75),        
+        height=Decimal(75),    
+        ), row_span=2))
     else:
         table.add(TableCell(Paragraph(" ", padding_left=Decimal(50)), row_span=2))
 
@@ -227,10 +223,10 @@ def pdf_provider_client(receipt: Union[Estimate, Invoice]):
         Paragraph(provider_list[-1], horizontal_alignment=Alignment.RIGHT)
     )
     business_number_table.add(Paragraph(" ", padding_left=Decimal(145)))
-
-    # Si le champ email pour l'utilisateur n'est pas remplit,
-    # On supprime l'élément dans la liste
-    if provider_list[1] == None:
+    
+    #Si le champ email pour l'utilisateur n'est pas remplit,
+    #On supprime l'élément dans la liste
+    if(provider_list[1]):
         del provider_icon_list[1]
         del provider_list[1]
     # On appelle une fonction si le client est une entité morale
@@ -292,56 +288,55 @@ def provider_company_table(
 
 
 def provider_individual_table(
-    table: FlexibleColumnWidthTable,
-    business_number_table: FlexibleColumnWidthTable,
-    provider_list: list,
-    provider_icon_list: list,
-    client_list: list,
-):
-    """
-    Met en place le layout correspondant aux champs de l'artisan
-    et aux champs du client lorsqu'il est physique
-    """
-    client_icon_list = [person_icon, email_icon, mail_icon, phone_icon]
-    for i in range(3, 0, -1):
-        # On supprime tous les champs optionnels qui n'ont pas été
-        # remplit
-        if client_list[i] == None:
-            del client_icon_list[i]
-            del client_list[i]
-    i = 0
-    length_min = len(client_icon_list)
+        table : FlexibleColumnWidthTable, 
+        business_number_table : FlexibleColumnWidthTable, 
+        provider_list: list,
+        provider_icon_list: list, 
+        client_list: list
+                            ):
+        """
+        Met en place le layout correspondant aux champs de l'artisan
+        et aux champs du client lorsqu'il est physique
+        """   
+        client_icon_list = [person_icon, email_icon, mail_icon, phone_icon]
+        for i in range(3, 0, -1):
+            #On supprime tous les champs optionnels qui n'ont pas été
+            #remplit
+            if(client_list[i]):
+                del client_icon_list[i]
+                del client_list[i]
+        i = 0
+        length_min = len(client_icon_list)
+        
+        while(i < length_min):
+            table.add(provider_icon_list[i])  
+            table.add(Paragraph(provider_list[i]))
+            table.add(client_icon_list[i])  
+            table.add(Paragraph(client_list[i]))
+            i+=1
 
-    while i < length_min:
-        table.add(provider_icon_list[i])
-        table.add(Paragraph(provider_list[i]))
-        table.add(client_icon_list[i])
-        table.add(Paragraph(client_list[i]))
-        i += 1
+        i = length_min
+        length_min = len(provider_icon_list)
+        #Comme l'utilisateur a plus de champs que clients alors on
+        #fait une autre boucle a part
+        while(i < length_min):
+            table.add(provider_icon_list[i])  
+            table.add(Paragraph(provider_list[i]))
+            table.add(Paragraph(" "))  
+            table.add(Paragraph(" "))
+            i+=1
+        #Si l'utilisateur n'a pas d'email alors on fait une ligne vide
+        if(i != 5):
+            table.add(Paragraph(" "))
+            table.add(Paragraph(" "))
+            table.add(Paragraph(" "))
+            table.add(Paragraph(" "))
 
-    i = length_min
-    length_min = len(provider_icon_list)
-    # Comme l'utilisateur a plus de champs que clients alors on
-    # fait une autre boucle a part
-    while i < length_min:
-        table.add(provider_icon_list[i])
-        table.add(Paragraph(provider_list[i]))
-        table.add(Paragraph(" "))
-        table.add(Paragraph(" "))
-        i += 1
-    # Si l'utilisateur n'a pas d'email alors on fait une ligne vide
-    if i != 5:
-        table.add(Paragraph(" "))
-        table.add(Paragraph(" "))
-        table.add(Paragraph(" "))
-        table.add(Paragraph(" "))
+        #Un cleint physique n'a pas de numero SIREN
+        business_number_table.add(Paragraph(" "))
+        business_number_table.add(Paragraph(" "))     
 
-    # Un cleint physique n'a pas de numero SIREN
-    business_number_table.add(Paragraph(" "))
-    business_number_table.add(Paragraph(" "))
-
-    return table, business_number_table
-
+        return table, business_number_table
 
 def pdf_provider_inline(receipt: Union[Invoice, Estimate]):
     """
@@ -445,7 +440,7 @@ def pdf_individual_inline(receipt: Union[Invoice, Estimate]):
     # On supprime tous les champs optionnels qui n'ont pas été
     # remplit
     for i in range(2, -1, -1):
-        if client_list[i] == None:
+        if(client_list[i]):
             del client_icon_list[i]
             del client_list[i]
 

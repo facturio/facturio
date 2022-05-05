@@ -11,6 +11,8 @@ class Article:
     def __init__(self, title: str,  price: float, quantity: int = 1,
                  description: str = " "):
         self.title = title
+        if description == "":
+            description = " "
         self.description = description
         self.price = price
         self.quantity = quantity
