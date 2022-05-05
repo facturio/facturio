@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
 import sqlite3
 import gi
-from gui.page_gui import Page_Gui
+from gui.page_gui import PageGui
 from db.db import Data_base
 gi.require_version("Gtk", "3.0")
 from gi.repository import Gtk, Gdk, Gio, GdkPixbuf
 
 
-class Add_Customer(Page_Gui):
+class Add_Customer(PageGui):
     """
     Classe IHM de le fenetre d'ajoute d'un client
     +--------+
@@ -25,7 +25,6 @@ class Add_Customer(Page_Gui):
                                   row_spacing=20)
         self.client_entries={}
         self.client_label={}
-        self.db= Data_base("facturio")
         self.__init_grid()
         self.title__("Ajouter Client")
         self.__space_info()
@@ -71,10 +70,15 @@ class Add_Customer(Page_Gui):
             self.client_entries["Entreprise "].set_text("")
             self.info.append(self.client_entries["Siret "].get_text())
             self.client_entries["Siret "].set_text("")
-            print(self.info)
-            self.db.insertion_client_or_company(self.info, 1)
+            if self.is_valid_for_db(self.info) and self.info[-1].isnumeric():
+                self.db.insertion_client_or_company(self.info, 1)
+            else:
+                print("champs incorrect")
         else:
-            self.db.insertion_client_or_company(self.info, 0)
+            if self.is_valid_for_db(self.info):
+                self.db.insertion_client_or_company(self.info, 0)
+            else:
+                print("champs incorrect")
 
 
     def __swicth_client(self):
@@ -95,7 +99,6 @@ class Add_Customer(Page_Gui):
     def on_button_toggled(self, button, pro):
         if button.get_active() and pro=="1":
             self.is_pro=True
-            print(self.client_entries)
             self.client_entries["Entreprise "].show()
             self.client_label["Entreprise "].show()
             self.client_label["Siret "].show()
@@ -151,7 +154,6 @@ class Add_Customer(Page_Gui):
         label.set_markup("<b>"+c_txt+"</b>:")
         label.set_hexpand(True)
         label.set_justify(Gtk.Justification.CENTER)
-        print(c_txt)
         self.client_label[c_txt] = label
         self.cent.attach(label,*pos)
         self.entry = Gtk.Entry()

@@ -1,9 +1,11 @@
 import gi
 gi.require_version("Gtk", "3.0")
-from gui.page_gui import Page_Gui
+gi.require_version("OsmGpsMap", "1.0")
+from facturio.gui.page_gui import PageGui
 from gi.repository import Gtk, Gdk, Gio, GdkPixbuf, OsmGpsMap
+from facturio import __path__
 
-class InfoPerson (Page_Gui):
+class InfoPerson (PageGui):
     """
     Classe IHM de le fenetre d'affichage, elle permet soit d'afficher la page
     d'utilisateur soit la page d'un client
@@ -14,22 +16,38 @@ class InfoPerson (Page_Gui):
     """
     def __init__(self, is_ut, name,*args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.init_grid()
+        self.cent = Gtk.Grid(column_homogeneous=False,
+                                  row_homogeneous=False, column_spacing=20,
+                                  row_spacing=20)
+        self.__init_grid()
+        self.grid.attach(self.cent, 1, 2, 2, 1)
         self.__space_info()
-        self.title(name)
+        self.__title(name)
         if is_ut:
             self.utilisateur()
         else:
             self.client()
 
+    def __init_grid(self):
+        """
+        Propriete de la Grid Gtk
+        voir doc
+        """
+        self.grid = Gtk.Grid()
+        self.add(self.grid)
+        self.grid.set_column_homogeneous(False)
+        self.grid.set_row_homogeneous(False)
+        self.grid.set_row_spacing(20)
+        self.grid.set_column_spacing(20)
+        return self
 
-    def title__(self, ttl):
+    def __title(self, ttl):
         bttl= Gtk.Box()
         bttl.set_name("name")
         self.tl = Gtk.Label()
         self.tl.set_markup("<span font_weight=\"bold\" size=\"xx-large\">"+ttl+"</span>")
         bttl.pack_start(self.tl, False, False, 0)
-        self.grid.attach(bttl, 2, 2, 1, 1 )
+        self.grid.attach(bttl, 1, 1, 3, 1 )
 
 
     def utilisateur(self):
@@ -41,7 +59,7 @@ class InfoPerson (Page_Gui):
         self.nums("test")
         self.entreprise("test")
         self.siret("test")
-        self.logo("../icons/Moi.png")
+        self.logo(__path__[0] + "/data/icons/Moi.png")
         self.commentaire("ldhfskjv xbvhxknvkhxfvkjzx vjgcxbv jlkmc jcbui jmcljbuxvn kjxvhofxv dvudhvbdhkvn kbhvdubn kfuhvxovnludhvod")
 
 
@@ -66,27 +84,30 @@ class InfoPerson (Page_Gui):
         Ajoute les espace
         pour l'ergonomie
         """
-        spaceh = Gtk.Label(label="")
-        spacel = Gtk.Label(label="")
-        self.grid.attach(spacel,7,0,1,1)
-        self.grid.attach(spaceh,0,0,1,1)
-
+        spacel = Gtk.Label("")
+        spacel.set_hexpand(True)
+        self.grid.attach(spacel, 0, 1, 1, 1)
+        spacer = Gtk.Label("")
+        spacer.set_hexpand(True)
+        self.grid.attach(spacer, 3, 2, 2, 1)
+        spaceh = Gtk.Label("")
+        self.grid.attach(spaceh, 0, 0, 5, 1)
 
     def __creat_labelbox(self,c_txt,pos):
         """
         prend un couple de chaine de charactere ainsi que un
         tuple de postion et affhiche un label avec une boite
         """
-        boxadress= Gtk.Box()
-        boxadress.set_name("box_afficher")
-        self.adrs = Gtk.Label()
-        self.adrs.set_markup("<b>"+c_txt[0]+"</b>:")
-        self.txt = Gtk.Label(c_txt[1])
-        boxadress.pack_start(self.txt, False, False, 0)
-        self.grid.attach(boxadress, *pos)
-        self.grid.attach_next_to(self.adrs,boxadress,Gtk.PositionType.LEFT,1,1)
-        self.spaceadrss = Gtk.Label(label="")
-        self.grid.attach(self.spaceadrss,0,pos[1]+1,1,1)
+        print(c_txt)
+        label = Gtk.Label()
+        label.set_markup("<b>"+c_txt[0]+"</b>:")
+        label.set_hexpand(True)
+        label.set_justify(Gtk.Justification.CENTER)
+        self.cent.attach(label,*pos)
+        self.entry = Gtk.Label(c_txt[1])
+        self.cent.attach(self.entry,pos[0]+1,pos[1],2,1)
+        space = Gtk.Label()
+        self.cent.attach(space,pos[0],pos[1]+1,3,1)
 
 
     def adrss(self,adr):
@@ -118,7 +139,7 @@ class InfoPerson (Page_Gui):
         log = Gtk.Image.new_from_pixbuf(
             GdkPixbuf.Pixbuf.new_from_file_at_size(path, 200, 200))
         log.set_name("lg")
-        self.grid.attach(log, 4, 4, 3, 6 )
+        self.cent.attach(log, 4, 4, 3, 6 )
 
 
     def commentaire(self,adr):
@@ -128,5 +149,5 @@ class InfoPerson (Page_Gui):
         self.com.set_line_wrap(True)
         self.com.set_max_width_chars(32)
         boxcom.pack_start(self.com, False, False, 0)
-        self.grid.attach(boxcom, 4, 10, 3, 3 )
+        self.cent.attach(boxcom, 4, 10, 3, 3 )
 

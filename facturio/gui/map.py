@@ -1,12 +1,16 @@
 #!/usr/bin/env python3
 import gi
-from gui.page_gui import Page_Gui
+from facturio.gui.page_gui import PageGui
 gi.require_version("Gtk", "3.0")
 gi.require_version("OsmGpsMap", "1.0")
+import concurrent.futures
+from facturio.db.db import Data_base
 from geopy.geocoders import Nominatim
 from gi.repository import Gtk, Gdk, Gio, GdkPixbuf, OsmGpsMap
 
-class Map(Page_Gui):
+from facturio import __path__
+
+class Map(PageGui):
     """
     Classe IHM de la fenetre Map, elle permet de chercher un client
     et d'afficher ca position sur une
@@ -30,7 +34,10 @@ class Map(Page_Gui):
                 .search((1,3,5,1))
                 .__init_map()
         )
-        self.print_all_customer(["Paris","Toulon","Montlucon"])
+        list_client= self.db.selection_table("client")
+        list_adress=[client[4] for client in list_client ]
+        print(list_adress)
+        self.print_all_customer(list_adress)
 
 
     def __init_map(self):
@@ -51,7 +58,11 @@ class Map(Page_Gui):
         """
         geolocator = Nominatim(user_agent="Nominatim")
         location = geolocator.geocode(adrss)
+        if location == None:
+            print("adresse non trouver :", adrss)
+            return (None,None)
         x, y = location.latitude, location.longitude
+        print((x,y))
         return (x,y)
 
 
@@ -65,7 +76,7 @@ class Map(Page_Gui):
         """
         x,y= self.__get_gps(adrss)
         self.osm.set_center_and_zoom(x, y, 17)
-        marker = GdkPixbuf.Pixbuf.new_from_file_at_size("../icons/poi.png", 50, 50)
+        marker = GdkPixbuf.Pixbuf.new_from_file_at_size(__path__[0] + "/data/icons/poi.png", 50, 50)
         self.osm.image_add(x, y, marker)
         return self
 
@@ -76,7 +87,10 @@ class Map(Page_Gui):
         icone a chquene de leur adresse
         """
         for adresse in l_adress:
-            x,y= self.__get_gps(adresse)
-            marker = GdkPixbuf.Pixbuf.new_from_file_at_size("../icons/poi.png", 25, 25)
-            self.osm.image_add(x, y, marker)
+            with concurrent.futures.ThreadPoolExecutor() as executor:
+                future = executor.submit(self.__get_gps, adresse)
+                x,y = future.result()
+                if x!= None:
+                    marker = GdkPixbuf.Pixbuf.new_from_file_at_size(__path__[0] + "/data/icons/poi.png", 25, 25)
+                    self.osm.image_add(x, y, marker)
         return self

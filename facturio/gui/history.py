@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 import gi
 gi.require_version("Gtk", "3.0")
-from gui.page_gui import Page_Gui
+from gui.page_gui import PageGui
 from gi.repository import Gtk
 
-class History(Page_Gui):
+class History(PageGui):
     """
     Classe IHM de le fenetre Historique. Elle permet de chercher
     un devis ou une facture
@@ -16,8 +16,10 @@ class History(Page_Gui):
     ||------||
     +--------+
     """
-    def __init__(self):
-        super().__init__()
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.grid = Gtk.Grid(column_homogeneous=True, row_homogeneous=True,
+                             column_spacing=20, row_spacing=20)
         (
             self.init_grid()
                 .title("Historique")
@@ -25,5 +27,4 @@ class History(Page_Gui):
                 .space()
                 .init_result(["Nom", "date", "Description"],
                           (1,4,5,10))
-                .add(self.grid)
         )

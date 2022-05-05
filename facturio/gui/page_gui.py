@@ -2,17 +2,42 @@
 import gi
 gi.require_version("Gtk", "3.0")
 from gi.repository import Gtk
+import re
+from facturio.db.db import Data_base
 from facturio.gui.omnisearch import FacturioOmnisearch
 from facturio import examples
 
-class Page_Gui(Gtk.ScrolledWindow):
+class PageGui(Gtk.ScrolledWindow):
     """
     Classe servant de socle commun de methode
     gtk pour les page gui de Facturio
     """
 
     def __init__(self) -> None:
+        self.db= Data_base("facturio")
         super().__init__()
+
+
+    def is_valid_for_db(self,l_client):
+        """
+        retourn si les element de la liste
+        l_client est correct ou non pour
+        la base de donnee
+        """
+        regex_mail = re.compile(r'([A-Za-z0-9]+[.-_])*[A-Za-z0-9]+@[A-Za-z0-9-]+(\.[A-Z|a-z]{2,})+')
+        if not l_client[0].isalpha():
+            print(l_client[0],"est incorrect")
+            return False
+        if not l_client[1].isalpha():
+            print(l_client[1],"est incorrect")
+            return False
+        if not (re.fullmatch(regex_mail, l_client[2])):
+            print(l_client[2],"est incorrect")
+            return False
+        if not l_client[4][1:].strip(" ").isnumeric():
+            print(l_client[4],"est incorrect")
+            return False
+        return True
 
 
     def space(self):
