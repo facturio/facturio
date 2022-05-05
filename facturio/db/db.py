@@ -143,10 +143,10 @@ class Data_base:
     def insertion_user(self,liste):
             texte=liste[0]
             #convertir image logo sous forme de fichier binaire
-            with open(texte,"rb") as myfile:
-                blobfile=myfile.read()
+            #with open(texte,"rb") as myfile:
+            #   blobfile=myfile.read()
 
-            liste[0]=blobfile
+            liste[0]="img"
 
             self.cursor.execute("""INSERT INTO user(logo,company_name,e_mail,address,phone,num_SIREN) VALUES(?,?,?,?,?,?)""",liste)
             self.connexion.commit()

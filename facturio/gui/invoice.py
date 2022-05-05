@@ -29,7 +29,6 @@ class InvoicePage(Gtk.ScrolledWindow):
         self.main_grid.attach(self.header_grid, 2, 1, 1, 1)
         self.main_grid.attach(self.user_client_grid, 2, 2, 1, 1)
         # spaces sur les cotes
-
         spacel = Gtk.Label("")
         spacel.set_hexpand(True)
         self.main_grid.attach(spacel, 1, 1, 1, 3)

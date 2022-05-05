@@ -1,6 +1,9 @@
 import gi
+from facturio.gui.home import HeaderBarSwitcher
 gi.require_version("Gtk", "3.0")
 from gui.page_gui import PageGui
+from classes.user import User
+from gui.add_customer import Add_Customer
 from gi.repository import Gtk, Gdk, Gio, GdkPixbuf, OsmGpsMap
 
 class InfoPerson (PageGui):
@@ -12,7 +15,8 @@ class InfoPerson (PageGui):
     |---  -- |
     +--------+
     """
-    def __init__(self, is_ut, name,*args, **kwargs):
+    def __init__(self, header_bar: HeaderBarSwitcher, is_ut, num_client,*args, **kwargs):
+        self.header_bar = header_bar
         super().__init__(*args, **kwargs)
         self.cent = Gtk.Grid(column_homogeneous=False,
                                   row_homogeneous=False, column_spacing=20,
@@ -20,7 +24,6 @@ class InfoPerson (PageGui):
         self.__init_grid()
         self.grid.attach(self.cent, 1, 2, 2, 1)
         self.__space_info()
-        self.__title(name)
         if is_ut:
             self.utilisateur()
         else:
@@ -48,17 +51,26 @@ class InfoPerson (PageGui):
         self.grid.attach(bttl, 1, 1, 3, 1 )
 
 
+    def __get_user(self):
+        """
+        Recupere de la bd les info utilisateur
+        et les retourne sous forme de liste
+        """
+        list_client= self.db.selection_table("user")
+        return list_client
+
+
     def utilisateur(self):
         """
         Affichage pour utilisateur
         """
-        self.adrss("test")
-        self.mails("test")
-        self.nums("test")
-        self.entreprise("test")
-        self.siret("test")
+        att_usr=self.__get_user()[0]
+        self.__title(att_usr[2])
+        self.adrss(att_usr[4])
+        self.mails(att_usr[3])
+        self.nums(str(att_usr[5]))
+        self.siret(str(att_usr[6]))
         self.logo("../icons/Moi.png")
-        self.commentaire("ldhfskjv xbvhxknvkhxfvkjzx vjgcxbv jlkmc jcbui jmcljbuxvn kjxvhofxv dvudhvbdhkvn kbhvdubn kfuhvxovnludhvod")
 
 
 
@@ -75,6 +87,7 @@ class InfoPerson (PageGui):
         self.nums("test")
         self.entreprise("test")
         self.siret("test")
+        self.commentaire("ldhfskjv xbvhxknvkhxfvkjzx vjgcxbv jlkmc jcbui jmcljbuxvn kjxvhofxv dvudhvbdhkvn kbhvdubn kfuhvxovnludhvod")
 
 
     def __space_info(self):
@@ -96,16 +109,20 @@ class InfoPerson (PageGui):
         prend un couple de chaine de charactere ainsi que un
         tuple de postion et affhiche un label avec une boite
         """
-        print(c_txt)
+        self.imp = Gtk.Button(label="Modifier")
+        self.cent.attach(self.imp, 6, 12, 3, 1)
+        self.imp.connect("clicked", self.header_bar.active_button, "modify_usr")
         label = Gtk.Label()
-        label.set_markup("<b>"+c_txt[0]+"</b>:")
+        label.set_markup("<b>"+c_txt[0]+"</b>:    ")
+        label.set_justify(Gtk.Justification.RIGHT)
+        self.cent.attach(label,pos[0],pos[1],2,1)
         label.set_hexpand(True)
-        label.set_justify(Gtk.Justification.CENTER)
-        self.cent.attach(label,*pos)
-        self.entry = Gtk.Label(c_txt[1])
-        self.cent.attach(self.entry,pos[0]+1,pos[1],2,1)
-        space = Gtk.Label()
-        self.cent.attach(space,pos[0],pos[1]+1,3,1)
+        label.set_hexpand(True)
+        entry = Gtk.Entry()
+        entry.set_text(c_txt[1])
+        entry.set_hexpand(True)
+        entry.set_editable(False)
+        self.cent.attach(entry,pos[0]+2,pos[1],2,1)
 
 
     def adrss(self,adr):
@@ -137,7 +154,7 @@ class InfoPerson (PageGui):
         log = Gtk.Image.new_from_pixbuf(
             GdkPixbuf.Pixbuf.new_from_file_at_size(path, 200, 200))
         log.set_name("lg")
-        self.cent.attach(log, 4, 4, 3, 6 )
+        self.cent.attach(log, 6, 4, 3, 6 )
 
 
     def commentaire(self,adr):

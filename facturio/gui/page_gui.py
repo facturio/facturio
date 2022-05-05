@@ -39,6 +39,28 @@ class PageGui(Gtk.ScrolledWindow):
             return False
         return True
 
+    def is_usr_valid_for_db(self,l_client):
+        """
+        retourn si les element de la liste
+        l_client est correct ou non pour
+        la base de donnee
+        """
+        print(l_client)
+        regex_mail = re.compile(r'([A-Za-z0-9]+[.-_])*[A-Za-z0-9]+@[A-Za-z0-9-]+(\.[A-Z|a-z]{2,})+')
+        if not l_client[1].isalpha():
+            print(l_client[1],"est incorrect")
+            return False
+        if not (re.fullmatch(regex_mail, l_client[2])):
+            print(l_client[2],"est incorrect")
+            return False
+        if not l_client[4][1:].strip(" ").isnumeric():
+            print(l_client[4],"est incorrect")
+            return False
+        if not l_client[5].strip(" ").isnumeric():
+            print(l_client[5],"est incorrect")
+            return False
+        return True
+
 
     def space(self):
         """

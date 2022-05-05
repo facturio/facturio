@@ -6,6 +6,7 @@ from facturio.gui.invoice  import InvoicePage
 from facturio.gui.home import HomePage, HeaderBarSwitcher
 from facturio.gui.customer import Customer
 from facturio.gui.add_customer import Add_Customer
+from facturio.gui.modify_usr import ModifyUsr
 from facturio.gui.history import History
 from facturio.gui.map import Map
 from facturio.gui.display_info import InfoPerson
@@ -44,13 +45,15 @@ class Window(Gtk.ApplicationWindow):
         self.stack.add_named(self.invoice_page, "invoice_page")
         self.add_customer = Add_Customer()
         self.stack.add_named(self.add_customer, "add_customer")
+        self.modify_usr = ModifyUsr()
+        self.stack.add_named(self.modify_usr, "modify_usr")
         self.customer_page = Customer(self.header_bar)
         self.stack.add_named(self.customer_page, "customer_page")
         self.history_page = History()
         self.stack.add_named(self.history_page, "history_page")
         self.map_page = Map()
         self.stack.add_named(self.map_page, "map_page")
-        self.user_page = InfoPerson(True,"T.Olivier")
+        self.user_page = InfoPerson(self.header_bar,True,"T.Olivier")
         self.stack.add_named(self.user_page, "user_page")
 
         self.add(self.stack)
