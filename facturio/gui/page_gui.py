@@ -3,7 +3,7 @@ import gi
 gi.require_version("Gtk", "3.0")
 from gi.repository import Gtk
 import re
-from db.db import Data_base
+from facturio.db.db import Data_base
 from facturio.gui.omnisearch import FacturioOmnisearch
 from facturio.gui.autocompletion import FacturioEntryCompletion
 from facturio import examples

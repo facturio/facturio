@@ -1,24 +1,189 @@
 #!/usr/bin/env python3
 import gi
 gi.require_version("Gtk", "3.0")
-from gi.repository import Gtk, GObject
+from gi.repository import Gtk, GObject, Gdk
 from facturio.classes.client import Company, Client
 from facturio.classes.user import User
 from facturio.classes.invoice_misc import Article, Invoice, Advance, Estimate
+from facturio.gui.home import HeaderBarSwitcher
 from facturio.build_pdf.build_pdf import build_pdf
 from datetime import datetime
 import re
 from datetime import date
 
-
-
-
-
 class InvoicePage(Gtk.ScrolledWindow):
+    def __init__(self):
+        super().__init__()
+        # client | date | solde restant
+        self.grid = Gtk.Grid( row_homogeneous=True,
+                             column_spacing=20, row_spacing=20)
+        self._init_treeview()
+
+        header_bar = HeaderBarSwitcher.get_instance()
+        self.hb = header_bar
+        hbox = Gtk.HBox()
+        self.paid_switch = Gtk.RadioButton(label="Acquitee")
+        self.not_paid_switch = Gtk.RadioButton(group=self.paid_switch,
+                                               label="Non acquitee")
+        self.paid_switch.set_mode(False)
+        self.not_paid_switch.set_mode(False)
+        hbox.pack_start(self.paid_switch, True, True, 0)
+        hbox.pack_start(self.not_paid_switch, True, True, 0)
+        Gtk.StyleContext.add_class(hbox.get_style_context(), "linked")
+
+        vbox = Gtk.VBox()
+        create_btn = Gtk.Button(label="Creer nouvelle facture")
+        create_btn.connect("clicked", self.switch_to_create_invoice)
+        export_btn = Gtk.Button(label="Exporter PDF")
+        add_advance_btn = Gtk.Button(label="Ajouter acompte")
+        delete_btn = Gtk.Button(label="Supprimer")
+        update_style_btn = Gtk.Label(label="Style PDF")
+
+        color_btn = Gtk.ColorButton()
+        vbox.pack_start(create_btn, True, True, 5)
+        vbox.pack_start(add_advance_btn, True, True, 5)
+        vbox.pack_start(delete_btn, True, True, 5)
+        vbox.pack_start(export_btn, True, True, 5)
+        vbox.pack_start(update_style_btn, True, True, 5)
+        color = Gdk.RGBA()
+        color.parse("#5f5f5f")
+        color_btn.set_rgba(color)
+
+        vbox1 = Gtk.VBox()
+        rb = Gtk.RadioButton(label="Lignes")
+        rb1 = Gtk.RadioButton(group=rb, label="Colonnes")
+
+        vbox1.pack_start(rb, True, True, 0)
+        vbox1.pack_start(rb1, True, True, 0)
+        # update_style_btn.connect("clicked", self.style_update_window)
+        hbox1 = Gtk.HBox()
+        hbox1.pack_start(color_btn, True, True, 5)
+        hbox1.pack_start(vbox1, True, True, 5)
+
+        vbox.pack_start(hbox1, True, True, 5)
+
+        # self.grid.attach(hbox, 1, 1, 1, 1)
+        self.treeview.set_hexpand(True)
+        self.treeview.set_vexpand(True)
+        # self.grid.attach(self.treeview, 1, 2, 2, 7)
+        # self.grid.attach(vbox, 11, 2, 1, 3)
+
+
+        main_grid = Gtk.Grid(column_spacing=20, row_spacing=20)
+        vspace = Gtk.Label(label="")
+        vspace.set_hexpand(True)
+        vspace.set_vexpand(True)
+        main_grid.attach(vspace, 1, 1, 1, 1)
+
+        vspace = Gtk.Label(label="")
+        vspace.set_hexpand(True)
+        vspace.set_vexpand(True)
+        main_grid.attach(vspace, 5, 1, 1, 1)
+
+        hbox.set_halign(Gtk.Align.START)
+
+        search = Gtk.SearchEntry()
+
+        main_grid.attach(search, 2, 1, 3, 1)
+        main_grid.attach(hbox, 2, 2, 1, 1)
+
+        main_grid.attach(self.treeview, 2, 3, 2, 9)
+        main_grid.attach(vbox, 4, 3, 1, 1)
+
+        self.add(main_grid)
+
+    def switch_to_create_invoice(self, *args):
+        hb = HeaderBarSwitcher.get_instance()
+        hb.active_button(page="create_invoice_page")
+
+
+    def style_update_window(self, *args):
+        self.set_sensitive(False)
+        box = Gtk.VBox()
+        rb = Gtk.RadioButton(label="Lignes")
+        rb1 = Gtk.RadioButton(group=rb, label="Colonnes")
+        window = Gtk.Window(title="Modifier Style", type=Gtk.WindowType.TOPLEVEL)
+        color_chooser = Gtk.ColorChooserWidget(show_editor=False)
+        box.pack_start(color_chooser, True, True, 5)
+        box.pack_start(rb, True, True, 5)
+        box.pack_start(rb1, True, True, 5)
+        window.add(box)
+        window.show_all()
+
+    def _init_treeview(self):
+        self.store = Gtk.ListStore(str, str, str, float)
+
+        self.store.append(["Prenom", "nom", "11/23/1900", 123.4])
+        self.store.append(["Prenom1", "nom1", "11/23/1700", 323.4])
+        self.store.append(["Prenom2", "nom2", "11/23/1800", 423.4])
+
+        self.treeview = Gtk.TreeView(model=self.store, headers_clickable=True)
+        renderer_text = Gtk.CellRendererText()
+        column_text = Gtk.TreeViewColumn("Prenom", renderer_text, text=0)
+        column_text.set_clickable(True)
+        column_text.set_resizable(True)
+        column_text.get_button().connect("clicked", self.sort_first_name)
+        self.treeview.append_column(column_text)
+
+        renderer_text = Gtk.CellRendererText()
+        column_text = Gtk.TreeViewColumn("Nom", renderer_text, text=1)
+        column_text.set_clickable(True)
+        column_text.set_resizable(True)
+        column_text.get_button().connect("clicked", self.sort_last_name)
+        self.treeview.append_column(column_text)
+
+        # column_text.set_clickable(True)
+        # column_text.get_button().connect("clicked", self.sort_first_name)
+
+        # renderer_text = Gtk.CellRendererText()
+        column_text = Gtk.TreeViewColumn("Date", renderer_text, text=2)
+        column_text.set_clickable(True)
+        column_text.get_button().connect("clicked", self.sort_date)
+        self.treeview.append_column(column_text)
+
+        # renderer_text = Gtk.CellRendererText()
+        column_text= Gtk.TreeViewColumn("Solde restant", renderer_text, text=3)
+        column_text.set_clickable(True)
+        column_text.get_button().connect("clicked", self.sort_balance)
+        self.treeview.append_column(column_text)
+
+        renderer_text = Gtk.CellRendererText()
+        invisible_column = Gtk.TreeViewColumn("", renderer_text)
+        invisible_column.set_expand(True)
+        self.treeview.append_column(invisible_column)
+
+        renderer_text = Gtk.CellRendererText()
+        column_text = Gtk.TreeViewColumn(title="Rafraichir",
+                                         cell_renderer=renderer_text)
+        column_text.get_button().connect("clicked", self.refresh_store)
+        column_text.set_clickable(True)
+        # column_text.set_halign(Gtk.Align.END)
+        # column_text.set_widget(btn)
+        # btn.show()
+        self.treeview.append_column(column_text)
+
+    def on_combo_changed(self, widget, path, text):
+        self.liststore_hardware[path][1] = text
+
+    def sort_first_name(self, *args):
+        raise NotImplementedError()
+    def sort_last_name(self, *args):
+        raise NotImplementedError()
+    def sort_date(self, *args):
+        raise NotImplementedError()
+    def sort_balance(self, *args):
+        raise NotImplementedError()
+    def refresh_store(self, *args):
+        raise NotImplementedError()
+
+class CreateInvoicePage(Gtk.ScrolledWindow):
     """Page pour la creation invoice."""
 
     def __init__(self):
         super().__init__()
+        # user = User("Facturio INC", "BENJELLOUN", "Youssef", "yb@gmail.com",
+        #             "427 Boulevard des armaris 83100 Toulon", "07 67 31 58 20",
+        #             "12348921 2341")
         self.main_grid = Gtk.Grid(column_homogeneous=False,
                                   row_homogeneous=False, column_spacing=20,
                                   row_spacing=20)
@@ -91,8 +256,8 @@ class InvoicePage(Gtk.ScrolledWindow):
         self.logo_fn = None
         self.logo_button.connect("clicked", self._logo_dialog)
 
-    def test(self, entry):
-        if entry == self.client_switch:
+    def _switch_private_company(self, entry):
+        if entry == self.private_switch:
             self.client_entries["company_name"].hide()
             self.client_labels["company_name"].hide()
             self.client_entries["business_number"].hide()
@@ -130,14 +295,14 @@ class InvoicePage(Gtk.ScrolledWindow):
         label.set_use_markup(True)
         hbox = Gtk.HBox()
         # hbox.pack_start(label, True, True, 10)
-        self.client_switch = Gtk.RadioButton(label="Particulier")
-        self.company_switch = Gtk.RadioButton(group=self.client_switch,
+        self.private_switch = Gtk.RadioButton(label="Particulier")
+        self.company_switch = Gtk.RadioButton(group=self.private_switch,
                                               label="Entreprise")
-        self.company_switch.connect("clicked", self.test)
-        self.client_switch.connect("clicked", self.test)
-        self.client_switch.set_mode(False)
+        self.company_switch.connect("clicked", self._switch_private_company)
+        self.private_switch.connect("clicked", self._switch_private_company)
+        self.private_switch.set_mode(False)
         self.company_switch.set_mode(False)
-        hbox.pack_start(self.client_switch, True, True, 0)
+        hbox.pack_start(self.private_switch, True, True, 0)
         hbox.pack_start(self.company_switch, True, True, 0)
         Gtk.StyleContext.add_class(hbox.get_style_context(), "linked")
 
@@ -232,8 +397,13 @@ class InvoicePage(Gtk.ScrolledWindow):
 
         button = Gtk.Button(label="Sauvegarder client")
         self.client_grid.attach(button, 1, 11, 2, 1)
-    # def _get_active_btn(self):
-    #     self.client_switch.get_group
+
+    def _load_user_entries(self):
+        user = User.get_instance()
+        for name, entry in self.user_entries.items():
+            entry.set_text(user.get_attr(name))
+            entry.set_sensitive(False)
+
     def allow_only_phone(self, entry, string, *args):
         for char in string:
             if not char.isdigit() and char != " " and char != "-":
@@ -340,11 +510,56 @@ class InvoicePage(Gtk.ScrolledWindow):
         self.user_grid.attach(entry, 2, 10, 3, 1)
         self.user_entries["business_number"] = entry
 
-        button = Gtk.Button(label="Sauvegarder utilisateur")
-        self.user_grid.attach(button, 1, 11, 2, 1)
+        self.save_user_btn = Gtk.Button(label="Sauvegarder utilisateur")
+        self.save_user_btn.connect("clicked", self._save_user)
+        self.user_grid.attach(self.save_user_btn, 1, 11, 2, 1)
 
-        button = Gtk.Button(label="Charger utilisateur")
-        self.user_grid.attach(button, 3, 11, 2, 1)
+        self.update_user_btn = Gtk.Button(label="Modifier utilisateur")
+        self.update_user_btn.connect("clicked", self._update_user)
+        self.user_grid.attach(self.update_user_btn, 3, 11, 2, 1)
+        if User.exits():
+            self._load_user_entries()
+            self.logo_button.set_label(" Ajouté")
+            self.logo_button.set_sensitive(False)
+            self.save_user_btn.set_sensitive(False)
+        else:
+            self.update_user_btn.set_sensitive(False)
+
+
+
+    def _save_user(self, btn):
+        self.reset_context(btn)
+        if self._validate_user_entries() is False:
+            return
+        if User.exits():
+            user = User.get_instance()
+            for name, entry in self.user_entries.items():
+                user.set_attr(name, entry.get_text())
+        else:
+            user_data = {}
+            for name, entry in self.user_entries.items():
+                user_data[name] = entry.get_text()
+            user_data["logo"] = self.logo_fn
+            User.from_dict(user_data)
+
+        # ihm modif
+        user = User.get_instance()
+        for entry in self.user_entries.values():
+            entry.set_sensitive(False)
+        self.logo_button.set_sensitive(False)
+        self.logo_button.set_label(" Ajouté")
+        self.update_user_btn.set_sensitive(True)
+        self.save_user_btn.set_sensitive(False)
+        return
+
+    def _update_user(self, btn):
+        user = User.get_instance()
+        for name, entry in self.user_entries.items():
+            entry.set_sensitive(True)
+        self.logo_button.set_label(" Changer image")
+        self.logo_button.set_sensitive(True)
+        self.update_user_btn.set_sensitive(False)
+        self.save_user_btn.set_sensitive(True)
 
     def reset_context(self, entry):
         context = entry.get_style_context()
@@ -479,7 +694,6 @@ class InvoicePage(Gtk.ScrolledWindow):
 
     def set_error(self, entry):
         print(entry)
-        data = entry.get_text()
         context = entry.get_style_context()
         context.add_class("entry_error")
 
@@ -492,7 +706,7 @@ class InvoicePage(Gtk.ScrolledWindow):
                 if not self.valid_email(entry.get_text()) and data != "":
                     self.set_error(entry)
                     error = False
-            elif data == "":
+            if data == "":
                 self.set_error(entry)
                 error = False
         return error
@@ -500,7 +714,7 @@ class InvoicePage(Gtk.ScrolledWindow):
     def _validate_client_entries(self):
         """Renvoi True si les donnees saisis sont valides."""
         error = True
-        if self.client_switch.get_active():
+        if self.private_switch.get_active():
             for name, entry in self.client_entries.items():
                 data = entry.get_text()
                 if name == "email":
@@ -518,7 +732,7 @@ class InvoicePage(Gtk.ScrolledWindow):
                     if not self.valid_email(entry.get_text()) and data != "":
                         self.set_error(entry)
                         error = False
-                elif data == "":
+                if data == "":
                     self.set_error(entry)
                     error = False
         return error
@@ -559,6 +773,10 @@ class InvoicePage(Gtk.ScrolledWindow):
         error_found = False
         if self._validate_user_entries() is False:
             error_found = True
+        else:
+            if self.save_user_btn.get_sensitive():
+                self.set_error(self.save_user_btn)
+                error_found = True
         if self._validate_client_entries() is False:
             error_found = True
         if self._validate_article_entries() is False:
@@ -577,10 +795,10 @@ class InvoicePage(Gtk.ScrolledWindow):
             self._raise_error()
             return
 
-        self.user_data = {}
-        for name, entry in self.user_entries.items():
-            self.user_data[name] = entry.get_text()
-        self.user_data["logo"] = self.logo_fn
+        # self.user_data = {}
+        # for name, entry in self.user_entries.items():
+        #     self.user_data[name] = entry.get_text()
+        # self.user_data["logo"] = self.logo_fn
 
         self.client_data = {}
         self.client_data["note"] = None
@@ -589,7 +807,7 @@ class InvoicePage(Gtk.ScrolledWindow):
                 self.client_data[name] = entry.get_text()
             client = Company.from_dict(self.client_data)
         else:
-            assert(self.client_switch.get_active())
+            assert(self.private_switch.get_active())
             names = ("first_name", "last_name", "adress", "email",
                      "phone_number")
             for name in names:
@@ -624,7 +842,7 @@ class InvoicePage(Gtk.ScrolledWindow):
         date_text = self.date_entry.get_text()
         date = datetime.strptime(date_text, "%d/%m/%Y")
         epoch_date = date.timestamp()
-        user = User.from_dict(self.user_data)
+        user = User.get_instance()
 
         tax = self.spin_btn.get_adjustment().get_value() / 100
         total = float(self.total.get_text()[:-2])
@@ -647,7 +865,7 @@ class InvoicePage(Gtk.ScrolledWindow):
         file_chooser.set_filter(filter_)
         if file_chooser.run() == Gtk.ResponseType.ACCEPT:
            self.logo_fn = file_chooser.get_filename()
-           self.logo_button.set_sensitive(False)
+           # self.logo_button.set_sensitive(False)
            self.logo_button.set_label(" Ajouté")
 
     def _put_percentage(self, spin_btn):

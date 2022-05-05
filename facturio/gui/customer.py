@@ -5,9 +5,13 @@ from gui.home import HeaderBarSwitcher
 from gui.add_customer import Add_Customer
 from gui.omnisearch import FacturioOmnisearch
 from gui.autocompletion import FacturioEntryCompletion
+from facturio.gui.page_gui import PageGui
+from facturio.gui.home import HeaderBarSwitcher
+from facturio.gui.add_customer import Add_Customer
+from facturio.db.db import Data_base
 gi.require_version("Gtk", "3.0")
-from db.db import Data_base
 from gi.repository import Gtk, Gdk, Gio, GdkPixbuf
+from gui.headerbar import HeaderBarSwitcher
 
 class Customer(PageGui):
     """
@@ -19,9 +23,9 @@ class Customer(PageGui):
     |__| [E] |
     +--------+
     """
-    def __init__(self, header_bar: HeaderBarSwitcher):
+    def __init__(self):
         super().__init__()
-        self.header_bar = header_bar
+        self.header_bar = HeaderBarSwitcher.get_instance()
         self.__init_grid()
         self.title("Clients")
         self.__space_info()

@@ -1,10 +1,12 @@
 import gi
 from facturio.gui.home import HeaderBarSwitcher
 gi.require_version("Gtk", "3.0")
-from gui.page_gui import PageGui
 from classes.user import User
 from gui.add_customer import Add_Customer
+gi.require_version("OsmGpsMap", "1.0")
+from facturio.gui.page_gui import PageGui
 from gi.repository import Gtk, Gdk, Gio, GdkPixbuf, OsmGpsMap
+from facturio import __path__
 
 class InfoPerson (PageGui):
     """
@@ -15,8 +17,8 @@ class InfoPerson (PageGui):
     |---  -- |
     +--------+
     """
-    def __init__(self, header_bar: HeaderBarSwitcher, is_ut, num_client,*args, **kwargs):
-        self.header_bar = header_bar
+    def __init__(self, header_bar: HeaderBarSwitcher, is_ut, num_client=None,*args, **kwargs):
+        self.header_bar = HeaderBarSwitcher.get_instance()
         super().__init__(*args, **kwargs)
         self.cent = Gtk.Grid(column_homogeneous=False,
                                   row_homogeneous=False, column_spacing=20,
@@ -70,8 +72,7 @@ class InfoPerson (PageGui):
         self.mails(att_usr[3])
         self.nums(str(att_usr[5]))
         self.siret(str(att_usr[6]))
-        self.logo("../icons/Moi.png")
-
+        self.logo("./data/icons/Moi.png")
 
 
     def client(self):
@@ -152,7 +153,7 @@ class InfoPerson (PageGui):
 
     def logo(self,path):
         log = Gtk.Image.new_from_pixbuf(
-            GdkPixbuf.Pixbuf.new_from_file_at_size(path, 200, 200))
+            GdkPixbuf.Pixbuf.new_from_file_at_size("./data/icons/Moi.png", 200, 200))
         log.set_name("lg")
         self.cent.attach(log, 6, 4, 3, 6 )
 
