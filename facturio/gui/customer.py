@@ -62,30 +62,37 @@ class Customer(PageGui):
         filter_ = Gtk.FileFilter()
         filter_.set_name("Client")
         filter_.add_pattern("*.clt")
+        filter_.add_pattern("*.csv")
         filechooserdialog.set_filter(filter_)
         response = filechooserdialog.run()
         if response == Gtk.ResponseType.OK:
             is_coorect=True
-            l_clients=[[]]
-            with open(filechooserdialog.get_filename(), 'r') as f:
-                lines=f.readlines()
-                for line in lines:
-                    line=line.strip('\n')
-                    if line=="#" and len(l_clients)!=1:
-                        break
-                    elif line == "-":
-                        l_clients.append([])
-                    elif line != "#":
-                        l_clients[len(l_clients)-1].append(line)
-                for clients in l_clients:
-                    if self.is_valid_for_db(clients[1:]):
-                        self.db.insertion_client_or_company(clients[1:],
-                                                        clients[0])
-                    else:
-                        print("section incorrect :",clients)
-            print("File selected: %s" % filechooserdialog.get_filename())
-            print(l_clients)
-        filechooserdialog.destroy()
+            l_clients=[]
+            if filechooserdialog.get_filename()[-4:]==".csv":
+                with open(filechooserdialog.get_filename(), 'r') as f:
+                    lines=f.readlines()
+                    for line in lines:
+                        l_clients.append((line.split(",")))
+            else:
+                l_clients.append([])
+                with open(filechooserdialog.get_filename(), 'r') as f:
+                    lines=f.readlines()
+                    for line in lines:
+                        line=line.strip('\n')
+                        if line=="#" and len(l_clients)!=1:
+                            break
+                        elif line == "-":
+                            l_clients.append([])
+                        elif line != "#":
+                            l_clients[len(l_clients)-1].append(line)
+            for clients in l_clients:
+                print(l_clients)
+                if self.is_valid_for_db(clients[1:]):
+                    self.db.insertion_client_or_company(clients[1:],
+                                                    clients[0])
+                else:
+                    print("section incorrect :",clients)
+            filechooserdialog.destroy()
 
 
     def add_result(self,res):

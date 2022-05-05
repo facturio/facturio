@@ -8,6 +8,7 @@ __pycache__/
 
 # client extensions
 *clt
+*csv
 
 #pdf
 *.pdf
