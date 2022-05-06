@@ -16,6 +16,7 @@ class ReceiptDAO:
         return ReceiptDAO.__instance
 
     def insert(self, receipt: Receipt):
+        """Insertion du receipt."""
         request = """INSERT INTO receipt(balance, date, note,
                       id_client, id_user) VALUES (?, ?, ?, ?, ?)"""
         # TODO: Verifier que les id_client et id_user existent et ne soient
@@ -27,7 +28,12 @@ class ReceiptDAO:
         # On recupere l'id qui vient d'etre insere'
         max_req = "SELECT max(id_receipt) FROM receipt"
         id_ = self.bdd.cursor.execute(max_req).fetchone()
-        assert(len(id_) == 1)
+        # Insertion des articles
+        article_dao = ArticleDAO.get_instance()
+        for article in receipt.articles_list:
+            article_dao.insert(article)
+
+        # mis a jour des id receipt et articles
         receipt.set_id(id_[0])
 
     def update(self, receipt: Receipt):
@@ -75,11 +81,6 @@ if __name__ == "__main__":
     telephone = Article("Telephone", 399.99, 1)
     casque = Article("Casque", 69.99, 6)
     articles = [ordinateur, cable_ethernet, telephone, casque]
-
-    art_dao.insert(ordinateur)
-    art_dao.insert(cable_ethernet)
-    art_dao.insert(telephone)
-    art_dao.insert(casque)
 
     receipt_dao = ReceiptDAO.get_instance()
 

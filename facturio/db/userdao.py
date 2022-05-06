@@ -6,7 +6,7 @@ from dbmanager import DBManager
 class UserDAO:
     """User controleur pour la DB."""
 
-    __instance=None
+    __instance = None
 
     def __init__(self):
         """Recupere le manager."""
@@ -19,6 +19,7 @@ class UserDAO:
         return UserDAO.__instance
 
     def insert(self, user: User):
+        """Insertion de l'utilisateur."""
         # TODO: Tester que sur la table il y a pas deja un user
         # TODO: Modifier l'ordre des attributs pour respecter la table
         request = """INSERT INTO user(logo, company_name, e_mail, address,
