@@ -15,6 +15,7 @@ class Article:
         self.description = description
         self.price = price
         self.quantity = quantity
+        self.is_receip= id_receip
 
     def __str__(self):
         return (f"{self.title} | {self.description} | {self.price}"
@@ -72,12 +73,12 @@ class Advance:
 
 class Receipt:
     """
-    Classe contenant toutes les informations communes liées aux 
+    Classe contenant toutes les informations communes liées aux
     factures et devis
     """
     def __init__(self, user: User, client: Union[Client, Company],
                  articles_list: list[Article], date: int, taxes: float,
-                 balance: float, note: str = None), id_: int = None:
+                 balance: float, note: str = None, id_: int = None):
         self.user = user
         self.client = client
         self.articles_list = articles_list
@@ -85,29 +86,29 @@ class Receipt:
         self.balance = balance
         self.note = note
         self.id_ = None
-        
         if date:
             self.date = date
         else:
             self.date = int(time.time())
+
     def set_id(id_rec):
         self.id_ = id_rec
         for article in articles_list:
             article.
-        
     def __str__(self):
         return f"User :\n{self.user}\nClient :\n" \
         f"{self.client}\nDate :\n {self.date_string()}\nListe des articles :"\
         f"\n{self.articles_list}\nTaxes :\n{self.taxes}\nMontants :\n"\
         f"{str(self.balance)}\nCommentaire :\n{self.note}"
-        
+
+
     def __repr__(self):
         return self.__str__()
 
     def dump_to_list(self):
         """
         Renvoie une liste de toutes les variables de classes
-        """ 
+        """
         return [self.user, self.client, self.date, self.articles_list, 
                                             self.taxes, self.balance, self.note]
 
@@ -119,7 +120,6 @@ class Receipt:
         for art in self.articles_list:
             balance += art.price * art.quantity
         return round(balance,2)
-    
     def total_of_taxes(self):
         """
         Calcul le total des taxes
@@ -137,7 +137,8 @@ class Receipt:
         Retourne la date sous forme de chaîne de caractères
         """
         return time.strftime("%d/%m/%Y",time.localtime(self.date))
-            
+
+
 class Invoice(Receipt):
     """
         Classe contenant toutes les informations liées aux factures
@@ -172,11 +173,11 @@ class Invoice(Receipt):
 
     def __repr__(self):
         return self.__str__()
-    
+
     def dump_to_list(self):
         return [self.user, self.client, self.date, self.articles_list,
                 self.advances_list, self.taxes, self.balance, self.note]
-    
+
     def total_with_advances(self):
         """
         Calcule le total soustrait du total des advances
@@ -209,7 +210,7 @@ class Estimate(Receipt):
         taxes: float = None,
         note: str = None,
     ):
-        
+
         super().__init__(user, client, articles_list, date, taxes, balance,
                                                                          note)
 
@@ -221,7 +222,7 @@ if __name__ == "__main__":
 
     client_physique = Client("Lombardo", "Quentin", 
     "quentin.lombardo@email.com", "HLM Sainte-Muse Toulon", "0678905324")
-                    
+
     client_moral = Company(company_name="LeRoy", last_name="Ben",
                            first_name="Karim", business_number="287489404",
                            email="LeRoy83@sfr.fr", adress="12 ZAC de La Crau",

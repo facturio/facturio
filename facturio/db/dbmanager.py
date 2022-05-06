@@ -77,7 +77,8 @@ class DBManager:
             name STRING,
             description STRING,
             price float,
-            quantity INTEGER)""")
+            quantity INTEGER,
+            id_receip INTEGER)""")
         self.connexion.commit()
 
     def _creation_table_receipt(self):
