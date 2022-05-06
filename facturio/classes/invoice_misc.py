@@ -40,8 +40,9 @@ class Advance:
     """
     Classe contenant toutes les informations liées à un devis
     """
-    def __init__(self, amount: float, date: int = None):
-        self.amount = amount
+    def __init__(self, balance: float, date: int = None, id_ = None):
+        self.balance = balance
+        self.id_ = id_
 
         #On vérifie si la date est au format Unix time epoch
         if date:
@@ -50,7 +51,7 @@ class Advance:
             self.date = int(time.time())
 
     def __str__(self):
-        return f" {self.date_string()} | {self.amount}"
+        return f" {self.date_string()} | {self.balance}"
 
     def __repr__(self):
         return self.__str__()
@@ -65,7 +66,7 @@ class Advance:
         """
         Renvoie une liste de toutes les variables de classes
         """
-        return [self.amount, self.date]
+        return [self.balance, self.date]
 
 
 
@@ -76,12 +77,12 @@ class Receipt:
     """
     def __init__(self, user: User, client: Union[Client, Company],
                  articles_list: list[Article], date: int, taxes: float,
-                 amount: float, note: str = None):
+                 balance: float, note: str = None):
         self.user = user 
         self.client = client  
         self.articles_list = articles_list
         self.taxes = taxes
-        self.amount = amount 
+        self.balance = balance
         self.note = note
         
         if date:
@@ -93,7 +94,7 @@ class Receipt:
         return f"User :\n{self.user}\nClient :\n" \
         f"{self.client}\nDate :\n {self.date_string()}\nListe des articles :"\
         f"\n{self.articles_list}\nTaxes :\n{self.taxes}\nMontants :\n"\
-        f"{str(self.amount)}\nCommentaire :\n{self.note}"
+        f"{str(self.balance)}\nCommentaire :\n{self.note}"
         
     def __repr__(self):
         return self.__str__()
@@ -103,16 +104,16 @@ class Receipt:
         Renvoie une liste de toutes les variables de classes
         """ 
         return [self.user, self.client, self.date, self.articles_list, 
-                                            self.taxes, self.amount, self.note]
+                                            self.taxes, self.balance, self.note]
 
     def subtotal(self):
         """
         Calcule le sous-total à partir de la liste des articles
         """
-        amount = 0
+        balance = 0
         for art in self.articles_list:
-            amount += art.price * art.quantity
-        return round(amount,2)
+            balance += art.price * art.quantity
+        return round(balance,2)
     
     def total_of_taxes(self):
         """
@@ -139,9 +140,9 @@ class Invoice(Receipt):
     """
     def __init__(self, user: User, client: Union[Client, Company],
                  articles_list: list[Article], date: int,  taxes: float,
-                 amount: float, advances_list: list[Advance] = None,
+                 balance: float, advances_list: list[Advance] = None,
                  note: str = None):
-        super().__init__(user, client, articles_list, date, taxes, amount,
+        super().__init__(user, client, articles_list, date, taxes, balance,
                          note)
         self.advances_list = advances_list  
     def __str__(self):
@@ -150,14 +151,14 @@ class Invoice(Receipt):
                 f"{self.articles_list}\n"
                 f"\nListe des acomptes :\n{self.advances_list}"
                 f"\nTaxes :\n{self.taxes}\n"
-                f"Montants :\n{self.amount}\nCommentaire :\n{self.note}")
+                f"Montants :\n{self.balance}\nCommentaire :\n{self.note}")
 
     def __repr__(self):
         return self.__str__()
     
     def dump_to_list(self):
         return [self.user, self.client, self.date, self.articles_list,
-                self.advances_list, self.taxes, self.amount, self.note]
+                self.advances_list, self.taxes, self.balance, self.note]
     
     def total_with_advances(self):
         """
@@ -169,11 +170,11 @@ class Invoice(Receipt):
         """
         Calcule le total des acomptes
         """
-        amount = 0
+        balance = 0
         if(self.advances_list != None):
             for adv in self.advances_list:
-                amount += adv.amount
-        return round(amount,2)
+                balance += adv.balance
+        return round(balance,2)
 
 
 class Estimate(Receipt):
@@ -187,12 +188,12 @@ class Estimate(Receipt):
         client: Union[Client, Company],
         articles_list: list[(Article, int)],
         date: int = None ,
-        amount: float = None,
+        balance: float = None,
         taxes: float = None,
         note: str = None,
     ):
         
-        super().__init__(user, client, articles_list, date, taxes, amount, 
+        super().__init__(user, client, articles_list, date, taxes, balance,
                                                                          note)
 
 if __name__ == "__main__":
@@ -219,7 +220,7 @@ if __name__ == "__main__":
 
 
     fact = Invoice(user=artisan, client=client_moral, articles_list=articles,
-                   advances_list=paiements, date=0, taxes=0.2, amount=12,
+                   advances_list=paiements, date=0, taxes=0.2, balance=12,
                    note="Facture de matériel informatiques")
 
 
