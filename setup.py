@@ -7,11 +7,11 @@ setup(
     version='1.0',
     url='https://github.com/facturio/facturio',
     packages=find_packages(),
-    install_requires=["pygobject", "borb", "geopy", "pyxdg"],
+    install_requires=["pygobject", "borb", "geopy", "python-i18n[YAML]"],
     entry_points={
         'console_scripts': [
             'facturio = facturio.main:main'
         ]
     },
-    package_data={'facturio': ['data/icons/*', 'main.css']},
+    package_data={'facturio': ['data/icons/*', 'data/translations/*', 'main.css']},
 )

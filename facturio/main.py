@@ -1,11 +1,9 @@
-import gi
-gi.require_version("Gtk", "3.0")
-from gi.repository import Gtk, Gdk, Gio, GObject
 import sys
-from gui.invoice import InvoicePage, CreateInvoicePage
-from gui.home import HomePage
-from gui.headerbar import HeaderBarSwitcher
-from gui.customer import Customer
+import i18n
+from facturio.gui.invoice import InvoicePage, CreateInvoicePage
+from facturio.gui.home import HomePage
+from facturio.gui.headerbar import HeaderBarSwitcher
+from facturio.gui.customer import Customer
 from facturio.gui.add_customer import Add_Customer
 from facturio.gui.modify_usr import ModifyUsr
 from facturio.gui.history import History
@@ -13,7 +11,13 @@ from facturio.gui.map import Map
 from facturio.gui.display_info import InfoPerson
 from pathlib import Path
 from facturio import __path__
+import gi
+gi.require_version("Gtk", "3.0")
+from gi.repository import Gtk, Gdk, Gio, GObject
 
+i18n.load_path.append(__path__[0] + "/data/translations/")
+i18n.set('filename_format', '{namespace}.{format}')
+i18n.set('locale', 'en')
 
 class Window(Gtk.ApplicationWindow):
     def __init__(self, *args, **kwargs):
@@ -58,10 +62,8 @@ class Window(Gtk.ApplicationWindow):
         self.stack.add_named(self.history_page, "history_page")
         self.map_page = Map()
         self.stack.add_named(self.map_page, "map_page")
-        self.user_page = InfoPerson(True, "T.Olivier")
+        self.user_page = InfoPerson(True,1)
         self.stack.add_named(self.user_page, "user_page")
-        self.client_page = InfoPerson(True, "T.Olivier")
-        self.stack.add_named(self.client_page, "client_page")
         self.add(self.stack)
 
     def initial_show(self):

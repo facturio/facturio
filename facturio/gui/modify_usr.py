@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 import sqlite3
 import gi
-from gui.page_gui import PageGui
-from db.db import Data_base
+from facturio.gui.page_gui import PageGui
+from facturio.db.db import Data_base
 gi.require_version("Gtk", "3.0")
 from gi.repository import Gtk, Gdk, Gio, GdkPixbuf
 
@@ -24,6 +24,9 @@ class ModifyUsr(PageGui):
                                   row_homogeneous=False, column_spacing=20,
                                   row_spacing=20)
         self.attr_usr=self.__get_user()
+        if self.attr_usr==[]:
+            self.attr_usr=[["","","",
+                           "","","",""]]
         self.path=self.attr_usr[0][1]
         self.client_entries={}
         self.client_label={}

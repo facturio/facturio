@@ -1,0 +1,17 @@
+en:
+  search: "Search"
+  bill: "Billing"
+  history: "History"
+  invoice: "Invoice"
+  map: "Map"
+  client: "Client"
+  user: "User"
+
+fr:
+  search: "Recherche"
+  bill: "Facture"
+  history: "Historique"
+  invoice: "Devis"
+  map: "Carte"
+  client: "Client"
+  user: "Utilisateur"
