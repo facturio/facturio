@@ -297,7 +297,7 @@ class CreateInvoicePage(Gtk.ScrolledWindow):
             FacturioEntryCompletion(lambda x: x.first_name),
             FacturioEntryCompletion(lambda x: x.last_name),
             FacturioEntryCompletion(lambda x: x.email),
-            FacturioEntryCompletion(lambda x: x.adress),
+            FacturioEntryCompletion(lambda x: x.address),
             FacturioEntryCompletion(lambda x: x.phone_number),
             # FacturioEntryCompletion(lambda x: (x.company_name or None)),
             # FacturioEntryCompletion(lambda x: (x.business_number or None)),
@@ -373,8 +373,8 @@ class CreateInvoicePage(Gtk.ScrolledWindow):
         entry.set_max_length(100)
         entry.connect("changed", self.reset_context)
         self.client_grid.attach(entry, 2, 7, 3, 1)
-        self.client_entries["adress"] = entry
-        self.client_labels["adress"] = label
+        self.client_entries["address"] = entry
+        self.client_labels["address"] = label
 
         label = Gtk.Label("E-mail")
         label.set_hexpand(True)
@@ -455,7 +455,7 @@ class CreateInvoicePage(Gtk.ScrolledWindow):
 
         self.user_completions = [
             FacturioEntryCompletion(lambda x: x.company_name),
-            FacturioEntryCompletion(lambda x: x.adress),
+            FacturioEntryCompletion(lambda x: x.address),
             FacturioEntryCompletion(lambda x: x.phone_number),
             FacturioEntryCompletion(lambda x: x.business_number),
             FacturioEntryCompletion(lambda x: x.first_name),
@@ -510,7 +510,7 @@ class CreateInvoicePage(Gtk.ScrolledWindow):
         entry.set_max_length(100)
         entry.connect("changed", self.reset_context)
         self.user_grid.attach(entry, 2, 7, 3, 1)
-        self.user_entries["adress"] = entry
+        self.user_entries["address"] = entry
 
         label = Gtk.Label("E-mail")
         label.set_hexpand(True)
@@ -841,7 +841,7 @@ class CreateInvoicePage(Gtk.ScrolledWindow):
             client = Company.from_dict(self.client_data)
         else:
             assert(self.private_switch.get_active())
-            names = ("first_name", "last_name", "adress", "email",
+            names = ("first_name", "last_name", "address", "email",
                      "phone_number")
             for name in names:
                 txt = self.client_entries[name].get_text()
