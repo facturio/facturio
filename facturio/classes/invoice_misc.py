@@ -9,7 +9,8 @@ class Article:
     """
 
     def __init__(self, title: str,  price: float, quantity: int = 1,
-                 description: str = " "):
+                 description: str = " ",id_: int=None):
+        self.id_=id_
         self.title = title
         if description == "":
             description = " "
