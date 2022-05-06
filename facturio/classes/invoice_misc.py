@@ -9,21 +9,18 @@ class Article:
     """
 
     def __init__(self, title: str,  price: float, quantity: int = 1,
-                 description: str = " ",id_: int=None, id_receip: int=None):
-        self.id_=id_
+                 description: str = None, id_: int = None,
+                 id_receipt: int = None):
+        self.id_ = id_
         self.title = title
-        if description == "":
-            description = " "
         self.description = description
         self.price = price
         self.quantity = quantity
-        self.is_receip= id_receip
-
-    
+        self.id_receipt = id_receipt
 
     def __str__(self):
-        return (f"{self.title} | {self.description} | {self.price}"
-                f"| {self.quantity}")
+        return (f"{{{self.id_} | {self.title} | {self.description}"
+                f" | {self.price} | {self.quantity}}}")
 
     def __repr__(self):
         return self.__str__()
@@ -44,18 +41,21 @@ class Advance:
     """
     Classe contenant toutes les informations liées à un devis
     """
-    def __init__(self, balance: float, date: int = None, id_ = None):
+    def __init__(self, balance: float, date: int = None, id_ = None,
+                 id_invoice: int = None):
         self.balance = balance
         self.id_ = id_
+        self.id_invoice = id_invoice
 
-        #On vérifie si la date est au format Unix time epoch
+        # On vérifie si la date est au format Unix time epoch
         if date:
             self.date = date
         else:
             self.date = int(time.time())
 
     def __str__(self):
-        return f" {self.date_string()} | {self.balance}"
+        return (f"id = {self.id_} | {self.date_string()} | {self.balance} | "
+                f"id_invoice = {self.id_invoice}")
 
     def __repr__(self):
         return self.__str__()
@@ -72,27 +72,36 @@ class Advance:
         """
         return [self.balance, self.date]
 
-
-
 class Receipt:
     """
     Classe contenant toutes les informations communes liées aux
     factures et devis
     """
-    def __init__(self, user: User, client: Union[Client, Company],
-                 articles_list: list[Article], date: int, taxes: float,
-                 balance: float, note: str = None):
+    def __init__(self,
+                 user: User,
+                 client: Union[Client, Company],
+                 articles_list: list[Article],
+                 date: int,
+                 taxes: float,
+                 balance: float,
+                 note: str = None,
+                 id_: int = None):
         self.user = user
         self.client = client
         self.articles_list = articles_list
         self.taxes = taxes
         self.balance = balance
         self.note = note
-
+        self.id_ = None
         if date:
             self.date = date
         else:
             self.date = int(time.time())
+
+    def set_id(self, id_receipt):
+        self.id_ = id_receipt
+        for article in self.articles_list:
+            article.id_receipt = id_receipt
 
     def __str__(self):
         return f"User :\n{self.user}\nClient :\n" \
@@ -142,13 +151,26 @@ class Invoice(Receipt):
     """
         Classe contenant toutes les informations liées aux factures
     """
-    def __init__(self, user: User, client: Union[Client, Company],
-                 articles_list: list[Article], date: int,  taxes: float,
-                 balance: float, advances_list: list[Advance] = None,
-                 note: str = None):
+    def __init__(self,
+                 user: User,
+                 client: Union[Client, Company],
+                 articles_list: list[Article],
+                 date: int,
+                 taxes: float,
+                 balance: float,
+                 advances_list: list[Advance] = None,
+                 note: str = None,
+                 id_: int = None):
         super().__init__(user, client, articles_list, date, taxes, balance,
                          note)
-        self.advances_list = advances_list  
+        self.advances_list = advances_list
+        self.id_ = id_
+
+    def set_id(id_inv):
+        self.id_ = id_inv
+        for advance in advances_list:
+            advance.id_invoce = id_inv
+
     def __str__(self):
         return (f"User :\n{self.user}\nClient :\n {self.client}\n"
                 f"Date :\n{self.date_string()}\nListe des articles :"
@@ -191,7 +213,7 @@ class Estimate(Receipt):
         user: User,
         client: Union[Client, Company],
         articles_list: list[(Article, int)],
-        date: int = None ,
+        date: int = None,
         balance: float = None,
         taxes: float = None,
         note: str = None,
@@ -199,6 +221,7 @@ class Estimate(Receipt):
 
         super().__init__(user, client, articles_list, date, taxes, balance,
                                                                          note)
+
 
 if __name__ == "__main__":
     artisan = User("Facturio","15 rue des champs Cuers","0734567221", 

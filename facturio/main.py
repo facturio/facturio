@@ -2,10 +2,10 @@ import gi
 gi.require_version("Gtk", "3.0")
 from gi.repository import Gtk, Gdk, Gio, GObject
 import sys
-from gui.invoice import InvoicePage, CreateInvoicePage
-from gui.home import HomePage
-from gui.headerbar import HeaderBarSwitcher
-from gui.customer import Customer
+from facturio.gui.invoice import InvoicePage, CreateInvoicePage
+from facturio.gui.home import HomePage
+from facturio.gui.headerbar import HeaderBarSwitcher
+from facturio.gui.customer import Customer
 from facturio.gui.add_customer import Add_Customer
 from facturio.gui.modify_usr import ModifyUsr
 from facturio.gui.history import History
