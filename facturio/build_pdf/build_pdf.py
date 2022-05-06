@@ -359,7 +359,7 @@ def pdf_provider_inline(receipt: Union[Invoice, Estimate]):
         table_01.add(dot_icon)
 
     table_01.add(small_mail_icon)
-    table_01.add(Paragraph(artisan.adress, font_size=Decimal(8)))
+    table_01.add(Paragraph(artisan.address, font_size=Decimal(8)))
     table_01.add(dot_icon)
     table_01.add(small_phone_icon)
     table_01.add(Paragraph(artisan.phone_number, font_size=Decimal(8)))
@@ -404,7 +404,7 @@ def pdf_company_inline(receipt: Union[Invoice, Estimate]):
     table_01.add(Paragraph(client.email, font_size=Decimal(8)))
     table_01.add(dot_icon)
     table_01.add(small_mail_icon)
-    table_01.add(Paragraph(client.adress, font_size=Decimal(8)))
+    table_01.add(Paragraph(client.address, font_size=Decimal(8)))
     table_01.add(dot_icon)
     table_01.add(small_phone_icon)
     table_01.add(Paragraph(client.phone_number, font_size=Decimal(8)))

@@ -1,7 +1,5 @@
-import gi
-gi.require_version("Gtk", "3.0")
-from gi.repository import Gtk, Gdk, Gio, GObject
 import sys
+import i18n
 from facturio.gui.invoice import InvoicePage, CreateInvoicePage
 from facturio.gui.home import HomePage
 from facturio.gui.headerbar import HeaderBarSwitcher
@@ -13,7 +11,13 @@ from facturio.gui.map import Map
 from facturio.gui.display_info import InfoPerson
 from pathlib import Path
 from facturio import __path__
+import gi
+gi.require_version("Gtk", "3.0")
+from gi.repository import Gtk, Gdk, Gio, GObject
 
+i18n.load_path.append(__path__[0] + "/data/translations/")
+i18n.set('filename_format', '{namespace}.{format}')
+i18n.set('locale', 'en')
 
 class Window(Gtk.ApplicationWindow):
     def __init__(self, *args, **kwargs):
