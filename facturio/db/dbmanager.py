@@ -27,7 +27,7 @@ class DBManager:
         self._creation_table_user()
         self._creation_table_client()
         self._creation_table_company()
-        self._creation_table_invoice_estimate()
+        self._creation_table_receipt()
         self._creation_table_invoice()
         self._creation_table_advance()
 
@@ -80,21 +80,17 @@ class DBManager:
             quantity INTEGER)""")
         self.connexion.commit()
 
-    def _creation_table_invoice_estimate(self):
+    def _creation_table_receipt(self):
         self.cursor.execute("""
-            CREATE TABLE IF NOT EXISTS invoice_estimate
-            (id_invoice_estimate INTEGER PRIMARY KEY AUTOINCREMENT,
+            CREATE TABLE IF NOT EXISTS receipt
+            (id_receipt INTEGER PRIMARY KEY AUTOINCREMENT,
             balance FLOAT,
             date INTEGER,
-            description STRING,
             note STRING,
-            remark STRING,
             id_client INTEGER,
             id_user INTEGER,
-            id_article INTEGER,
-            FOREIGN KEY(id_user) REFERENCES user(id_user),
-            FOREIGN KEY(id_client) REFERENCES client(id_client),
-            FOREIGN KEY(id_article) REFERENCES article(id_article)
+            FOREIGN KEY(id_user) REFERENCES user(id_user) ON DELETE CASCADE,
+            FOREIGN KEY(id_client) REFERENCES client(id_client)
             ON DELETE CASCADE)""")
         self.connexion.commit()
 

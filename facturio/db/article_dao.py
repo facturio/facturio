@@ -3,7 +3,7 @@ from facturio.classes.invoice_misc import Article
 from dbmanager import DBManager
 
 class ArticleDAO:
-    #TODO tester
+    # TODO tester
     __instance=None
 
     def __init__(self):
@@ -21,13 +21,13 @@ class ArticleDAO:
          Prend une isntance de la classe article
          et l'ajoute a la bd
          """
-         request="""INSERT INTO article(name,description,price)
-                            VALUES(?,?,?)"""
+         request = """INSERT INTO article(name,description,price)
+                    VALUES(?,?,?)"""
          if(article.id_!=None):
              raise ValueError
          max_req = "SELECT max(id_article) FROM article"
          article.id_ = self.bdd.cursor.execute(max_req).fetchone()
-         values= ( article.id_, article.title, article.price,
+         values = (article.id_, article.title, article.price,
                   article.quantity, article.description)
          self.bdd.cursor.execute(request, values)
          self.bdd.connexion.commit()
@@ -41,8 +41,8 @@ class ArticleDAO:
              raise ValueError
          values= [article.title, article.description,
                   article.price, article.quantity, article.id_]
-         request=""" UPDATE Article SET name=?, description=?,
-                     price=?, quantity=?,  WHERE id_article=?"""
+         request="""UPDATE Article SET name=?, description=?,
+                    price=?, quantity=?,  WHERE id_article=?"""
          self.bdd.cursor.execute(request, values)
          self.bdd.connexion.commit()
 
@@ -56,15 +56,16 @@ class ArticleDAO:
                           description=tup[2],
                           price=tup[3],
                           quantity=tup[4],
-                          id_=tup[5],
-                          )
+                          id_=tup[5])
         return article
 
 
     def get_all(self):
-        tuples=self.bdd.cursor.execute("""select * from article""")
+        tuples = self.bdd.cursor.execute("""select * from article""")
         res=[]
         for tup in tuples:
            res.append(self._gen_article(tup))
         return res
 
+
+if __name__ == "__main__":

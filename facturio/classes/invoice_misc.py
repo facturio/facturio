@@ -9,11 +9,9 @@ class Article:
     """
 
     def __init__(self, title: str,  price: float, quantity: int = 1,
-                 description: str = " ",id_: int=None):
-        self.id_=id_
+                 description: str = " ", id_: int = None):
+        self.id_ = id_
         self.title = title
-        if description == "":
-            description = " "
         self.description = description
         self.price = price
         self.quantity = quantity
@@ -41,18 +39,21 @@ class Advance:
     """
     Classe contenant toutes les informations liées à un devis
     """
-    def __init__(self, balance: float, date: int = None, id_ = None):
+    def __init__(self, balance: float, date: int = None, id_ = None,
+                 id_invoice: int = None):
         self.balance = balance
         self.id_ = id_
+        self.id_invoice = id_invoice
 
-        #On vérifie si la date est au format Unix time epoch
+        # On vérifie si la date est au format Unix time epoch
         if date:
             self.date = date
         else:
             self.date = int(time.time())
 
     def __str__(self):
-        return f" {self.date_string()} | {self.balance}"
+        return (f"id = {self.id_} | {self.date_string()} | {self.balance} | "
+                f"id_invoice = {self.id_invoice}")
 
     def __repr__(self):
         return self.__str__()
@@ -69,8 +70,6 @@ class Advance:
         """
         return [self.balance, self.date]
 
-
-
 class Receipt:
     """
     Classe contenant toutes les informations communes liées aux 
@@ -78,18 +77,23 @@ class Receipt:
     """
     def __init__(self, user: User, client: Union[Client, Company],
                  articles_list: list[Article], date: int, taxes: float,
-                 balance: float, note: str = None):
-        self.user = user 
-        self.client = client  
+                 balance: float, note: str = None), id_: int = None:
+        self.user = user
+        self.client = client
         self.articles_list = articles_list
         self.taxes = taxes
         self.balance = balance
         self.note = note
+        self.id_ = None
         
         if date:
             self.date = date
         else:
             self.date = int(time.time())
+    def set_id(id_rec):
+        self.id_ = id_rec
+        for article in articles_list:
+            article.
         
     def __str__(self):
         return f"User :\n{self.user}\nClient :\n" \
@@ -134,18 +138,30 @@ class Receipt:
         """
         return time.strftime("%d/%m/%Y",time.localtime(self.date))
             
-
 class Invoice(Receipt):
     """
         Classe contenant toutes les informations liées aux factures
     """
-    def __init__(self, user: User, client: Union[Client, Company],
-                 articles_list: list[Article], date: int,  taxes: float,
-                 balance: float, advances_list: list[Advance] = None,
-                 note: str = None):
+    def __init__(self,
+                 user: User,
+                 client: Union[Client, Company],
+                 articles_list: list[Article],
+                 date: int,
+                 taxes: float,
+                 balance: float,
+                 advances_list: list[Advance] = None,
+                 note: str = None,
+                 id_: int = None):
         super().__init__(user, client, articles_list, date, taxes, balance,
                          note)
-        self.advances_list = advances_list  
+        self.advances_list = advances_list
+        self.id_ = id_
+
+    def set_id(id_inv):
+        self.id_ = id_inv
+        for advance in advances_list:
+            advance.id_invoce = id_inv
+
     def __str__(self):
         return (f"User :\n{self.user}\nClient :\n {self.client}\n"
                 f"Date :\n{self.date_string()}\nListe des articles :"
@@ -188,7 +204,7 @@ class Estimate(Receipt):
         user: User,
         client: Union[Client, Company],
         articles_list: list[(Article, int)],
-        date: int = None ,
+        date: int = None,
         balance: float = None,
         taxes: float = None,
         note: str = None,
@@ -196,6 +212,7 @@ class Estimate(Receipt):
         
         super().__init__(user, client, articles_list, date, taxes, balance,
                                                                          note)
+
 
 if __name__ == "__main__":
     artisan = User("Facturio","15 rue des champs Cuers","0734567221", 

@@ -24,7 +24,7 @@ class UserDAO:
         request = """INSERT INTO user(logo, company_name, e_mail, address,
                      phone, business_num, first_name, last_name)
                     VALUES(?, ?, ?, ?, ?, ?, ?, ?)"""
-        #convertir image logo sous forme de fichier binaire
+        # convertir image logo sous forme de fichier binaire
         logo = None
         if user.logo is not None:
             with open(texte,"rb") as user.logo:
@@ -79,7 +79,7 @@ class UserDAO:
         return user
 
     def selection_table(self,nom):
-        bdd=DBManager.get_instance()
+        bdd = DBManager.get_instance()
         bdd.cursor.execute("""select * from """+nom)
         return bdd.cursor.fetchall()
 
