@@ -2,7 +2,7 @@ class Client:
     """
     Classe contenant toutes les informations liées à un client physique
     """
-
+	
     def __init__(
         self,
         first_name: str,
@@ -10,7 +10,8 @@ class Client:
         email: str = None,
         address: str = None,
         phone_number: str = None,
-        note: str = None
+        note: str = None,
+        id_: int = None
     ):
         """
         Les attributs sont initialisés selon leur ordre d'apparition
@@ -23,10 +24,11 @@ class Client:
         self.address = address
         self.phone_number = phone_number
         self.note = note
+        self.id_ = id_
 
     def __str__(self):
         return f"{self.first_name} | {self.last_name} | {self.email} | " \
-               f"{self.address}  | {self.phone_number} | {self.note}"
+               f"{self.address}  | {self.phone_number} | {self.note} | {self.id_}"
 
     def __repr__(self):
         return self.__str__()
@@ -70,7 +72,8 @@ class Company(Client):
         address: str,
         phone_number: str,
         business_number: str,
-        note: str = None
+        note: str = None,
+        id_: int =None
     ):
         """
         Les attributs sont initialisés selon leur ordre d'apparition
@@ -79,11 +82,12 @@ class Company(Client):
         super().__init__(first_name, last_name, email, address, phone_number, note)
         self.company_name = company_name
         self.business_number = business_number
+        self.id_ = id_
 
     def __str__(self):
         return f"{self.company_name} | {self.email} | {self.address} | " \
                f"{self.phone_number} | {self.business_number} | "\
-               f"{self.first_name} {self.last_name} | {self.note}"
+               f"{self.first_name} {self.last_name} | {self.note} | {self.id_}"
 
     def __repr__(self):
         return self.__str__()
