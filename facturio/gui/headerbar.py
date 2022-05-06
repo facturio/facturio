@@ -82,7 +82,7 @@ class HeaderBarSwitcher(Gtk.HeaderBar):
         Création des buttons du milieu et ajout dans self.box
         """
         page_names = ("invoice_page", "quotation_page", "customer_page")
-        labels = (i18n.t('home.bill'), i18n.t('home.invoice'), i18n.t('home.clients'))
+        labels = (i18n.t('home.bill'), i18n.t('home.invoice'), i18n.t('home.client'))
         icons = ("emblem-documents-symbolic", "x-office-document-symbolic",
                  "system-users-symbolic")
         for name, label, icon in zip(page_names, labels, icons):
