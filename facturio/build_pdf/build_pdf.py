@@ -12,7 +12,7 @@ from borb.pdf.canvas.color.color import HexColor
 from borb.pdf.canvas.layout.image.image import Image
 from borb.pdf.canvas.layout.layout_element import Alignment, LayoutElement
 
-# from borb.pdf.canvas.layout.page_layout.browser_layout import BrowserLayout
+from borb.pdf.canvas.layout.page_layout.browser_layout import BrowserLayout
 # from borb.pdf.canvas.layout.page_layout.page_layout import PageLayout
 from borb.pdf.canvas.layout.table.fixed_column_width_table import \
     FixedColumnWidthTable as Table
