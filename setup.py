@@ -13,5 +13,5 @@ setup(
             'facturio = facturio.main:main'
         ]
     },
-    package_data={'facturio': ['data/icons/*', 'data/translations/*' 'main.css']},
+    package_data={'facturio': ['data/icons/*', 'data/translations/*', 'main.css']},
 )
