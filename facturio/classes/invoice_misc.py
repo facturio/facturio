@@ -9,17 +9,18 @@ class Article:
     """
 
     def __init__(self, title: str,  price: float, quantity: int = 1,
-                 description: str = " ", id_: int = None):
+                 description: str = None, id_: int = None,
+                 id_receipt: int = None):
         self.id_ = id_
         self.title = title
         self.description = description
         self.price = price
         self.quantity = quantity
-        self.is_receip= id_receip
+        self.id_receipt = id_receipt
 
     def __str__(self):
-        return (f"{self.title} | {self.description} | {self.price}"
-                f"| {self.quantity}")
+        return (f"{{{self.id_} | {self.title} | {self.description}"
+                f" | {self.price} | {self.quantity}}}")
 
     def __repr__(self):
         return self.__str__()
@@ -76,9 +77,15 @@ class Receipt:
     Classe contenant toutes les informations communes liées aux
     factures et devis
     """
-    def __init__(self, user: User, client: Union[Client, Company],
-                 articles_list: list[Article], date: int, taxes: float,
-                 balance: float, note: str = None, id_: int = None):
+    def __init__(self,
+                 user: User,
+                 client: Union[Client, Company],
+                 articles_list: list[Article],
+                 date: int,
+                 taxes: float,
+                 balance: float,
+                 note: str = None,
+                 id_: int = None):
         self.user = user
         self.client = client
         self.articles_list = articles_list
@@ -91,10 +98,11 @@ class Receipt:
         else:
             self.date = int(time.time())
 
-    def set_id(id_rec):
-        self.id_ = id_rec
-        for article in articles_list:
-            article.
+    def set_id(self, id_receipt):
+        self.id_ = id_receipt
+        for article in self.articles_list:
+            article.id_receipt = id_receipt
+
     def __str__(self):
         return f"User :\n{self.user}\nClient :\n" \
         f"{self.client}\nDate :\n {self.date_string()}\nListe des articles :"\

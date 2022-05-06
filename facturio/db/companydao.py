@@ -1,4 +1,7 @@
 #!/usr/bin/env python3
+from facturio.classes.client import Company
+from facturio.db.dbmanager import DBManager
+from facturio.db.clientdao import ClientDAO
 
 class CompanyDAO:
     __instance = None
@@ -24,7 +27,7 @@ class CompanyDAO:
         self.bdd.cursor.execute(req, values)
         self.bdd.connexion.commit()
 
-    def update(self, client: Client):
+    def update(self, company: Company):
         raise NotImplementedError
         # TODO: Faire l'update
         # """Mis a jour du client."""

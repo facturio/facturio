@@ -24,7 +24,7 @@ class ClientDAO:
         request = """INSERT INTO client(first_name, last_name, e_mail, address,
                      phone, remark) VALUES (?,?,?,?,?,?)"""
         values = (client.first_name, client.last_name, client.email,
-                  client.adress, client.phone_number, client.note)
+                  client.address, client.phone_number, client.note)
         self.bdd.cursor.execute(request, values)
         self.bdd.connexion.commit()
         # On recupere l'id qui vient d'etre insere'
