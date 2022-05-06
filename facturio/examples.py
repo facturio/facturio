@@ -1,13 +1,17 @@
 from facturio.classes.client import Client
 from facturio.classes.invoice_misc import Article
-clement = Client("Bazan", "Clement", "clement.bazan@email.com",
+from facturio.classes.user import User
+clement = Client("Clément", "Bazan", "clement.bazan@email.com",
                  "AAAAAAAAAAAAAAAAAA", "0123456789")
-quentin = Client("Lombardo", "Quentin", "quentin.lombardo@email.com",
+quentin = Client("Quentin", "Lombardo", "quentin.lombardo@email.com",
                  "AAAAAAAAAAAAAAAAAAAAAA", "0000000000")
-youssef = Client("Benjelloun", "Youssef",
+youssef = Client("Youssef", "Benjelloun",
                  "youssef.benjelloun@email.com",
                  "AAAAAAAAAAAAAAAAAAAAA", "0101010101")
 theo = Client("Theo", "Alphaoui", "tropdrole@email.com", "AEU", "010101")
+
+test = User("Company", "Address", "Phone number", "Business Number", "First Name",
+            "Last Name", "Email@email.com", "Logo.")
 
 ordinateur = Article("ordinateur", 1684.33, 1)
 cable_ethernet = Article("cable ethernet", 9.99, 3)
