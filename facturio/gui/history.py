@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 import gi
 gi.require_version("Gtk", "3.0")
-from gui.page_gui import PageGui
+from facturio.gui.page_gui import PageGui
 from gi.repository import Gtk
 
 class History(PageGui):
