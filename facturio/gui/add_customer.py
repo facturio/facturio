@@ -24,6 +24,7 @@ class Add_Customer(PageGui):
                                   row_homogeneous=False, column_spacing=20,
                                   row_spacing=20)
         self.client_entries={}
+        self.client_space={}
         self.client_label={}
         self.__init_grid()
         self.title__("Ajouter Client")
@@ -109,8 +110,10 @@ class Add_Customer(PageGui):
             self.is_pro=False
             self.client_entries["Entreprise "].hide()
             self.client_label["Entreprise "].hide()
+            self.client_space["Entreprise "].hide()
             self.client_entries["Siret "].hide()
             self.client_label["Siret "].hide()
+            self.client_space["Siret "].hide()
 
 
     def client(self):
@@ -158,9 +161,10 @@ class Add_Customer(PageGui):
         self.entry = Gtk.Entry()
         self.entry.set_hexpand(True)
         self.cent.attach(self.entry,pos[0]+1,pos[1],2,1)
-        space = Gtk.Label()
-        self.cent.attach(space,pos[0],pos[1]+1,3,1)
+        self.space = Gtk.Label()
+        self.cent.attach(self.space,pos[0],pos[1]+1,3,1)
         self.client_entries[c_txt] = self.entry
+        self.client_space[c_txt] = self.space
 
 
     def last_name(self):
