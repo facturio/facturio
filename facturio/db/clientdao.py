@@ -70,7 +70,6 @@ class ClientDAO:
 
     @staticmethod
     def _gen_client(tup):
-
         client = Client(first_name=tup[1],
                         last_name=tup[2],
                         email=tup[3],
@@ -80,6 +79,14 @@ class ClientDAO:
                         id_=tup[0])
 
         return client
+
+    def get_with_id(self, id_):
+        """Renvoie une instace du client avec id_."""
+        request = f"SELECT * FROM client where id_client = {id_}"
+        tup = self.bdd.cursor.execute(request).fetchone()
+        return self._gen_client(tup)
+
+
 
 if __name__ == "__main__":
     dao = ClientDAO.get_instance()

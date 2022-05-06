@@ -11,16 +11,17 @@ class Article:
     def __init__(self, title: str,  price: float, quantity: int = 1,
                  description: str = None, id_: int = None,
                  id_receipt: int = None):
-        self.id_ = id_
         self.title = title
-        self.description = description
         self.price = price
         self.quantity = quantity
+        self.description = description
+        self.id_ = id_
         self.id_receipt = id_receipt
 
     def __str__(self):
         return (f"{{{self.id_} | {self.title} | {self.description}"
-                f" | {self.price} | {self.quantity}}}")
+                f" | {self.price} | {self.quantity} | "
+                f"id_receipt = {self.id_receipt}}}")
 
     def __repr__(self):
         return self.__str__()
@@ -37,11 +38,14 @@ class Article:
                   data_dict["quantity"], data_dict["description"])
         return res
 
+
 class Advance:
-    """
-    Classe contenant toutes les informations liées à un devis
-    """
-    def __init__(self, balance: float, date: int = None, id_ = None,
+    """Classe contenant toutes les informations liées à un devis."""
+
+    def __init__(self,
+                 balance: float,
+                 date: int = None,
+                 id_: int = None,
                  id_invoice: int = None):
         self.balance = balance
         self.id_ = id_
@@ -98,10 +102,6 @@ class Receipt:
         else:
             self.date = int(time.time())
 
-    def set_id(self, id_receipt):
-        self.id_ = id_receipt
-        for article in self.articles_list:
-            article.id_receipt = id_receipt
 
     def __str__(self):
         return f"User :\n{self.user}\nClient :\n" \
@@ -165,11 +165,6 @@ class Invoice(Receipt):
                          note)
         self.advances_list = advances_list
         self.id_ = id_
-
-    def set_id(id_inv):
-        self.id_ = id_inv
-        for advance in advances_list:
-            advance.id_invoce = id_inv
 
     def __str__(self):
         return (f"User :\n{self.user}\nClient :\n {self.client}\n"

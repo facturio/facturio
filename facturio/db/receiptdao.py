@@ -4,6 +4,8 @@ from facturio.db.dbmanager import DBManager
 from facturio.db.userdao import UserDAO
 from facturio.db.clientdao import ClientDAO
 from facturio.db.companydao import CompanyDAO
+from facturio.db.articledao import ArticleDAO
+from facturio.classes.client import Client
 
 class ReceiptDAO:
     __instance = None
@@ -18,9 +20,15 @@ class ReceiptDAO:
             ReceiptDAO.__instance = ReceiptDAO()
         return ReceiptDAO.__instance
 
+
+    def _set_id(self, receipt, id_receipt):
+        """Mis a jour des ids local et des articles."""
+        receipt.id_ = id_receipt
+        for article in receipt.articles_list:
+            article.id_receipt = id_receipt
+
     def insert(self, receipt: Receipt):
         """Insertion du receipt."""
-
         # Insertion de l'user
         user_dao = UserDAO.get_instance()
         user_dao.insert(receipt.user)
@@ -34,11 +42,12 @@ class ReceiptDAO:
             company_dao = CompanyDAO.get_instance()
             company_dao.insert(receipt.client)
 
-        request = """INSERT INTO receipt(balance, date, note,
-                      id_client, id_user) VALUES (?, ?, ?, ?, ?)"""
+        request = """INSERT INTO receipt(balance, taxes, date, note,
+                      id_client, id_user) VALUES (?, ?, ?, ?, ?, ?)"""
+
         # TODO: Verifier que les id_client et id_user existent et ne soient
         # pas egale a None
-        values = (receipt.balance, receipt.date, receipt.note,
+        values = (receipt.balance, receipt.taxes, receipt.date, receipt.note,
                   receipt.client.id_, receipt.user.id_)
         self.bdd.cursor.execute(request, values)
         self.bdd.connexion.commit()
@@ -48,10 +57,11 @@ class ReceiptDAO:
         # Insertion des articles
         article_dao = ArticleDAO.get_instance()
         for article in receipt.articles_list:
+            article.id_receipt = id_[0]
             article_dao.insert(article)
 
         # mis a jour des id receipt et articles
-        receipt.set_id(id_[0])
+        self._set_id(receipt, id_[0])
 
     def update(self, receipt: Receipt):
         raise NotImplementedError
@@ -62,6 +72,7 @@ class ReceiptDAO:
     #     bdd.connexion.commit()
 
     def get_all(self):
+        #TODO?
         request = "SELECT * FROM receipt"
         self.bdd.cursor.execute(request)
         return self.bdd.cursor.fetchall()
