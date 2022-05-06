@@ -59,13 +59,15 @@ class DBManager:
     def _creation_table_user(self):
         self.cursor.execute("""
             CREATE TABLE IF NOT EXISTS user
-            ( id_user INTEGER PRIMARY KEY AUTOINCREMENT,
-            logo BLOB,
+            (id_user INTEGER PRIMARY KEY AUTOINCREMENT,
             company_name STRING,
+            first_name STRING,
+            last_name STRING,
             e_mail STRING,
             address STRING,
             phone STRING,
-            business_num STRING)""")
+            business_num STRING,
+            logo BLOB)""")
         self.connexion.commit()
 
     def _creation_table_article(self):
