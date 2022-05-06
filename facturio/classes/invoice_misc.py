@@ -9,7 +9,7 @@ class Article:
     """
 
     def __init__(self, title: str,  price: float, quantity: int = 1,
-                 description: str = " ",id_: int=None):
+                 description: str = " ",id_: int=None, id_receip: int=None):
         self.id_=id_
         self.title = title
         if description == "":
@@ -17,6 +17,9 @@ class Article:
         self.description = description
         self.price = price
         self.quantity = quantity
+        self.is_receip= id_receip
+
+    
 
     def __str__(self):
         return (f"{self.title} | {self.description} | {self.price}"
@@ -72,38 +75,38 @@ class Advance:
 
 class Receipt:
     """
-    Classe contenant toutes les informations communes liées aux 
+    Classe contenant toutes les informations communes liées aux
     factures et devis
     """
     def __init__(self, user: User, client: Union[Client, Company],
                  articles_list: list[Article], date: int, taxes: float,
                  amount: float, note: str = None):
-        self.user = user 
-        self.client = client  
+        self.user = user
+        self.client = client
         self.articles_list = articles_list
         self.taxes = taxes
-        self.amount = amount 
+        self.amount = amount
         self.note = note
-        
+
         if date:
             self.date = date
         else:
             self.date = int(time.time())
-        
+
     def __str__(self):
         return f"User :\n{self.user}\nClient :\n" \
         f"{self.client}\nDate :\n {self.date_string()}\nListe des articles :"\
         f"\n{self.articles_list}\nTaxes :\n{self.taxes}\nMontants :\n"\
         f"{str(self.amount)}\nCommentaire :\n{self.note}"
-        
+
     def __repr__(self):
         return self.__str__()
 
     def dump_to_list(self):
         """
         Renvoie une liste de toutes les variables de classes
-        """ 
-        return [self.user, self.client, self.date, self.articles_list, 
+        """
+        return [self.user, self.client, self.date, self.articles_list,
                                             self.taxes, self.amount, self.note]
 
     def subtotal(self):
@@ -114,7 +117,7 @@ class Receipt:
         for art in self.articles_list:
             amount += art.price * art.quantity
         return round(amount,2)
-    
+
     def total_of_taxes(self):
         """
         Calcul le total des taxes
@@ -132,7 +135,7 @@ class Receipt:
         Retourne la date sous forme de chaîne de caractères
         """
         return time.strftime("%d/%m/%Y",time.localtime(self.date))
-            
+
 
 class Invoice(Receipt):
     """
@@ -155,11 +158,11 @@ class Invoice(Receipt):
 
     def __repr__(self):
         return self.__str__()
-    
+
     def dump_to_list(self):
         return [self.user, self.client, self.date, self.articles_list,
                 self.advances_list, self.taxes, self.amount, self.note]
-    
+
     def total_with_advances(self):
         """
         Calcule le total soustrait du total des advances
