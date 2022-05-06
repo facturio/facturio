@@ -455,18 +455,17 @@ class CreateInvoicePage(Gtk.ScrolledWindow):
 
         self.user_completions = [
             FacturioEntryCompletion(lambda x: x.company_name),
+            FacturioEntryCompletion(lambda x: x.first_name),
+            FacturioEntryCompletion(lambda x: x.last_name),
+            FacturioEntryCompletion(lambda x: x.email),
             FacturioEntryCompletion(lambda x: x.address),
             FacturioEntryCompletion(lambda x: x.phone_number),
             FacturioEntryCompletion(lambda x: x.business_number),
-            FacturioEntryCompletion(lambda x: x.first_name),
-            FacturioEntryCompletion(lambda x: x.last_name),
-            FacturioEntryCompletion(lambda x: x.email)
         ]
 
         for c in self.user_completions:
-            c.fill_entry([examples.test])
+            c.fill_entry(examples.utilisateurs)
             c.to_update = self.user_completions
-
 
         label = Gtk.Label("Nom\nEntreprise")
         label.set_justify(Gtk.Justification.CENTER)
@@ -484,7 +483,7 @@ class CreateInvoicePage(Gtk.ScrolledWindow):
         label.set_hexpand(True)
         self.user_grid.attach(label, 1, 5, 1, 1)
         label.set_hexpand(True)
-        entry = self.user_completions[5]
+        entry = self.user_completions[2]
         entry.set_max_length(25)
         entry.connect("changed", self.reset_context)
         entry.set_hexpand(True)
@@ -496,7 +495,7 @@ class CreateInvoicePage(Gtk.ScrolledWindow):
         label.set_hexpand(True)
         self.user_grid.attach(label, 1, 6, 1, 1)
         label.set_hexpand(True)
-        entry = self.user_completions[4]
+        entry = self.user_completions[1]
         entry.set_max_length(25)
         entry.connect("changed", self.reset_context)
         entry.set_hexpand(True)
@@ -506,7 +505,7 @@ class CreateInvoicePage(Gtk.ScrolledWindow):
         label = Gtk.Label("Adresse")
         label.set_hexpand(True)
         self.user_grid.attach(label, 1, 7, 1, 1)
-        entry = self.user_completions[1]
+        entry = self.user_completions[4]
         entry.set_max_length(100)
         entry.connect("changed", self.reset_context)
         self.user_grid.attach(entry, 2, 7, 3, 1)
@@ -515,7 +514,7 @@ class CreateInvoicePage(Gtk.ScrolledWindow):
         label = Gtk.Label("E-mail")
         label.set_hexpand(True)
         self.user_grid.attach(label, 1, 8, 1, 1)
-        entry = self.user_completions[6]
+        entry = self.user_completions[3]
         entry.set_max_length(25)
         entry.connect("changed", self.reset_context)
         self.user_grid.attach(entry, 2, 8, 3, 1)
@@ -525,7 +524,7 @@ class CreateInvoicePage(Gtk.ScrolledWindow):
         label.set_hexpand(True)
         label.set_justify(Gtk.Justification.CENTER)
         self.user_grid.attach(label, 1, 9, 1, 1)
-        entry = self.user_completions[2]
+        entry = self.user_completions[5]
         entry.set_max_length(25)
         entry.connect("changed", self.reset_context)
         entry.connect("insert-text", self.allow_only_phone)
@@ -537,7 +536,7 @@ class CreateInvoicePage(Gtk.ScrolledWindow):
         label.set_hexpand(True)
         self.user_grid.attach(label, 1, 10, 1, 1)
 
-        entry = self.user_completions[3]
+        entry = self.user_completions[6]
         entry.set_max_length(25)
         entry.connect("changed", self.reset_context)
         self.user_grid.attach(entry, 2, 10, 3, 1)
