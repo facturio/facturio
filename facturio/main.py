@@ -28,7 +28,7 @@ class Window(Gtk.ApplicationWindow):
         self.set_vexpand(True)
         self.resize(960, 540)
         provider = Gtk.CssProvider()
-        provider.load_from_path(__path__[0] + "/main.css")
+        provider.load_from_path("./main.css")
         screen = Gdk.Screen.get_default()
         style_context = Gtk.StyleContext()
         style_context.add_provider_for_screen(screen, provider,
@@ -62,10 +62,8 @@ class Window(Gtk.ApplicationWindow):
         self.stack.add_named(self.history_page, "history_page")
         self.map_page = Map()
         self.stack.add_named(self.map_page, "map_page")
-        self.user_page = InfoPerson(True, "T.Olivier")
+        self.user_page = InfoPerson(True,1)
         self.stack.add_named(self.user_page, "user_page")
-        self.client_page = InfoPerson(True, "T.Olivier")
-        self.stack.add_named(self.client_page, "client_page")
         self.add(self.stack)
 
     def initial_show(self):

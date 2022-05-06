@@ -17,7 +17,8 @@ class InfoPerson (PageGui):
     |---  -- |
     +--------+
     """
-    def __init__(self, header_bar: HeaderBarSwitcher, is_ut, num_client=None,*args, **kwargs):
+    def __init__(self, is_ut, num_client=0,*args, **kwargs):
+        print("num=",num_client)
         self.header_bar = HeaderBarSwitcher.get_instance()
         super().__init__(*args, **kwargs)
         self.cent = Gtk.Grid(column_homogeneous=False,
@@ -29,6 +30,7 @@ class InfoPerson (PageGui):
         if is_ut:
             self.utilisateur()
         else:
+            self.num_client=num_client
             self.client()
 
     def __init_grid(self):
@@ -61,17 +63,40 @@ class InfoPerson (PageGui):
         list_client= self.db.selection_table("user")
         return list_client
 
+    def __get_client(self):
+        """
+        Recupere de la bd les info client
+        et les retourne sous forme de liste
+        """
+        list_client= self.db.selection_table("client")
+        return list_client[self.num_client-1]
+
+
+    def __get_ent(self):
+        """
+        Recupere de la bd les info entreprise
+        et les retourne sous forme de liste
+        """
+        list_client= self.db.selection_table("company")
+        return list_client
+
 
     def utilisateur(self):
         """
         Affichage pour utilisateur
         """
-        att_usr=self.__get_user()[0]
-        self.__title(att_usr[2])
-        self.adrss(att_usr[4])
-        self.mails(att_usr[3])
-        self.nums(str(att_usr[5]))
-        self.siret(str(att_usr[6]))
+        att_usr=self.__get_user()
+        if att_usr==[]:
+            att_usr=[["","","","",
+                      "","","",""]]
+        att_usr=att_usr[0]
+        self.__title(att_usr[1])
+        self.first_name(att_usr[2])
+        self.last_name(att_usr[3])
+        self.adrss(att_usr[5])
+        self.mails(att_usr[4])
+        self.nums(str(att_usr[6]))
+        self.siret(str(att_usr[7]))
         self.logo("./data/icons/Moi.png")
 
 
@@ -79,16 +104,20 @@ class InfoPerson (PageGui):
         """
         Affichage pour client
         """
+        att_clt=self.__get_client()
+        l_entr=self.__get_ent()
+        l_id=[l[0] for l in l_entr]
         self.imp = Gtk.Button(label="Parameter")
-        self.grid.attach(self.imp, 7, 2, 2, 1)
+        self.cent.attach(self.imp, 7, 2, 2, 1)
         self.button = Gtk.Button(label="Supprimer")
-        self.grid.attach(self.button, 9, 2, 2, 1)
-        self.adrss("test")
-        self.mails("test")
-        self.nums("test")
-        self.entreprise("test")
-        self.siret("test")
-        self.commentaire("ldhfskjv xbvhxknvkhxfvkjzx vjgcxbv jlkmc jcbui jmcljbuxvn kjxvhofxv dvudhvbdhkvn kbhvdubn kfuhvxovnludhvod")
+        self.cent.attach(self.button, 9, 2, 2, 1)
+        self.adrss(att_clt[4])
+        self.mails(att_clt[3])
+        self.nums(str(att_clt[5]))
+        if self.num_client in l_id:
+            self.entreprise(l_entr[self.num_client][1])
+            self.siret(str(l_entr[self.num_client][2]))
+        self.commentaire(att_clt[6])
 
 
     def __space_info(self):
@@ -104,6 +133,7 @@ class InfoPerson (PageGui):
         self.grid.attach(spacer, 3, 2, 2, 1)
         spaceh = Gtk.Label("")
         self.grid.attach(spaceh, 0, 0, 5, 1)
+
 
     def __creat_labelbox(self,c_txt,pos):
         """
@@ -124,32 +154,41 @@ class InfoPerson (PageGui):
         entry.set_hexpand(True)
         entry.set_editable(False)
         self.cent.attach(entry,pos[0]+2,pos[1],2,1)
+        spacer = Gtk.Label("")
+        spacer.set_hexpand(True)
+        self.cent.attach(spacer,pos[0]+4,pos[1],1,1)
 
+    def first_name(self,fn):
+        self.__creat_labelbox(("Adresse ",fn),(1,4,3,1))
+        return self
+
+    def last_name(self,nm):
+        self.__creat_labelbox(("Adresse ",nm),(1,6,3,1))
+        return self
 
     def adrss(self,adr):
-        self.__creat_labelbox(("Adresse ",adr),(1,4,3,1))
+        self.__creat_labelbox(("Adresse ",adr),(1,8,3,1))
         return self
 
 
     def mails(self,mail):
-        self.__creat_labelbox(("Mail ",mail),(1,6,3,1))
+        self.__creat_labelbox(("Mail ",mail),(1,10,3,1))
         return self
 
 
     def nums(self,n):
-        self.__creat_labelbox(("Numero ",n),(1,8,3,1))
+        self.__creat_labelbox(("Numero ",n),(1,12,3,1))
         return self
 
 
     def entreprise(self,ent):
-        self.__creat_labelbox(("entreprise ",ent),(1,10,3,1))
+        self.__creat_labelbox(("entreprise ",ent),(1,14,3,1))
         return self
 
 
     def siret(self,sir):
-        self.__creat_labelbox(("Siret ",sir),(1,12,3,1))
+        self.__creat_labelbox(("Siret ",sir),(1,16,3,1))
         return self
-
 
     def logo(self,path):
         log = Gtk.Image.new_from_pixbuf(
