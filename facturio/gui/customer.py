@@ -1,5 +1,10 @@
 #!/usr/bin/env python3
 import gi
+from gui.page_gui import PageGui
+from gui.home import HeaderBarSwitcher
+from gui.add_customer import Add_Customer
+from gui.omnisearch import FacturioOmnisearch
+from gui.autocompletion import FacturioEntryCompletion
 from facturio.gui.page_gui import PageGui
 from facturio.gui.home import HeaderBarSwitcher
 from facturio.gui.add_customer import Add_Customer
@@ -21,21 +26,44 @@ class Customer(PageGui):
     def __init__(self):
         super().__init__()
         self.header_bar = HeaderBarSwitcher.get_instance()
-        self.init_grid()
+        self.__init_grid()
         self.title("Clients")
-        self.space()
-        self.search((1,3,4,1))
+        self.__space_info()
+        self.search_bar_client()
         self.__summon_button()
-        self.init_result(["Nom","Entreprise","Adresse",""],
-                         (1,4,4,10))
 
+
+    def __space_info(self):
+        """
+        Ajoute les espace
+        pour l'ergonomie
+        """
+        spacel = Gtk.Label("")
+        self.grid.attach(spacel, 0, 1, 1, 1)
+        spacer = Gtk.Label("")
+        self.grid.attach(spacer, 10, 2, 1, 1)
+        spaceb = Gtk.Label("")
+
+
+    def __init_grid(self):
+        """
+        Propriete de la Grid Gtk
+        voir doc
+        """
+        self.grid = Gtk.Grid()
+        self.add(self.grid)
+        self.grid.set_column_homogeneous(True)
+        self.grid.set_row_homogeneous(False)
+        self.grid.set_row_spacing(20)
+        self.grid.set_column_spacing(20)
+        return self
 
     def __summon_button(self):
         """
         Invoque les boutons: Importer,Exporter,Creer
         """
-        p_button=(("Importer", (5,3,1,1)), ("Plus", (5,4,1,1)),
-                  ("Exporter", (5,5,1,1)))
+        p_button=(("Importer", (4,3,1,1)), ("Plus", (4,4,1,1)),
+                  ("Exporter", (4,5,1,1)))
         but = Gtk.Button.new_from_icon_name("list-add-symbolic",
                                                     Gtk.IconSize.BUTTON)
         but.connect("clicked", self.header_bar.active_button, "add_customer")
@@ -63,30 +91,47 @@ class Customer(PageGui):
         filter_ = Gtk.FileFilter()
         filter_.set_name("Client")
         filter_.add_pattern("*.clt")
+        filter_.add_pattern("*.csv")
         filechooserdialog.set_filter(filter_)
         response = filechooserdialog.run()
         if response == Gtk.ResponseType.OK:
             is_coorect=True
-            l_clients=[[]]
-            with open(filechooserdialog.get_filename(), 'r') as f:
-                lines=f.readlines()
-                for line in lines:
-                    line=line.strip('\n')
-                    if line=="#" and len(l_clients)!=1:
-                        break
-                    elif line == "-":
-                        l_clients.append([])
-                    elif line != "#":
-                        l_clients[len(l_clients)-1].append(line)
-                for clients in l_clients:
-                    if self.is_valid_for_db(clients[1:]):
-                        self.db.insertion_client_or_company(clients[1:],
-                                                        clients[0])
-                    else:
-                        print("section incorrect :",clients)
-            print("File selected: %s" % filechooserdialog.get_filename())
-            print(l_clients)
-        filechooserdialog.destroy()
+            l_clients=[]
+            if filechooserdialog.get_filename()[-4:]==".csv":
+                with open(filechooserdialog.get_filename(), 'r') as f:
+                    lines=f.readlines()
+                    for line in lines:
+                        l_clients.append((line.split(",")))
+            else:
+                l_clients.append([])
+                with open(filechooserdialog.get_filename(), 'r') as f:
+                    lines=f.readlines()
+                    for line in lines:
+                        line=line.strip('\n')
+                        if line=="#" and len(l_clients)!=1:
+                            break
+                        elif line == "-":
+                            l_clients.append([])
+                        elif line != "#":
+                            l_clients[len(l_clients)-1].append(line)
+            for clients in l_clients:
+                print(l_clients)
+                if self.is_valid_for_db(clients[1:]):
+                    self.db.insertion_client_or_company(clients[1:],
+                                                    clients[0])
+                else:
+                    print("section incorrect :",clients)
+            filechooserdialog.destroy()
+
+
+    def search_bar_client(self):
+        """
+        Affiche tout les clients de la base de donner
+        """
+        list_client= self.db.selection_table("client",)
+        searchbar = FacturioOmnisearch(list_client)
+        searchbar.go_to=True
+        self.grid.attach(searchbar, 1,3,2,1)
 
 
     def add_result(self,res):

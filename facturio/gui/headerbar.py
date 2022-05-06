@@ -2,6 +2,7 @@ import gi
 gi.require_version("Gtk", "3.0")
 from gi.repository import Gtk, Gio
 
+
 class ButtonIcon(Gtk.RadioButton):
     """
     Spécialise la classe Gtk.RadioButton en ajoutant un icon et un label
@@ -60,6 +61,20 @@ class HeaderBarSwitcher(Gtk.HeaderBar):
 
     def set_stack(self, stack: Gtk.Stack):
         self.stack = stack
+
+    def get_stack(self):
+        return self.stack
+
+    def change_page_client(self,num_client):
+        """
+        Change la page actuelle de client pour
+        celle avec le numero donenr en parametre
+        """
+        self.stack.remove("client_page")
+        self.client_page = InfoPerson(False,num_client)
+        self.stack.add_named(self.client_page, "client_page")
+        self.header_bar.set_stack(self.stack)
+
 
     def __init_buttons(self):
         """

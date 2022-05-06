@@ -24,9 +24,20 @@ class FacturioOmnisearch(Gtk.SearchEntry):
         self.completion.set_model(self.complist)
         self.completion.set_match_func(facturio_match_func)
 
+        self.go_to=False
         self.completion.set_inline_selection(True)
         self.completion.set_inline_completion(False)
         self.completion.set_text_column(0)
+        self.completion.connect('match-selected', self.switch_to_display)
+
+    def switch_to_display(self, completion, model, iter):
+        """
+        recupere les info de la completion et les affiche
+        avec la page info_persone
+        """
+        num_client = str(list((completion.props.model.get_value(iter, 0)))[1])
+        if num_client.isnumeric():
+            print(num_client)
 
 def facturio_match_func(completion, key, iter, *user_data):
     k = re.compile('.*' + re.escape(key) + '.*')
@@ -34,10 +45,9 @@ def facturio_match_func(completion, key, iter, *user_data):
 
 if __name__ == '__main__':
     win = Gtk.Window()
+
     box = Gtk.Box(orientation=1, spacing=6)
-
     fn = FacturioOmnisearch(examples.clients)
-
     box.add(fn)
 
     win.add(box)

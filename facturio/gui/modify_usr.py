@@ -7,31 +7,38 @@ gi.require_version("Gtk", "3.0")
 from gi.repository import Gtk, Gdk, Gio, GdkPixbuf
 
 
-class Add_Customer(PageGui):
+class ModifyUsr(PageGui):
     """
-    Classe IHM de le fenetre d'ajoute d'un client
+    Classe IHM de le fenetre de la modification
+    de l'utilisateur
     +--------+
     | --     |
     | --  -- |
     +--------+
     """
     def __init__(self):
-        self.list_att_par=["Nom ","Prenom ","Mail ","Adresse ",
-                           "Numero ","Remarque "]
+        self.list_att_par=["Entreprise ","Mail ","Adresse ",
+                           "Numero ","Siret "]
         super().__init__()
-        self.is_pro=True
         self.cent = Gtk.Grid(column_homogeneous=False,
                                   row_homogeneous=False, column_spacing=20,
                                   row_spacing=20)
+        self.attr_usr=self.__get_user()
+        self.path=self.attr_usr[0][1]
         self.client_entries={}
-        self.client_space={}
         self.client_label={}
         self.__init_grid()
-        self.title__("Ajouter Client")
+        self.title__("Modifier Utilisateur")
         self.__space_info()
-        self.client()
-        self.__swicth_client()
+        self.utilisateur()
 
+    def __get_user(self):
+        """
+        Recupere de la bd les info utilisateur
+        et les retourne sous forme de liste
+        """
+        list_client= self.db.selection_table("user")
+        return list_client
 
     def __init_grid(self):
         """
@@ -62,40 +69,20 @@ class Add_Customer(PageGui):
         sqlite et insert les info client
         """
         self.info=[]
-        self.entry.set_text("")
+        if self.path == None:
+            print("pas de logo")
+            return None
+        print("avant path=",self.info)
+        self.info.append(self.path)
+        print("apres path=",self.info)
         for i in self.list_att_par:
             self.info.append(self.client_entries[i].get_text())
-            self.client_entries[i].set_text("")
-        if self.is_pro:
-            self.info.append(self.client_entries["Entreprise "].get_text())
-            self.client_entries["Entreprise "].set_text("")
-            self.info.append(self.client_entries["Siret "].get_text())
-            self.client_entries["Siret "].set_text("")
-            if self.is_valid_for_db(self.info) and self.info[-1].isnumeric():
-                self.db.insertion_client_or_company(self.info, 1)
-            else:
-                print("champs incorrect")
+        if self.is_usr_valid_for_db(self.info):
+            self.info.append("1")
+            print("info=",self.info)
+            self.db.update_user(self.info)
         else:
-            if self.is_valid_for_db(self.info):
-                self.header_bar.active_button("home")
-                self.db.insertion_client_or_company(self.info, 0)
-            else:
-                print("champs incorrect")
-
-
-    def __swicth_client(self):
-        switch_box=Gtk.HBox()
-        pro = Gtk.RadioButton.new_with_label_from_widget(None, "Entreprise")
-        particulier = Gtk.RadioButton.new_from_widget(pro)
-        particulier.set_label("Particulier")
-        particulier.connect("toggled", self.on_button_toggled, "0")
-        pro.connect("toggled", self.on_button_toggled, "1")
-        switch_box.pack_start(particulier, True, True, 0)
-        switch_box.pack_start(pro, True, True, 0)
-        pro.set_mode(False)
-        particulier.set_mode(False)
-        Gtk.StyleContext.add_class(switch_box.get_style_context(), "linked")
-        self.cent.attach(switch_box, 0, 1, 1, 1)
+            print("champs incorrect")
 
 
     def on_button_toggled(self, button, pro):
@@ -110,28 +97,31 @@ class Add_Customer(PageGui):
             self.is_pro=False
             self.client_entries["Entreprise "].hide()
             self.client_label["Entreprise "].hide()
-            self.client_space["Entreprise "].hide()
             self.client_entries["Siret "].hide()
             self.client_label["Siret "].hide()
-            self.client_space["Siret "].hide()
 
 
-    def client(self):
+    def utilisateur(self):
         """
         Affichage pour client
         """
-        self.imp = Gtk.Button.new_with_label(label="Ajouter")
+        self.logo_button = Gtk.Button.new_from_icon_name("image-x-generic-symbolic",
+                                                    Gtk.IconSize.BUTTON)
+        self.logo_button.set_label('+ Logo')
+        self.logo_button.set_always_show_image(True)
+        self.logo_button.set_hexpand(True)
+        self.cent.attach(self.logo_button, 4, 11, 2, 1)
+        self.logo_fn = None
+        self.logo_button.connect("clicked", self._logo_dialog)
+        self.imp = Gtk.Button.new_with_label(label="Modifier")
         self.imp.connect("clicked", self.__add2bd)
         self.grid.attach(self.cent, 1, 2, 2, 1)
         self.cent.attach(self.imp, 1, 16, 5, 1)
-        self.first_name()
-        self.last_name()
         self.adrss()
         self.mails()
         self.nums()
         self.entreprise_name()
         self.siret()
-        self.rmq()
 
 
     def __space_info(self):
@@ -144,10 +134,12 @@ class Add_Customer(PageGui):
         self.grid.attach(spacel, 0, 1, 1, 1)
         spacer = Gtk.Label("")
         spacer.set_hexpand(True)
-        self.grid.attach(spacer, 3, 1, 1, 1)
+        self.grid.attach(spacer, 3, 2, 2, 1)
+        spaceh = Gtk.Label("")
+        self.grid.attach(spaceh, 0, 0, 5, 1)
 
 
-    def __creat_labelbox(self,c_txt,pos):
+    def __creat_labelbox(self,c_txt,pos,ind):
         """
         prend un couple de chaine de charactere ainsi que un
         tuple de postion et affhiche un label avec une boite
@@ -160,50 +152,50 @@ class Add_Customer(PageGui):
         self.cent.attach(label,*pos)
         self.entry = Gtk.Entry()
         self.entry.set_hexpand(True)
+        self.entry.set_text(str(self.attr_usr[0][ind]))
         self.cent.attach(self.entry,pos[0]+1,pos[1],2,1)
-        self.space = Gtk.Label()
-        self.cent.attach(self.space,pos[0],pos[1]+1,3,1)
+        space = Gtk.Label()
+        self.cent.attach(space,pos[0],pos[1]+1,3,1)
         self.client_entries[c_txt] = self.entry
-        self.client_space[c_txt] = self.space
-
-
-    def last_name(self):
-        self.__creat_labelbox("Prenom ",(0,3,1,1))
-        return self
-
-
-    def first_name(self):
-        self.__creat_labelbox("Nom ",(3,3,1,1))
-        return self
 
 
     def adrss(self):
-        self.__creat_labelbox("Mail ",(3,5,1,1))
+        self.__creat_labelbox("Mail ",(3,5,1,1),3)
         return self
 
 
     def mails(self):
-        self.__creat_labelbox("Adresse ",(0,7,1,1))
+        self.__creat_labelbox("Adresse ",(0,7,1,1),4)
         return self
 
 
     def nums(self):
-        self.__creat_labelbox("Numero ",(0,5,1,1))
-        return self
-
-
-    def entreprise(self):
-        self.__creat_labelbox("Remarque ",(3,5,1,1))
+        self.__creat_labelbox("Numero ",(3,7,1,1),5)
         return self
 
 
     def entreprise_name(self):
-        self.__creat_labelbox("Entreprise ",(3,7,1,1))
+        self.__creat_labelbox("Entreprise ",(0,5,1,1),2)
         return self
+
+    def _logo_dialog(self, *args):
+        file_chooser = Gtk.FileChooserNative(title="Selectionnez une image",
+                                             accept_label="Selectionner",
+                                             cancel_label="Annuler")
+        filter_ = Gtk.FileFilter()
+        filter_.set_name("Images")
+        filter_.add_pattern("*.jpg")
+        filter_.add_pattern("*.png")
+        filter_.add_pattern("*.jpeg")
+        file_chooser.set_filter(filter_)
+        if file_chooser.run() == Gtk.ResponseType.ACCEPT:
+           self.path = file_chooser.get_filename()
+           self.logo_button.set_sensitive(False)
+           self.logo_button.set_label(" Ajouté")
 
 
     def siret(self):
-        self.__creat_labelbox("Siret ",(0,11,1,1))
+        self.__creat_labelbox("Siret ",(0,11,1,1),6)
         return self
 
 
