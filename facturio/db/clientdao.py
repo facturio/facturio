@@ -82,7 +82,6 @@ class ClientDAO:
         return client
 
 if __name__ == "__main__":
-    
     dao = ClientDAO.get_instance()
     a =None
     dao.insert(a)

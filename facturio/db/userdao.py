@@ -20,11 +20,11 @@ class UserDAO:
 
     def insert(self, user: User):
         """Insertion de l'utilisateur."""
-        # TODO: Tester que sur la table il y a pas deja un user
+        # TODO: Tester que sur la table il n'aie pas deja un user
         # TODO: Modifier l'ordre des attributs pour respecter la table
         request = """INSERT INTO user(logo, company_name, e_mail, address,
                      phone, business_num, first_name, last_name)
-                    VALUES(?, ?, ?, ?, ?, ?, ?, ?)"""
+                     VALUES(?, ?, ?, ?, ?, ?, ?, ?)"""
         # convertir image logo sous forme de fichier binaire
         logo = None
         if user.logo is not None:
@@ -79,10 +79,10 @@ class UserDAO:
                     id_=tup[0])
         return user
 
-    def selection_table(self,nom):
-        bdd = DBManager.get_instance()
-        bdd.cursor.execute("""select * from """+nom)
-        return bdd.cursor.fetchall()
+    # def selection_table(self,nom):
+    #     bdd = DBManager.get_instance()
+    #     bdd.cursor.execute("""select * from """+nom)
+    #     return bdd.cursor.fetchall()
 
 if __name__ == "__main__":
     #TODO: Tester tous les fonctions

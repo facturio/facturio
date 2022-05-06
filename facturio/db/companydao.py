@@ -21,13 +21,12 @@ class CompanyDAO:
 
         client_dao = ClientDAO.get_instance()
         c = Client(company.first_name, company.last_name, company.email,
-        company.address,company.phone_number)
+                   company.address, company.phone_number)
         client_dao.insert(c)
-        #cherche le max id
+        # cherche le max id
         self.bdd.cursor.execute("""SELECT max(id_client) FROM client""")
         self.bdd.connexion.commit()
         id_max = self.bdd.cursor.fetchall()
-        print(id_max[0])
         company.id_ = id_max[0][0]
         req = """INSERT INTO company(id_company, company_name, business_num)
                 VALUES(?,?,?)"""
