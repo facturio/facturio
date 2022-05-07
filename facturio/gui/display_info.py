@@ -222,4 +222,3 @@ class InfoPerson (PageGui):
         entry.set_hexpand(True)
         entry.set_editable(False)
         self.cent.attach(entry,7,17,2,2)
-

@@ -35,9 +35,9 @@ class FacturioOmnisearch(Gtk.SearchEntry):
         recupere les info de la completion et les affiche
         avec la page info_persone
         """
-        txt = (completion.props.model.get_value(iter, 0))
-        if len(txt)==7:
-            print("go")
+        num_client = str(list((completion.props.model.get_value(iter, 0)))[1])
+        if num_client.isnumeric():
+            print(num_client)
 
 def facturio_match_func(completion, key, iter, *user_data):
     k = re.compile('.*' + re.escape(key) + '.*')

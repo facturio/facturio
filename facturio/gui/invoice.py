@@ -1,15 +1,19 @@
 #!/usr/bin/env python3
-import gi
-gi.require_version("Gtk", "3.0")
-from gi.repository import Gtk, GObject, Gdk
+import i18n
 from facturio.classes.client import Company, Client
 from facturio.classes.user import User
 from facturio.classes.invoice_misc import Article, Invoice, Advance, Estimate
 from facturio.gui.home import HeaderBarSwitcher
 from facturio.build_pdf.build_pdf import build_pdf
+from facturio.gui.autocompletion import FacturioEntryCompletion
+from facturio import examples
 from datetime import datetime
 import re
 from datetime import date
+import gi
+gi.require_version("Gtk", "3.0")
+from gi.repository import Gtk, GObject, Gdk
+
 
 class InvoicePage(Gtk.ScrolledWindow):
     def __init__(self):
@@ -22,9 +26,9 @@ class InvoicePage(Gtk.ScrolledWindow):
         header_bar = HeaderBarSwitcher.get_instance()
         self.hb = header_bar
         hbox = Gtk.HBox()
-        self.paid_switch = Gtk.RadioButton(label="Acquitee")
+        self.paid_switch = Gtk.RadioButton(label=i18n.t('invoice.paid'))
         self.not_paid_switch = Gtk.RadioButton(group=self.paid_switch,
-                                               label="Non acquitee")
+                                               label=i18n.t('invoice.unpaid'))
         self.paid_switch.set_mode(False)
         self.not_paid_switch.set_mode(False)
         hbox.pack_start(self.paid_switch, True, True, 0)
@@ -32,12 +36,12 @@ class InvoicePage(Gtk.ScrolledWindow):
         Gtk.StyleContext.add_class(hbox.get_style_context(), "linked")
 
         vbox = Gtk.VBox()
-        create_btn = Gtk.Button(label="Creer nouvelle facture")
+        create_btn = Gtk.Button(label=i18n.t('invoice.create_new_invoice'))
         create_btn.connect("clicked", self.switch_to_create_invoice)
-        export_btn = Gtk.Button(label="Exporter PDF")
-        add_advance_btn = Gtk.Button(label="Ajouter acompte")
-        delete_btn = Gtk.Button(label="Supprimer")
-        update_style_btn = Gtk.Label(label="Style PDF")
+        export_btn = Gtk.Button(label=i18n.t('invoice.export_to_pdf'))
+        add_advance_btn = Gtk.Button(label=i18n.t('invoice.add_deposit'))
+        delete_btn = Gtk.Button(label=i18n.t('invoice.delete'))
+        update_style_btn = Gtk.Label(label=i18n.t('invoice.pdf_style'))
 
         color_btn = Gtk.ColorButton()
         vbox.pack_start(create_btn, True, True, 5)
@@ -50,8 +54,8 @@ class InvoicePage(Gtk.ScrolledWindow):
         color_btn.set_rgba(color)
 
         vbox1 = Gtk.VBox()
-        rb = Gtk.RadioButton(label="Lignes")
-        rb1 = Gtk.RadioButton(group=rb, label="Colonnes")
+        rb = Gtk.RadioButton(label=i18n.t('invoice.lines'))
+        rb1 = Gtk.RadioButton(group=rb, label=i18n.t('invoice.columns'))
 
         vbox1.pack_start(rb, True, True, 0)
         vbox1.pack_start(rb1, True, True, 0)
@@ -100,9 +104,9 @@ class InvoicePage(Gtk.ScrolledWindow):
     def style_update_window(self, *args):
         self.set_sensitive(False)
         box = Gtk.VBox()
-        rb = Gtk.RadioButton(label="Lignes")
-        rb1 = Gtk.RadioButton(group=rb, label="Colonnes")
-        window = Gtk.Window(title="Modifier Style", type=Gtk.WindowType.TOPLEVEL)
+        rb = Gtk.RadioButton(label=i18n.t('invoice.lines'))
+        rb1 = Gtk.RadioButton(group=rb, label=i18n.t('invoice.columns'))
+        window = Gtk.Window(title=i18n.t('invoice.edit_style'), type=Gtk.WindowType.TOPLEVEL)
         color_chooser = Gtk.ColorChooserWidget(show_editor=False)
         box.pack_start(color_chooser, True, True, 5)
         box.pack_start(rb, True, True, 5)
@@ -119,14 +123,14 @@ class InvoicePage(Gtk.ScrolledWindow):
 
         self.treeview = Gtk.TreeView(model=self.store, headers_clickable=True)
         renderer_text = Gtk.CellRendererText()
-        column_text = Gtk.TreeViewColumn("Prenom", renderer_text, text=0)
+        column_text = Gtk.TreeViewColumn(i18n.t('invoice.name'), renderer_text, text=0)
         column_text.set_clickable(True)
         column_text.set_resizable(True)
         column_text.get_button().connect("clicked", self.sort_first_name)
         self.treeview.append_column(column_text)
 
         renderer_text = Gtk.CellRendererText()
-        column_text = Gtk.TreeViewColumn("Nom", renderer_text, text=1)
+        column_text = Gtk.TreeViewColumn(i18n.t('invoice.surname'), renderer_text, text=1)
         column_text.set_clickable(True)
         column_text.set_resizable(True)
         column_text.get_button().connect("clicked", self.sort_last_name)
@@ -136,13 +140,13 @@ class InvoicePage(Gtk.ScrolledWindow):
         # column_text.get_button().connect("clicked", self.sort_first_name)
 
         # renderer_text = Gtk.CellRendererText()
-        column_text = Gtk.TreeViewColumn("Date", renderer_text, text=2)
+        column_text = Gtk.TreeViewColumn(i18n.t('invoice.date'), renderer_text, text=2)
         column_text.set_clickable(True)
         column_text.get_button().connect("clicked", self.sort_date)
         self.treeview.append_column(column_text)
 
         # renderer_text = Gtk.CellRendererText()
-        column_text= Gtk.TreeViewColumn("Solde restant", renderer_text, text=3)
+        column_text= Gtk.TreeViewColumn(i18n.t('invoice.balance_left'), renderer_text, text=3)
         column_text.set_clickable(True)
         column_text.get_button().connect("clicked", self.sort_balance)
         self.treeview.append_column(column_text)
@@ -153,7 +157,7 @@ class InvoicePage(Gtk.ScrolledWindow):
         self.treeview.append_column(invisible_column)
 
         renderer_text = Gtk.CellRendererText()
-        column_text = Gtk.TreeViewColumn(title="Rafraichir",
+        column_text = Gtk.TreeViewColumn(title=i18n.t('invoice.refresh'),
                                          cell_renderer=renderer_text)
         column_text.get_button().connect("clicked", self.refresh_store)
         column_text.set_clickable(True)
@@ -223,7 +227,7 @@ class CreateInvoicePage(Gtk.ScrolledWindow):
         self.main_grid.attach(sep, 2, 7, 1, 1)
 
         self.spinner = Gtk.Spinner()
-        self.create_button = Gtk.Button(label='Créer')
+        self.create_button = Gtk.Button(label=i18n.t('invoice.create'))
         self.create_button.connect("clicked", self._gen_invoice)
         self.create_button.set_halign(Gtk.Align.END)
         hbox = Gtk.HBox()
@@ -243,7 +247,7 @@ class CreateInvoicePage(Gtk.ScrolledWindow):
         """Facture texte et logo"""
         self.header_grid = Gtk.Grid(row_homogeneous=True,
                                     column_homogeneous=True)
-        label = Gtk.Label("<big>Facture</big>")
+        label = Gtk.Label("<big>" + i18n.t('invoice.invoice') + "</big>")
         label.set_hexpand(True)
         label.set_use_markup(True)
         self.header_grid.attach(label, 1, 1, 4, 1)
@@ -290,14 +294,28 @@ class CreateInvoicePage(Gtk.ScrolledWindow):
                                     row_spacing=20)
         self.client_entries = {}
         self.client_labels= {}
-        label = Gtk.Label("<big>Client</big>")
+        self.client_completions = [
+            FacturioEntryCompletion(lambda x: x.first_name),
+            FacturioEntryCompletion(lambda x: x.last_name),
+            FacturioEntryCompletion(lambda x: x.email),
+            FacturioEntryCompletion(lambda x: x.address),
+            FacturioEntryCompletion(lambda x: x.phone_number),
+            # FacturioEntryCompletion(lambda x: (x.company_name or None)),
+            # FacturioEntryCompletion(lambda x: (x.business_number or None)),
+        ]
+
+        for c in self.client_completions:
+            c.fill_entry(examples.clients)
+            c.to_update = self.client_completions
+
+        label = Gtk.Label("<big>" + i18n.t('invoice.client') + "</big>")
         label.set_hexpand(True)
         label.set_use_markup(True)
         hbox = Gtk.HBox()
         # hbox.pack_start(label, True, True, 10)
-        self.private_switch = Gtk.RadioButton(label="Particulier")
+        self.private_switch = Gtk.RadioButton(label=i18n.t('invoice.private_individual'))
         self.company_switch = Gtk.RadioButton(group=self.private_switch,
-                                              label="Entreprise")
+                                              label=i18n.t('invoice.business'))
         self.company_switch.connect("clicked", self._switch_private_company)
         self.private_switch.connect("clicked", self._switch_private_company)
         self.private_switch.set_mode(False)
@@ -309,7 +327,7 @@ class CreateInvoicePage(Gtk.ScrolledWindow):
         self.client_grid.attach(label, 1, 1, 1, 1)
         self.client_grid.attach(hbox, 2, 1, 3, 1)
 
-        label = Gtk.Label("Nom\nEntreprise")
+        label = Gtk.Label(i18n.t('invoice.business_name'))
         label.set_justify(Gtk.Justification.CENTER)
         label.set_hexpand(True)
         self.client_grid.attach(label, 1, 4, 1, 1)
@@ -323,12 +341,12 @@ class CreateInvoicePage(Gtk.ScrolledWindow):
 
         self.client_grid.attach(entry, 2, 4, 3, 1)
 
-        label = Gtk.Label("Nom")
+        label = Gtk.Label(i18n.t('invoice.surname'))
         label.set_justify(Gtk.Justification.CENTER)
         label.set_hexpand(True)
         self.client_grid.attach(label, 1, 5, 1, 1)
         label.set_hexpand(True)
-        entry = Gtk.Entry()
+        entry = self.client_completions[1]
         entry.set_max_length(25)
         entry.connect("changed", self.reset_context)
         entry.set_hexpand(True)
@@ -336,12 +354,12 @@ class CreateInvoicePage(Gtk.ScrolledWindow):
         self.client_entries["last_name"] = entry
         self.client_labels["last_name"] = label
 
-        label = Gtk.Label("Prenom")
+        label = Gtk.Label(i18n.t('invoice.name'))
         label.set_justify(Gtk.Justification.CENTER)
         label.set_hexpand(True)
         self.client_grid.attach(label, 1, 6, 1, 1)
         label.set_hexpand(True)
-        entry = Gtk.Entry()
+        entry = self.client_completions[0]
         entry.set_max_length(25)
         entry.connect("changed", self.reset_context)
         entry.set_hexpand(True)
@@ -349,31 +367,32 @@ class CreateInvoicePage(Gtk.ScrolledWindow):
         self.client_entries["first_name"] = entry
         self.client_labels["first_name"] = label
 
-        label = Gtk.Label("Adresse")
+        label = Gtk.Label(i18n.t('invoice.address'))
         label.set_hexpand(True)
         self.client_grid.attach(label, 1, 7, 1, 1)
-        entry = Gtk.Entry()
+        entry = self.client_completions[3]
         entry.set_max_length(100)
         entry.connect("changed", self.reset_context)
         self.client_grid.attach(entry, 2, 7, 3, 1)
-        self.client_entries["adress"] = entry
-        self.client_labels["adress"] = label
+        self.client_entries["address"] = entry
+        self.client_labels["address"] = label
 
-        label = Gtk.Label("E-mail")
+        label = Gtk.Label(i18n.t('invoice.email'))
         label.set_hexpand(True)
         self.client_grid.attach(label, 1, 8, 1, 1)
         entry = Gtk.Entry()
+        entry = self.client_completions[2]
         entry.set_max_length(25)
         entry.connect("changed", self.reset_context)
         self.client_grid.attach(entry, 2, 8, 3, 1)
         self.client_entries["email"] = entry
         self.client_labels["email"] = label
 
-        label = Gtk.Label("Numéro\ntéléphone")
+        label = Gtk.Label(i18n.t('invoice.phone_number'))
         label.set_hexpand(True)
         label.set_justify(Gtk.Justification.CENTER)
         self.client_grid.attach(label, 1, 9, 1, 1)
-        entry = Gtk.Entry()
+        entry = self.client_completions[4]
         entry.set_max_length(25)
         entry.connect("changed", self.reset_context)
         entry.connect("insert-text", self.allow_only_phone)
@@ -381,7 +400,7 @@ class CreateInvoicePage(Gtk.ScrolledWindow):
         self.client_entries["phone_number"] = entry
         self.client_labels["phone_number"] = label
 
-        label = Gtk.Label("Numéro\nSIRET/SIREN")
+        label = Gtk.Label(i18n.t('invoice.siret_number'))
         label.set_justify(Gtk.Justification.CENTER)
         label.set_hexpand(True)
         self.client_grid.attach(label, 1, 10, 1, 1)
@@ -392,10 +411,10 @@ class CreateInvoicePage(Gtk.ScrolledWindow):
         self.client_entries["business_number"] = entry
         self.client_labels["business_number"] = label
 
-        button = Gtk.Button(label="Importer client")
+        button = Gtk.Button(label=i18n.t('invoice.import_client'))
         self.client_grid.attach(button, 3, 11, 2, 1)
 
-        button = Gtk.Button(label="Sauvegarder client")
+        button = Gtk.Button(label=i18n.t('invoice.save_client'))
         self.client_grid.attach(button, 1, 11, 2, 1)
 
     def _load_user_entries(self):
@@ -430,91 +449,105 @@ class CreateInvoicePage(Gtk.ScrolledWindow):
                                   row_homogeneous=True, column_spacing=20,
                                   row_spacing=20)
         self.user_entries = {}
-        label = Gtk.Label("<big>Utilisateur</big>")
+        label = Gtk.Label("<big>" + i18n.t('invoice.user') + "</big>")
         label.set_hexpand(True)
         label.set_use_markup(True)
         self.user_grid.attach(label, 1, 3, 1, 1)
 
-        label = Gtk.Label("Nom\nEntreprise")
+        self.user_completions = [
+            FacturioEntryCompletion(lambda x: x.company_name),
+            FacturioEntryCompletion(lambda x: x.first_name),
+            FacturioEntryCompletion(lambda x: x.last_name),
+            FacturioEntryCompletion(lambda x: x.email),
+            FacturioEntryCompletion(lambda x: x.address),
+            FacturioEntryCompletion(lambda x: x.phone_number),
+            FacturioEntryCompletion(lambda x: x.business_number),
+        ]
+
+        for c in self.user_completions:
+            c.fill_entry(examples.utilisateurs)
+            c.to_update = self.user_completions
+
+        label = Gtk.Label(i18n.t('invoice.business_name'))
         label.set_justify(Gtk.Justification.CENTER)
         label.set_hexpand(True)
         self.user_grid.attach(label, 1, 4, 1, 1)
-        entry = Gtk.Entry()
+        entry = self.user_completions[0]
         entry.set_max_length(25)
         entry.connect("changed", self.reset_context)
         entry.set_hexpand(True)
         self.user_grid.attach(entry, 2, 4, 3, 1)
         self.user_entries["company_name"] = entry
 
-        label = Gtk.Label("Nom")
+        label = Gtk.Label(i18n.t('invoice.surname'))
         label.set_justify(Gtk.Justification.CENTER)
         label.set_hexpand(True)
         self.user_grid.attach(label, 1, 5, 1, 1)
         label.set_hexpand(True)
-        entry = Gtk.Entry()
+        entry = self.user_completions[2]
         entry.set_max_length(25)
         entry.connect("changed", self.reset_context)
         entry.set_hexpand(True)
         self.user_grid.attach(entry, 2, 5, 3, 1)
         self.user_entries["last_name"] = entry
 
-        label = Gtk.Label("Prenom")
+        label = Gtk.Label(i18n.t('invoice.name'))
         label.set_justify(Gtk.Justification.CENTER)
         label.set_hexpand(True)
         self.user_grid.attach(label, 1, 6, 1, 1)
         label.set_hexpand(True)
-        entry = Gtk.Entry()
+        entry = self.user_completions[1]
         entry.set_max_length(25)
         entry.connect("changed", self.reset_context)
         entry.set_hexpand(True)
         self.user_grid.attach(entry, 2, 6, 3, 1)
         self.user_entries["first_name"] = entry
 
-        label = Gtk.Label("Adresse")
+        label = Gtk.Label(i18n.t('invoice.address'))
         label.set_hexpand(True)
         self.user_grid.attach(label, 1, 7, 1, 1)
-        entry = Gtk.Entry()
+        entry = self.user_completions[4]
         entry.set_max_length(100)
         entry.connect("changed", self.reset_context)
         self.user_grid.attach(entry, 2, 7, 3, 1)
-        self.user_entries["adress"] = entry
+        self.user_entries["address"] = entry
 
-        label = Gtk.Label("E-mail")
+        label = Gtk.Label(i18n.t('invoice.email'))
         label.set_hexpand(True)
         self.user_grid.attach(label, 1, 8, 1, 1)
-        entry = Gtk.Entry()
+        entry = self.user_completions[3]
         entry.set_max_length(25)
         entry.connect("changed", self.reset_context)
         self.user_grid.attach(entry, 2, 8, 3, 1)
         self.user_entries["email"] = entry
 
-        label = Gtk.Label("Numéro\ntéléphone")
+        label = Gtk.Label(i18n.t('invoice.phone_number'))
         label.set_hexpand(True)
         label.set_justify(Gtk.Justification.CENTER)
         self.user_grid.attach(label, 1, 9, 1, 1)
-        entry = Gtk.Entry()
+        entry = self.user_completions[5]
         entry.set_max_length(25)
         entry.connect("changed", self.reset_context)
         entry.connect("insert-text", self.allow_only_phone)
         self.user_grid.attach(entry, 2, 9, 3, 1)
         self.user_entries["phone_number"] = entry
 
-        label = Gtk.Label("Numéro\nSIRET/SIREN")
+        label = Gtk.Label(i18n.t('invoice.siret_number'))
         label.set_justify(Gtk.Justification.CENTER)
         label.set_hexpand(True)
         self.user_grid.attach(label, 1, 10, 1, 1)
 
-        entry = Gtk.Entry()
+        entry = self.user_completions[6]
         entry.set_max_length(25)
         entry.connect("changed", self.reset_context)
         self.user_grid.attach(entry, 2, 10, 3, 1)
         self.user_entries["business_number"] = entry
 
-        self.save_user_btn = Gtk.Button(label="Sauvegarder utilisateur")
+        self.save_user_btn = Gtk.Button(label=i18n.t('invoice.save_user'))
         self.save_user_btn.connect("clicked", self._save_user)
         self.user_grid.attach(self.save_user_btn, 1, 11, 2, 1)
 
-        self.update_user_btn = Gtk.Button(label="Modifier utilisateur")
+        self.update_user_btn = Gtk.Button(label=i18n.t('invoice.edit_user'))
         self.update_user_btn.connect("clicked", self._update_user)
         self.user_grid.attach(self.update_user_btn, 3, 11, 2, 1)
         if User.exits():
@@ -547,7 +580,7 @@ class CreateInvoicePage(Gtk.ScrolledWindow):
         for entry in self.user_entries.values():
             entry.set_sensitive(False)
         self.logo_button.set_sensitive(False)
-        self.logo_button.set_label(" Ajouté")
+        self.logo_button.set_label(i18n.t('invoice.added'))
         self.update_user_btn.set_sensitive(True)
         self.save_user_btn.set_sensitive(False)
         return
@@ -556,7 +589,7 @@ class CreateInvoicePage(Gtk.ScrolledWindow):
         user = User.get_instance()
         for name, entry in self.user_entries.items():
             entry.set_sensitive(True)
-        self.logo_button.set_label(" Changer image")
+        self.logo_button.set_label(i18n.t('invoice.edit_picture'))
         self.logo_button.set_sensitive(True)
         self.update_user_btn.set_sensitive(False)
         self.save_user_btn.set_sensitive(True)
@@ -567,7 +600,7 @@ class CreateInvoicePage(Gtk.ScrolledWindow):
 
     def _init_taxes_grid(self):
         self.taxes_grid = Gtk.Grid(row_spacing=20)
-        label = Gtk.Label("Tax")
+        label = Gtk.Label(i18n.t('invoice.tax'))
         adj = Gtk.Adjustment(value=21, lower=0, upper=100, step_increment=1)
         self.spin_btn = Gtk.SpinButton(adjustment=adj, climb_rate=1, digits=2)
         self.spin_btn.connect("output", self._put_percentage)
@@ -579,7 +612,7 @@ class CreateInvoicePage(Gtk.ScrolledWindow):
         self.taxes_grid.attach(space, 2,1,1,1)
         self.taxes_grid.attach(self.spin_btn, 3,1,1,1)
 
-        label = Gtk.Label("Date")
+        label = Gtk.Label(i18n.t('invoice.date'))
         self.taxes_grid.attach(label, 1,2,1,1)
         vbox = Gtk.HBox()
         self.date_entry = Gtk.Entry(placeholder_text="dd/mm/yyyy")
@@ -587,7 +620,7 @@ class CreateInvoicePage(Gtk.ScrolledWindow):
         today = date.today()
         self.date_entry.set_text(date.today().strftime("%d/%m/%Y"))
         # self.taxes_grid.attach(date_entry, 3,2,1,1)
-        self.show_calendar = Gtk.ToggleButton(label="Montrer calendrier")
+        self.show_calendar = Gtk.ToggleButton(label=i18n.t('invoice.show_calendar'))
         vbox.pack_start(self.date_entry, True, True, 0)
         vbox.pack_start(self.show_calendar , True, True, 5)
         self._init_calendar()
@@ -610,13 +643,13 @@ class CreateInvoicePage(Gtk.ScrolledWindow):
         self.total_grid = Gtk.Grid(column_homogeneous=True,
                                    row_homogeneous=True, column_spacing=20,
                                    row_spacing=20)
-        self.label= Gtk.Label("Subtotal")
+        self.label= Gtk.Label(i18n.t('invoice.subtotal'))
         self.label.set_xalign(0)
         self.total_grid.attach(self.label, 1, 1, 1, 1)
-        self.tax_label = Gtk.Label("Tax (21%)")
+        self.tax_label = Gtk.Label(i18n.t('invoice.tax') + "(21%)")
         self.tax_label.set_xalign(0)
         self.total_grid.attach(self.tax_label, 1, 2, 1, 1)
-        self.label = Gtk.Label("Total")
+        self.label= Gtk.Label(i18n.t('invoice.total'))
         self.label.set_xalign(0)
         self.total_grid.attach(self.label, 1, 3, 1, 1)
 
@@ -740,7 +773,7 @@ class CreateInvoicePage(Gtk.ScrolledWindow):
     def _raise_error(self):
         self.spinner.stop()
         self.spinner.hide()
-        self.error_label.set_text("Champs non valides")
+        self.error_label.set_text(i18n.t('invoice.invalid_fields'))
         self.error_label.show()
 
     def _validate_date(self):
@@ -808,7 +841,7 @@ class CreateInvoicePage(Gtk.ScrolledWindow):
             client = Company.from_dict(self.client_data)
         else:
             assert(self.private_switch.get_active())
-            names = ("first_name", "last_name", "adress", "email",
+            names = ("first_name", "last_name", "address", "email",
                      "phone_number")
             for name in names:
                 txt = self.client_entries[name].get_text()
@@ -854,11 +887,11 @@ class CreateInvoicePage(Gtk.ScrolledWindow):
         webbrowser.open_new("exemple_avec_gui.pdf")
 
     def _logo_dialog(self, *args):
-        file_chooser = Gtk.FileChooserNative(title="Selectionnez une image",
-                                             accept_label="Selectionner",
-                                             cancel_label="Annuler")
+        file_chooser = Gtk.FileChooserNative(title=i18n.t('invoice.select_picture'),
+                                             accept_label=i18n.t('invoice.select'),
+                                             cancel_label=i18n.t('invoice.cancel'))
         filter_ = Gtk.FileFilter()
-        filter_.set_name("Images")
+        filter_.set_name(i18n.t('invoice.pictures'))
         filter_.add_pattern("*.jpg")
         filter_.add_pattern("*.png")
         filter_.add_pattern("*.jpeg")
@@ -866,7 +899,7 @@ class CreateInvoicePage(Gtk.ScrolledWindow):
         if file_chooser.run() == Gtk.ResponseType.ACCEPT:
            self.logo_fn = file_chooser.get_filename()
            # self.logo_button.set_sensitive(False)
-           self.logo_button.set_label(" Ajouté")
+           self.logo_button.set_label(i18n.t('invoice.added'))
 
     def _put_percentage(self, spin_btn):
         """
@@ -885,7 +918,7 @@ class CreateInvoicePage(Gtk.ScrolledWindow):
         value = adjustement.get_value()
         if value.is_integer():
             value = int(value)
-        self.tax_label.set_text(f"Tax ({value}%)")
+        self.tax_label.set_text(i18n.t('invoice.tax') + f" ({value}%)")
         sub_total_val = float(self.sub_total.get_text()[:-2])
         res = round((value/100) * sub_total_val, 2)
         self.total_taxes.set_text(f"{res} €")
@@ -922,20 +955,20 @@ class CreateInvoicePage(Gtk.ScrolledWindow):
         self.label.set_hexpand(True)
         self.article_grid.attach(self.label, 1, 1, 1, 1)
 
-        self.label = Gtk.Label("Article")
+        self.label = Gtk.Label(i18n.t('invoice.article'))
         self.label.set_halign(Gtk.Align.START)
         self.label.set_hexpand(True)
         self.article_grid.attach(self.label, 2, 1, 2, 1)
 
-        self.label = Gtk.Label("Prix")
+        self.label = Gtk.Label(i18n.t('invoice.price'))
         self.label.set_xalign(0.9)
         self.article_grid.attach(self.label, 4, 1, 1, 1)
 
-        self.label = Gtk.Label("Quantité")
+        self.label = Gtk.Label(i18n.t('invoice.quantity'))
         self.label.set_xalign(0.9)
         self.article_grid.attach(self.label, 5, 1, 1, 1)
 
-        self.label = Gtk.Label("Somme")
+        self.label = Gtk.Label(i18n.t('invoice.sum'))
         self.article_grid.attach(self.label, 6, 1, 1, 1)
 
     def _first_article_row(self):
@@ -950,7 +983,7 @@ class CreateInvoicePage(Gtk.ScrolledWindow):
         left_space.set_hexpand(True)
         self.article_grid.attach(left_space, 1, 2, 1, 1)
 
-        entry = Gtk.Entry(placeholder_text="Nom de l'article")
+        entry = Gtk.Entry(placeholder_text=i18n.t('invoice.article_name'))
         entry.connect("changed", self.reset_context)
         entry.set_max_length(25)
         self.article_grid.attach(entry , 2, 2, 2, 1)
@@ -974,7 +1007,7 @@ class CreateInvoicePage(Gtk.ScrolledWindow):
         self.total_articles.append(label)
         self.article_grid.attach(label, 6, 2, 1, 1)
 
-        des_entry = Gtk.Entry(placeholder_text="Détails additionnels")
+        des_entry = Gtk.Entry(placeholder_text=i18n.t('invoice.additional_details'))
         des_entry.set_max_length(100)
         self.article_grid.attach(des_entry, 2, 3, 2, 2)
         des_entry.connect("changed", self.reset_context)
@@ -1011,7 +1044,7 @@ class CreateInvoicePage(Gtk.ScrolledWindow):
         self.btns[button] = i
         button.connect("clicked", self._remove_article_form)
 
-        title_entry = Gtk.Entry(placeholder_text="Nom de l'article")
+        title_entry = Gtk.Entry(placeholder_text=i18n.t('invoice.article_name'))
         title_entry.connect("changed", self.reset_context)
         title_entry.set_max_length(25)
         self.article_grid.attach(title_entry, 2, i, 2, 1)
@@ -1043,7 +1076,7 @@ class CreateInvoicePage(Gtk.ScrolledWindow):
                             label)
         qty_entry.connect("changed", self._update_total_article, article_entries, label)
 
-        des_entry = Gtk.Entry(placeholder_text="Détails additionnels")
+        des_entry = Gtk.Entry(placeholder_text=i18n.t('invoice.additional_details'))
         des_entry.connect("insert-text", self.allow_only_float)
         des_entry.set_max_length(100)
         # self.entry.set_hexpand(True)
@@ -1091,4 +1124,5 @@ class CreateInvoicePage(Gtk.ScrolledWindow):
         self.article_grid.remove_row(line)
         self._update_dict(line)
         self.plus_btn_row -= 3
+
         self._modify_sub_total()
