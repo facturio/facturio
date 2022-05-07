@@ -214,4 +214,3 @@ class ModifyUsr(PageGui):
         self.client_entries["Remarque "] = self.entry
         self.cent.attach(self.entry,1,13,5,3)
         return self
-
