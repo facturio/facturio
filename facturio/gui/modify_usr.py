@@ -24,6 +24,9 @@ class ModifyUsr(PageGui):
                                   row_homogeneous=False, column_spacing=20,
                                   row_spacing=20)
         self.attr_usr=self.__get_user()
+        if self.attr_usr==[]:
+            self.attr_usr=[["","","",
+                           "","","",""]]
         self.path=self.attr_usr[0][1]
         self.client_entries={}
         self.client_label={}
@@ -211,4 +214,3 @@ class ModifyUsr(PageGui):
         self.client_entries["Remarque "] = self.entry
         self.cent.attach(self.entry,1,13,5,3)
         return self
-
