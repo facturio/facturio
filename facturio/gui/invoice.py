@@ -64,7 +64,7 @@ class InvoicePage(Gtk.ScrolledWindow):
         vbox1.pack_start(rb1, True, True, 0)
         # update_style_btn.connect("clicked", self.style_update_window)
         hbox1 = Gtk.HBox()
-        hbox1.pack_start(color_btn, True, True, 5)
+        # hbox1.pack_start(color_btn, True, True, 5)
         hbox1.pack_start(vbox1, True, True, 5)
 
         vbox.pack_start(hbox1, True, True, 5)

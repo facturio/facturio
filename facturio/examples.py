@@ -25,4 +25,4 @@ casque = Article("casque", 69.99, 10)
 
 clients = [clement, quentin, youssef, theo]
 articles = [ordinateur, cable_ethernet, telephone, casque]
-utilisateurs = [placeholder]
+utilisateurs = [test]
