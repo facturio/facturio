@@ -99,7 +99,8 @@ class DBManager:
             description STRING,
             price float,
             quantity INTEGER,
-            id_receipt INTEGER)""")
+            id_receipt INTEGER
+            FOREIGN KEY(id_receipt) REFERENCES receipt(id_receipt) ON DELETE CASCADE)""")
         self.connexion.commit()
 
     def _creation_table_receipt(self):

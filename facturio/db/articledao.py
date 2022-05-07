@@ -50,6 +50,12 @@ class ArticleDAO:
         self.bdd.cursor.execute(request, values)
         self.bdd.connexion.commit()
 
+    def delete_table(self, id):
+
+        self.bdd.cursor.execute(
+            """ DELETE FROM article WHERE id_article="""+str(id))
+        self.bdd.connexion.commit()
+
     @staticmethod
     def _gen_article(tup):
         """
