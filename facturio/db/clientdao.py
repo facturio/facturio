@@ -59,6 +59,15 @@ class ClientDAO:
         self.bdd.cursor.execute(request, data)
         self.bdd.connexion.commit()
 
+    def delete(self, client: Client):
+        """
+        Prend un objet client et le supprime de la BD
+        """
+        if client.id_ is None:
+            raise ValueError
+        self.bdd.cursor.execute("DELETE FROM CLIENT WHERE id_client="+str(client.id_))
+        self.bdd.connexion.commit()
+
     def get_all(self):
         """Renvoie une liste tous les instances des client sur la BD."""
         tuples = self.bdd.cursor.execute("select * from  client").fetchall()
@@ -95,7 +104,5 @@ if __name__ == "__main__":
     #a=dao.get_all()
     #avoir celui qu'on veut
     #a=a[len(a)-1]
-
     #a.first_name="titit"
-
     #dao.update(a)

@@ -2,6 +2,7 @@
 import sqlite3
 import gi
 from facturio.gui.page_gui import PageGui
+from facturio.gui.home import HeaderBarSwitcher
 from facturio.db.db import Data_base
 gi.require_version("Gtk", "3.0")
 from gi.repository import Gtk, Gdk, Gio, GdkPixbuf
@@ -20,6 +21,7 @@ class ModifyUsr(PageGui):
         self.list_att_par=["Entreprise ","Mail ","Adresse ",
                            "Numero ","Siret "]
         super().__init__()
+        self.header_bar = HeaderBarSwitcher.get_instance()
         self.cent = Gtk.Grid(column_homogeneous=False,
                                   row_homogeneous=False, column_spacing=20,
                                   row_spacing=20)
@@ -84,6 +86,7 @@ class ModifyUsr(PageGui):
             self.info.append("1")
             print("info=",self.info)
             self.db.update_user(self.info)
+            self.header_bar.switch_page(None,"home_page")
         else:
             print("champs incorrect")
 

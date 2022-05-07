@@ -17,8 +17,19 @@ class InfoPerson (PageGui):
     |---  -- |
     +--------+
     """
-    def __init__(self, is_ut, num_client=0,*args, **kwargs):
-        print("num=",num_client)
+    __instance = None
+
+    def get_instance():
+        """Renvoie le singleton."""
+        if InfoPerson.__instance is None:
+            InfoPerson.__instance = InfoPerson()
+        return InfoPerson.__instance
+
+    def __init__(self,*args, **kwargs):
+        super().__init__()
+        self.is_ut=True
+        self.num_client=0
+        print("num=",self.num_client)
         self.header_bar = HeaderBarSwitcher.get_instance()
         super().__init__(*args, **kwargs)
         self.cent = Gtk.Grid(column_homogeneous=False,
@@ -27,10 +38,9 @@ class InfoPerson (PageGui):
         self.__init_grid()
         self.grid.attach(self.cent, 1, 2, 2, 1)
         self.__space_info()
-        if is_ut:
+        if self.is_ut:
             self.utilisateur()
         else:
-            self.num_client=num_client
             self.client()
 
     def __init_grid(self):
@@ -55,11 +65,11 @@ class InfoPerson (PageGui):
         self.grid.attach(bttl, 1, 1, 3, 1 )
 
 
-    def __delete_client(self):
+    def __delete_client(self,button,num_client):
         """
         """
-        list_client= self.db.selection_table("user")
-        return list_client
+        self.db.db_delete_client(num_client)
+        self.header_bar.switch_page(None,"home_page")
 
 
     def __get_user(self):
@@ -121,6 +131,8 @@ class InfoPerson (PageGui):
         self.cent.attach(self.imp, 6, 4, 3, 3)
         self.imp.connect("clicked", self.header_bar.active_button, "modify_usr")
         self.button = Gtk.Button(label="Supprimer")
+        print(self.num_client)
+        self.button.connect("clicked", self.__delete_client, self.num_client)
         self.cent.attach(self.button, 6, 7, 3, 3)
         exporter = Gtk.Button.new_from_icon_name("document-save-symbolic",
                                                     Gtk.IconSize.BUTTON)

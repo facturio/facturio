@@ -25,6 +25,6 @@ class History(PageGui):
                 .title("Historique")
                 .search((1,3,5,1))
                 .space()
-                .init_result(["Nom", "date", "Description"],
-                          (1,4,5,10))
+                #.init_result(["Nom", "date", "Description"],
+                          #(1,4,5,10))
         )

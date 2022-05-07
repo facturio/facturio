@@ -76,6 +76,15 @@ class Data_base:
             """)
             self.connexion.commit()
 
+    def db_delete_client(self, id_):
+        """
+        Prend un objet client et le supprime de la BD
+        """
+        if id_ is None:
+            raise ValueError
+        self.cursor.execute("DELETE FROM CLIENT WHERE id_client="+str(id_))
+        self.connexion.commit()
+
     def __creation_table_invoice_devis(self):
             self.cursor.execute("""
             CREATE TABLE IF NOT EXISTS invoice_devis

@@ -9,6 +9,7 @@ from facturio.gui.page_gui import PageGui
 from facturio.gui.home import HeaderBarSwitcher
 from facturio.gui.add_customer import Add_Customer
 from facturio.gui.headerbar import HeaderBarSwitcher
+from facturio.gui.display_info import InfoPerson
 from facturio.db.db import Data_base
 gi.require_version("Gtk", "3.0")
 from gi.repository import Gtk, Gdk, Gio, GdkPixbuf
@@ -30,7 +31,6 @@ class Customer(PageGui):
                                   row_spacing=20)
         self.header_bar = HeaderBarSwitcher.get_instance()
         self.__init_grid()
-        self.title("Clients")
         self.__space_info()
         self.search_bar_client()
         self.__summon_button()
@@ -59,7 +59,9 @@ class Customer(PageGui):
         self.grid.set_row_homogeneous(False)
         self.grid.set_row_spacing(20)
         self.grid.set_column_spacing(20)
+        self.grid.attach(self.cent, 1, 3, 2, 1)
         return self
+
 
     def __summon_button(self):
         """
@@ -83,7 +85,7 @@ class Customer(PageGui):
     def file_explorer(self,button):
         """
         ouvrent un explorateur de fichier et ajoute la
-        bd le contenue du fichier en *.clt
+        bd le contenue du fichier en *.clt et *csv
         """
         filechooserdialog = Gtk.FileChooserDialog(title=" Importer client",
              parent=None,
@@ -133,8 +135,20 @@ class Customer(PageGui):
         """
         list_client= self.db.selection_table("client",)
         searchbar = FacturioOmnisearch(list_client)
-        searchbar.go_to=True
+        searchbar.completion.connect('match-selected', self.switch_to_display)
         self.cent.attach(searchbar, 1,3,2,1)
+
+    def switch_to_display(self, completion, model, iter):
+        """
+        recupere les info de la completion et les affiche
+        avec la page info_persone
+        """
+        num_client = str(list((completion.props.model.get_value(iter, 0)))[1])
+        page=InfoPerson()
+        page.is_ut=False
+        page.num_client=int(num_client)
+        if num_client.isnumeric():
+            self.header_bar.switch_page(None,"user_page")
 
 
     def add_result(self,res):
