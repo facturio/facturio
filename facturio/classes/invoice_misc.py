@@ -158,7 +158,7 @@ class Invoice(Receipt):
                  date: int,
                  taxes: float,
                  balance: float,
-                 advances_list: list[Advance] = None,
+                 advances_list: list[Advance] = [],
                  note: str = None,
                  id_: int = None):
         super().__init__(user, client, articles_list, date, taxes, balance,

@@ -136,7 +136,7 @@ def create_random_invoice():
     Return a random invoice
     """
 
-    if User.exits():
+    if User.exists():
         user = User.get_instance()
     else:
         user = create_random_user()

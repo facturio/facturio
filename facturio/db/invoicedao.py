@@ -35,6 +35,7 @@ class InvoiceDAO:
         for advance in invoice.advances_list:
             advance.id_invoice = id_rcp
             adv_dao.insert(advance)
+        assert(invoice.id_ is not None)
 
     # def _set_id(self, invoice: Invoice, id_inv):
     #     """Mis a jour l'id_invoice des acomptes."""
@@ -59,7 +60,6 @@ class InvoiceDAO:
                    "invoice.id_invoice=receipt.id_receipt "
                    f"WHERE invoice.id_invoice={id_inv}")
         tup = self.db.cursor.execute(request).fetchone()
-        print(tup)
         return self._gen_invoice(tup)
 
 

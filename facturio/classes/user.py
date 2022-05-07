@@ -23,7 +23,7 @@ class User:
         if User.instance is None:
             User.instance = self
         else:
-            print("Class singleton User already exits")
+            print("Class singleton User already exists")
             raise ValueError
 
         self.logo = logo
@@ -84,12 +84,12 @@ class User:
     def get_instance():
         """Recupere l'instance."""
         if User.instance is None:
-            print("Class singleton User already exits")
+            print("Class singleton User already exists")
             raise ValueError
         return User.instance
 
     @staticmethod
-    def exits():
+    def exists():
         """Renvoie vrai si il exist une instance du singleton."""
         return True if User.instance else False
 
