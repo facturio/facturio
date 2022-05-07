@@ -15,7 +15,7 @@ from datetime import datetime
 import re
 from datetime import date
 from facturio.build_pdf.build_pdf import build_pdf
-
+import webbrowser
 
 class InvoicePage(Gtk.ScrolledWindow):
     def __init__(self):
@@ -43,33 +43,19 @@ class InvoicePage(Gtk.ScrolledWindow):
         export_btn = Gtk.Button(label="Exporter PDF")
         export_btn.connect("clicked", self._gen_invoice)
         add_advance_btn = Gtk.Button(label="Ajouter acompte")
-        delete_btn = Gtk.Button(label="Supprimer")
-        update_style_btn = Gtk.Label(label="Style PDF")
+        self.delete_btn = Gtk.Button(label="Supprimer")
+        self.show_style = Gtk.ToggleButton(label="Modifer style PDF")
+        self._init_style_settings()
+        self.show_style.connect("clicked", self.show_hide_style_settings)
 
-        color_btn = Gtk.ColorButton()
+
         vbox.pack_start(create_btn, True, True, 5)
         vbox.pack_start(add_advance_btn, True, True, 5)
-        vbox.pack_start(delete_btn, True, True, 5)
+        vbox.pack_start(self.delete_btn, True, True, 5)
         vbox.pack_start(export_btn, True, True, 5)
-        vbox.pack_start(update_style_btn, True, True, 5)
-        color = Gdk.RGBA()
-        color.parse("#5f5f5f")
-        color_btn.set_rgba(color)
+        vbox.pack_start(self.show_style, True, True, 5)
+        # vbox.pack_start(self.style_grid, True, True, 0)
 
-        vbox1 = Gtk.VBox()
-        rb = Gtk.RadioButton(label="Lignes")
-        rb1 = Gtk.RadioButton(group=rb, label="Colonnes")
-
-        vbox1.pack_start(rb, True, True, 0)
-        vbox1.pack_start(rb1, True, True, 0)
-        # update_style_btn.connect("clicked", self.style_update_window)
-        hbox1 = Gtk.HBox()
-        hbox1.pack_start(color_btn, True, True, 5)
-        hbox1.pack_start(vbox1, True, True, 5)
-
-        vbox.pack_start(hbox1, True, True, 5)
-
-        # self.grid.attach(hbox, 1, 1, 1, 1)
         self.treeview.set_hexpand(True)
         self.treeview.set_vexpand(True)
         # self.grid.attach(self.treeview, 1, 2, 2, 7)
@@ -94,67 +80,32 @@ class InvoicePage(Gtk.ScrolledWindow):
         main_grid.attach(search, 2, 1, 3, 1)
         main_grid.attach(hbox, 2, 2, 1, 1)
 
-        main_grid.attach(self.treeview, 2, 3, 2, 9)
+        main_grid.attach(self.treeview_scroll, 2, 3, 2, 9)
         main_grid.attach(vbox, 4, 3, 1, 1)
+        main_grid.attach(self.style_grid, 4, 4, 1, 1)
 
         self.add(main_grid)
 
-    def _gen_invoice(self, btn):
-        model, sel_iter = self.treeview.get_selection().get_selected()
-        id_= model[sel_iter][-1]
-        invoice = self.id_inv[id_]
-        print(invoice)
-        build_pdf(invoice, path="facture.pdf") #, show_advances_table=True)
-        import webbrowser
-        webbrowser.open_new("facture.pdf")
-
-        # print(invoice)
-        # build_pdf(fact, 490, "exemple_facture", color="#de260d", show_advances_table=True)
-        # build_pdf()
+    def show_hide_style_settings(self, *args):
+        """Affiche ou cache la grid des styles."""
+        if self.show_style.get_active():
+            self.style_grid.show()
+        else:
+            self.style_grid.hide()
 
     def switch_to_create_invoice(self, *args):
         hb = HeaderBarSwitcher.get_instance()
         hb.active_button(page="create_invoice_page")
 
-    def style_update_window(self, *args):
-        self.set_sensitive(False)
-        box = Gtk.VBox()
-        rb = Gtk.RadioButton(label="Lignes")
-        rb1 = Gtk.RadioButton(group=rb, label="Colonnes")
-        window = Gtk.Window(title="Modifier Style", type=Gtk.WindowType.TOPLEVEL)
-        color_chooser = Gtk.ColorChooserWidget(show_editor=False)
-        box.pack_start(color_chooser, True, True, 5)
-        box.pack_start(rb, True, True, 5)
-        box.pack_start(rb1, True, True, 5)
-        window.add(box)
-        window.show_all()
+    def _update_window(self, *args):
+        raise NotImplementedError
 
     def _init_treeview(self):
+        self.treeview_scroll = Gtk.ScrolledWindow()
         self.store = Gtk.ListStore(str, str, str, float, int)
-
-        from facturio.generation.generation import create_random_invoice
-        dao_inv = InvoiceDAO.get_instance()
-        for i in range(10):
-            invoice = create_random_invoice()
-            dao_inv.insert(invoice)
-        invoices = dao_inv.get_all()
-        print(invoices)
-        # dico pour lier chaque id a l'instance
-        inv_dao = InvoiceDAO.get_instance()
-        self.id_inv = {}
-        for invoice in inv_dao.get_all():
-            iter_ = self.store.append([invoice.client.first_name,
-                                      invoice.client.last_name,
-                                      invoice.date_string(),
-                                      invoice.balance,
-                                      invoice.id_])
-            self.id_inv[invoice.id_] = invoice
-            print(iter_)
-        # self.store.append(["Prenom", "nom", "11/23/1900", 123.4])
-        # self.store.append(["Prenom1", "nom1", "11/23/1700", 323.4])
-        # self.store.append(["Prenom2", "nom2", "11/23/1800", 423.4])
-
+        # self.refresh_store()
         self.treeview = Gtk.TreeView(model=self.store, headers_clickable=True)
+        self.treeview_scroll.add(self.treeview)
         renderer_text = Gtk.CellRendererText()
         column_text = Gtk.TreeViewColumn("Prenom", renderer_text, text=0)
         column_text.set_clickable(True)
@@ -199,23 +150,93 @@ class InvoicePage(Gtk.ScrolledWindow):
         # btn.show()
         self.treeview.append_column(column_text)
 
+    def refresh_store(self, *args):
+        """Syncro avec la bd."""
+        inv_dao = InvoiceDAO.get_instance()
+        invoices = inv_dao.get_all()
+        self.store.clear()
+        for invoice in inv_dao.get_all():
+            iter_ = self.store.append([invoice.client.first_name,
+                                      invoice.client.last_name,
+                                      invoice.date_string(),
+                                      invoice.balance,
+                                      invoice.id_])
+
+    def _gen_invoice(self, btn):
+        model, sel_iter = self.treeview.get_selection().get_selected()
+        id_ = model[sel_iter][-1]
+        inv_dao = InvoiceDAO.get_instance()
+        invoice = inv_dao.get_with_id(id_)
+        color = self.color.get_rgba().to_string()
+        color = self.str_rgb_to_hex(color)
+        prominent = self.inf_footer.get_active()
+        show_adv = self.detail.get_active()
+        inline = self.radio_line.get_active()
+        print(color)
+        build_pdf(invoice, path="facture.pdf", color=color, inline=inline,
+                  prominent_article_table=prominent,
+                  show_advances_table=show_adv)
+        webbrowser.open_new("facture.pdf")
+
+    @staticmethod
+    def str_rgb_to_hex(str_color):
+        """Return color as rrggbb for the given color values."""
+        # format de str_color rgb(XXX, XXX, XXX)
+        color = str_color.strip("rgba()")
+        color = [int(x) for x in color.split(',')]
+        hex_rgb_list = []
+        for x in color:
+            hex_x = hex(x)[2:]
+            if len(hex_x) == 1:
+                hex_x = "0" + hex_x
+            hex_rgb_list.append(hex_x)
+        return "".join(hex_rgb_list)
+
     def on_combo_changed(self, widget, path, text):
         self.liststore_hardware[path][1] = text
+
+    def _init_style_settings(self):
+        """Creation de la grid avec le style."""
+        self.color = Gtk.ColorButton()
+        curr_color = Gdk.RGBA()
+        curr_color.parse("#5f5f5f")
+        self.color.set_rgba(curr_color)
+
+        self.style_grid = Gtk.Grid(row_spacing=5, row_homogeneous=False)
+        self.radio_col = Gtk.RadioButton(label="En colonnes")
+        self.radio_line = Gtk.RadioButton(group=self.radio_col,
+                                          label="En lignes")
+        self.detail = Gtk.CheckButton(label="Détails des accomptes")
+        self.inf_footer = Gtk.CheckButton(label="Données pied de page")
+
+        self.style_grid.attach(self.color, 1, 1, 1, 2)
+        # self.style_grid.attach_next_to(self.color, style_pdf,
+        #                                Gtk.PositionType.BOTTOM, 1, 2)
+        self.style_grid.attach_next_to(self.radio_col, self.color,
+                                       Gtk.PositionType.RIGHT, 1, 1)
+        self.style_grid.attach_next_to(self.radio_line, self.radio_col,
+                                       Gtk.PositionType.BOTTOM, 1, 1)
+        # self.style_grid.attach_next_to(self.detail, self.radio_col,
+        #                                Gtk.PositionType.BOTTOM, 1, 1)
+        self.style_grid.attach_next_to(self.inf_footer, self.color,
+                                       Gtk.PositionType.BOTTOM, 2, 1)
+        self.style_grid.attach_next_to(self.detail, self.inf_footer,
+                                       Gtk.PositionType.BOTTOM, 2, 1)
 
     def sort_first_name(self, *args):
         """Tri par prenom."""
         raise NotImplementedError()
+
     def sort_last_name(self, *args):
-        raise NotImplementedError()
         """Tri par nom."""
+        raise NotImplementedError()
+
     def sort_date(self, *args):
         """Tri par date."""
         raise NotImplementedError()
+
     def sort_balance(self, *args):
         """Tri par solde restant."""
-        raise NotImplementedError()
-    def refresh_store(self, *args):
-        """Syncro avec la bd."""
         raise NotImplementedError()
 
 
@@ -224,9 +245,6 @@ class CreateInvoicePage(Gtk.ScrolledWindow):
 
     def __init__(self):
         super().__init__()
-        # user = User("Facturio INC", "BENJELLOUN", "Youssef", "yb@gmail.com",
-        #             "427 Boulevard des armaris 83100 Toulon", "07 67 31 58 20",
-        #             "12348921 2341")
         self.main_grid = Gtk.Grid(column_homogeneous=False,
                                   row_homogeneous=False, column_spacing=20,
                                   row_spacing=20)
