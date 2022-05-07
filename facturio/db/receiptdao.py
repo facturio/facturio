@@ -7,6 +7,7 @@ from facturio.db.companydao import CompanyDAO
 from facturio.db.articledao import ArticleDAO
 from facturio.classes.client import Client
 
+
 class ReceiptDAO:
     __instance = None
 
@@ -19,7 +20,6 @@ class ReceiptDAO:
         if ReceiptDAO.__instance is None:
             ReceiptDAO.__instance = ReceiptDAO()
         return ReceiptDAO.__instance
-
 
     def _set_id(self, receipt, id_receipt):
         """Mis a jour des ids local et des articles."""
@@ -42,12 +42,26 @@ class ReceiptDAO:
             company_dao = CompanyDAO.get_instance()
             company_dao.insert(receipt.client)
 
+        # TODO:Verifier que les id_client et id_user existent et ne soient
+        request = """select * from client"""
+        client_table = self.bdd.cursor.execute(request).fetchall()
+        print("tto")
+        request = """select* from user """
+        user_table = self.bdd.cursor.execute(request).fetchone()
+        flag = 0
+        for i in client_table:
+            if i[0] == receipt.client:
+                flag += 1
+        for i in user_table:
+            if i[0] == receipt.user:
+                flag += 1
+        if flag == 2:
+            print("il y a ")
+
         request = """INSERT INTO receipt(balance, taxes, date, note,
                       id_client, id_user) VALUES (?, ?, ?, ?, ?, ?)"""
-
-        # TODO: Verifier que les id_client et id_user existent et ne soient
-        # pas egale a None
-        values = (receipt.balance, receipt.taxes, receipt.date, receipt.note,
+        values = (receipt.balance, receipt.taxes, receipt.date,
+                  receipt.note,
                   receipt.client.id_, receipt.user.id_)
         self.bdd.cursor.execute(request, values)
         self.bdd.connexion.commit()
@@ -64,25 +78,27 @@ class ReceiptDAO:
         self._set_id(receipt, id_[0])
 
     def update(self, receipt: Receipt):
-        raise NotImplementedError
-        # TODO
-    #     bdd=DBManager.get_instance()
-    #     liste=liste[1:]+[liste[0]]
-    #     bdd.cursor.execute("""UPDATE invoice_estimate SET balance=?,date=?,description=?,note=?,remark=?,id_client=?,id_user=? WHERE id_invoice_estimate=?""",liste)
-    #     bdd.connexion.commit()
+
+        self.bdd.cursor.execute("""UPDATE receipt SET
+            balance=?,taxes=?,date=?,note=?,id_client=?,id_user=?
+            WHERE id_receipt=?""",
+                                (receipt.balance, receipt.taxes,
+                                 receipt.date, receipt.note,
+                                 receipt.client, receipt.user, receipt.id_))
+        self.bdd.connexion.commit()
 
     def get_all(self):
-        #TODO?
+        # TODO?
         request = "SELECT * FROM receipt"
         self.bdd.cursor.execute(request)
         return self.bdd.cursor.fetchall()
+
 
 if __name__ == "__main__":
     from facturio.classes.invoice_misc import Article
     from facturio.classes.client import Client, Company
     from facturio.classes.user import User
     from facturio.db.articledao import ArticleDAO
-
 
     user = User(company_name="Facturio INC", last_name="BENJELLOUN",
                 first_name="Youssef", email="yb@gmail.com",
@@ -97,18 +113,18 @@ if __name__ == "__main__":
                    phone_number="0345678910")
     # company_dao.insert(comp)
 
-
     ordinateur = Article("Ordinateur", 1684.33, 3)
     cable_ethernet = Article("Cable ethernet", 5, 10)
     telephone = Article("Telephone", 399.99, 1)
     casque = Article("Casque", 69.99, 6)
     articles = [ordinateur, cable_ethernet, telephone, casque]
 
-
     receipt = Receipt(user=user, client=comp, articles_list=articles,
                       date=0, taxes=0.11, balance=122,
                       note="Facture de matériel informatiques")
+    dao = ReceiptDAO()
 
+    dao.insert(receipt)
     user_dao = UserDAO.get_instance()
     company_dao = CompanyDAO.get_instance()
     receipt_dao = ReceiptDAO.get_instance()

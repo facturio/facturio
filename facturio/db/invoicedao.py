@@ -6,8 +6,9 @@ from facturio.db.advancedao import AdvanceDAO
 from facturio.db.dbmanager import DBManager
 from facturio.classes.invoice_misc import Invoice
 
+
 class InvoiceDAO:
-    __instance=None
+    __instance = None
 
     def get_instance():
         """Recupere l'instance."""
@@ -25,8 +26,8 @@ class InvoiceDAO:
         rdao.insert(invoice)
         max_req = "SELECT max(id_receipt) FROM receipt"
         id_rcp = self.db.cursor.execute(max_req).fetchone()[0]
-        # TODO: CHANGER SOLDE PAR BALANCE PARTOUT
-        request = "INSERT INTO invoice(id_invoice, solde) VALUES(?,?)"
+
+        request = "INSERT INTO invoice(id_invoice, balance) VALUES(?,?)"
         self.db.cursor.execute(request, (id_rcp, invoice.balance))
         self.db.connexion.commit()
         # insertion des accomptes
@@ -57,6 +58,7 @@ class InvoiceDAO:
         user = udao.get()
         # entreprise ou client?
         # TODO: Verifier si l'id est un entrprise
+
         client = cdao.get_with_id(tup[7])
         user = udao.get()
         art_dao = ArticleDAO.get_instance()
@@ -78,21 +80,24 @@ class InvoiceDAO:
 
     def delete(self, invoice: Invoice):
         """Supprime la entree represente par invoice."""
-        # TODO
-        raise NotImplementedError
+        self.bdd.cursor.execute(
+            """ DELETE FROM invoice WHERE id_invoice="""+str(id))
+        self.bdd.connexion.commit()
 
     def update(self, invoice: Invoice):
         """Mise a jour de la entree represente par invoice."""
-        # TODO
-        raise NotImplementedError
+        self.bdd.cursor.execute("""UPDATE invoice SET balance=?
+            WHERE id_invoice=?""", (invoice.solde, invoice.id_))
+        self.bdd.connexion.commit()
+
 
 if __name__ == "__main__":
+    # toDO test les fonction update
     from facturio.classes.invoice_misc import Article, Advance
     from facturio.classes.client import Client, Company
     from facturio.classes.user import User
     from facturio.db.articledao import ArticleDAO
     from facturio.db.companydao import CompanyDAO
-
 
     user = User(company_name="Facturio INC", last_name="BENJELLOUN",
                 first_name="Youssef", email="yb@gmail.com",
