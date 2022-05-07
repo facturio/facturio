@@ -14,25 +14,31 @@ class UserDAO:
 
     def get_instance():
         """Recupere l'instance."""
-        if UserDAO.__instance  is None:
+        if UserDAO.__instance is None:
             UserDAO.__instance = UserDAO()
         return UserDAO.__instance
 
     def insert(self, user: User):
         """Insertion de l'utilisateur."""
-        # TODO: Tester que sur la table il n'aie pas deja un user
-        # TODO: Modifier l'ordre des attributs pour respecter la table
-        request = """INSERT INTO user(logo, company_name, e_mail, address,
-                     phone, business_num, first_name, last_name)
+        # Tester que sur la table il n'aie pas deja un user
+        request = """select * from user """
+        self.bdd.cursor.execute(request)
+        self.bdd.connexion.commit()
+        ligne = self.bdd.cursor.fetchone()
+        if len(ligne) >= 2:
+            return
+        #  Modifier l'ordre des attributs pour respecter la table
+        request = """INSERT INTO user(company_name, first_name, last_name
+        , e_mail, address, phone, business_num,logo)
                      VALUES(?, ?, ?, ?, ?, ?, ?, ?)"""
         # convertir image logo sous forme de fichier binaire
         logo = None
         if user.logo is not None:
-            with open(texte,"rb") as user.logo:
+            with open(texte, "rb") as user.logo:
                 logo = myfile.read()
-        values = [logo, user.company_name, user.email, user.address,
-                  user.phone_number, user.business_number, user.first_name,
-                  user.last_name]
+        values = [user.company_name, user.first_name,
+                  user.last_name, user.email, user.address, user.phone_number,
+                  user.business_number, logo]
         self.bdd.cursor.execute(request, values)
         self.bdd.connexion.commit()
 
@@ -40,15 +46,14 @@ class UserDAO:
         # il y une seule instance
         user.id_ = 1
 
-
     def update_user(self, user: User):
         """Maj de l'utilisateur."""
         request = """UPDATE user SET logo=?,company_name=?,e_mail=?,
                      address=?,phone=?,business_num=? WHERE id_user=1"""
-        #convertir image logo sous forme de fichier binaire
+        # convertir image logo sous forme de fichier binaire
         logo = None
         if user.logo is not None:
-            with open(texte,"rb") as user.logo:
+            with open(texte, "rb") as user.logo:
                 logo = myfile.read()
         values = [logo, user.company_name, user.email, user.address,
                   user.phone_number, user.business_number]
@@ -60,7 +65,9 @@ class UserDAO:
     def get(self):
         """Renvoie une liste tous les instances des client sur la BD."""
         data = self.bdd.cursor.execute("select * from user").fetchone()
-        # TODO: VERIFIER QUE IL Y A UNE LIGNE SINON ERROR
+        # VERIFIER QUE IL Y A UNE LIGNE SINON ERROR
+        if len(data) >= 2:
+            return
         if not User.exits():
             return self._gen_user(data)
         else:
@@ -79,14 +86,12 @@ class UserDAO:
                     id_=tup[0])
         return user
 
-    # def selection_table(self,nom):
-    #     bdd = DBManager.get_instance()
-    #     bdd.cursor.execute("""select * from """+nom)
-    #     return bdd.cursor.fetchall()
 
 if __name__ == "__main__":
-    #TODO: Tester tous les fonctions
+
     dao = UserDAO.get_instance()
-    user = User("Facturio INC", "Youssef", "BENJELLOUN", "yb@gmail.com",
-                "427 Boulevard des armaris 83100 Toulon", "07 67 31 58 20",
+    user = User("Facturio INC", "Yousggsef", "BENJEggLLOUN", "yb@gmail.com",
+                "427 Boulevard des armaris 8dsfdsfdsq3100 Toulon", "07 67 31 58 20",
                 "12348921 2341")
+    # dao.insert(user)
+    dao.update_user(user)
