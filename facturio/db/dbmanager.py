@@ -30,9 +30,30 @@ class DBManager:
         self._creation_table_receipt()
         self._creation_table_invoice()
         self._creation_table_advance()
-
+        if (self.verif() == False):
+            raise ValueError("base pas crée")
         # self._creation_table_art_dev()
         return
+
+    def verif(self):
+        self.cursor.execute("""
+            SELECT name from sqlite_master
+
+            where type="table"
+
+            """)
+        self.connexion.commit()
+        jointure = self.cursor.fetchall()
+        liste = ["invoice", "advance", "company",
+                 "client", "article", "user", "receipt"]
+        cpt = 1
+        for i in jointure:
+            if i[0] in liste:
+                cpt += 1
+        if cpt == len(jointure):
+            return True
+        else:
+            return False
 
     def _creation_table_company(self):
         self.cursor.execute("""
@@ -131,8 +152,7 @@ class DBManager:
         """Fermeture de la BD."""
         self.connexion.close()
 
+
 if __name__ == "__main__":
-    exit()
-    # TODO: Appeler le classe et tester que les
-    # tables se sont bien crees
-    # https://www.sqlite.org/faq.html#q7
+
+    bdd = DBManager.get_instance()

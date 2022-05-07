@@ -2,9 +2,10 @@ from datetime import date
 from facturio.classes.invoice_misc import Article
 from dbmanager import DBManager
 
+
 class ArticleDAO:
-    # TODO tester
-    __instance=None
+
+    __instance = None
 
     def __init__(self):
         """Recupere le manager."""
@@ -13,7 +14,7 @@ class ArticleDAO:
     def get_instance():
         """Verifie l'unicite de l'instance."""
         if ArticleDAO.__instance is None:
-            ArticleDAO.__instance=ArticleDAO()
+            ArticleDAO.__instance = ArticleDAO()
         return ArticleDAO.__instance
 
     def insert(self, article: Article):
@@ -40,10 +41,10 @@ class ArticleDAO:
         Prend une instance de la classe Article et update
         la bd avec cette objet
         """
-        if(article.id_==None):
+        if(article.id_ == None):
             raise ValueError
-        values= [article.title, article.description,
-                article.price, article.quantity, article.id_]
+        values = [article.title, article.description,
+                  article.price, article.quantity, article.id_]
         request = """UPDATE Article SET name=?, description=?,
                     price=?, quantity=?  WHERE id_article=?"""
         self.bdd.cursor.execute(request, values)
@@ -64,12 +65,11 @@ class ArticleDAO:
                           id_receipt=tup[5])
         return article
 
-
     def get_all(self):
         tuples = self.bdd.cursor.execute("""select * from article""")
-        res=[]
+        res = []
         for tup in tuples:
-           res.append(self._gen_article(tup))
+            res.append(self._gen_article(tup))
         return res
 
     def get_all_with_id_receipt(self, id_rcp):
@@ -79,6 +79,7 @@ class ArticleDAO:
         for tup in articles_tup:
             res.append(self._gen_article(tup))
         return res
+
 
 if __name__ == "__main__":
     #######

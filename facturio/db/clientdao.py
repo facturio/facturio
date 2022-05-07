@@ -3,6 +3,7 @@ from dbmanager import DBManager
 from facturio.classes.client import Client
 import unittest
 
+
 class ClientDAO:
     """Client controleur pour la DB."""
 
@@ -19,7 +20,6 @@ class ClientDAO:
         return ClientDAO.__instance
 
     def insert(self, client: Client):
-
         """Insertion du client."""
 
         request = """INSERT INTO client(first_name, last_name, e_mail, address,
@@ -29,13 +29,12 @@ class ClientDAO:
         req = """
         select *
         from client
-
         """
         self.bdd.cursor.execute(req)
         self.bdd.connexion.commit()
-        jointure=self.bdd.cursor.fetchall()
+        jointure = self.bdd.cursor.fetchall()
         for i in jointure:
-            if i[1]==client.first_name and i[2]==client.last_name:
+            if i[1] == client.first_name and i[2] == client.last_name:
                 print("tu ne peux pas ")
                 return
 
@@ -50,6 +49,7 @@ class ClientDAO:
 
     def update(self, client: Client):
         """Mis a jour du client."""
+
         if client.id_ is None:
             raise ValueError
         request = """UPDATE client SET first_name=?, last_name=?, e_mail=?,
@@ -61,6 +61,7 @@ class ClientDAO:
 
     def get_all(self):
         """Renvoie une liste tous les instances des client sur la BD."""
+
         tuples = self.bdd.cursor.execute("select * from  client").fetchall()
         res = []
         for tup in tuples:
@@ -82,20 +83,20 @@ class ClientDAO:
 
     def get_with_id(self, id_):
         """Renvoie une instace du client avec id_."""
+
         request = f"SELECT * FROM client where id_client = {id_}"
         tup = self.bdd.cursor.execute(request).fetchone()
         return self._gen_client(tup)
 
 
-
 if __name__ == "__main__":
     dao = ClientDAO.get_instance()
-    a =None
+    a = None
     dao.insert(a)
-    #a=dao.get_all()
-    #avoir celui qu'on veut
-    #a=a[len(a)-1]
+    # a=dao.get_all()
+    # avoir celui qu'on veut
+    # a=a[len(a)-1]
 
-    #a.first_name="titit"
+    # a.first_name="titit"
 
-    #dao.update(a)
+    # dao.update(a)

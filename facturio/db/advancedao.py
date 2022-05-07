@@ -21,12 +21,14 @@ class AdvanceDAO():
         """Insertion du advance."""
         request = """INSERT INTO advance(date, balance, id_invoice)
                      VALUES(?, ?, ?)"""
-        # TODO s'assurer que le id_invoice existe sur la table invoice
+
         if advance.id_invoice is None:
             raise ValueError
+
         values = (advance.date, advance.balance, advance.id_invoice)
         self.bdd.cursor.execute(request, values)
         self.bdd.connexion.commit()
+
         max_req = "SELECT max(id_invoice) FROM advance"
         id_ = self.bdd.cursor.execute(max_req).fetchone()
         assert(len(id_) == 1)
@@ -41,22 +43,18 @@ class AdvanceDAO():
             res.append(self._gen_advance(tup))
         return res
 
+    def update_advance(self, advance: Advance):
 
+        self.bdd.cursor.execute("""UPDATE advance SET date=?,balance=?,
+        id_invoice=? WHERE id_advance=?""", (advance.date, advance.balance,
+                                advance.id_invoice, advance.id_advance))
+        self.bdd.connexion.commit()
 
-    # TODO:
-    # def update_advance(self, advance: Advance):
-    #     # TODO: Ifaire l'update
-    #     raise NotImplementedError()
-        # liste=liste[1:]+[liste[0]]
-        # self.bdd.cursor.execute("""UPDATE advance SET date=?,balance=?, id_invoice=? WHERE id_advance=?""",liste)
-        # self.bdd.connexion.commit()
+    def delete_table(self, id):
 
-    # TODO:
-    # def delete_table(self,name, id):
-    #     # TODO: Ifaire delete
-    #     raise NotImplementedError()
-        # self.bdd.cursor.execute(""" DELETE FROM"""+name+""" WHERE id_"""+name+"""="""+str(id))
-        # self.bdd.connexion.commit()
+        self.bdd.cursor.execute(
+            """ DELETE FROM advance WHERE id_advance="""+str(id))
+        self.bdd.connexion.commit()
 
     def get_all(self):
 
@@ -74,6 +72,13 @@ class AdvanceDAO():
                        balance=tup[2],
                        id_invoice=tup[3])
 
+
 if __name__ == "__main__":
     dao = AdvanceDAO()
     adv = Advance(1230.0)
+    adv.id_advance = 3
+    adv.balance = 100
+
+    # dao.insert(adv)
+    dao.update_advance(adv)
+    # dao.delete_table(2)

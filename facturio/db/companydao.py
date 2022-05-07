@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 from dbmanager import DBManager
-from facturio.classes.client import Client,Company
+from facturio.classes.client import Client, Company
 from clientdao import ClientDAO
+
 
 class CompanyDAO:
     __instance = None
@@ -76,6 +77,7 @@ class CompanyDAO:
                           business_number=tup[8],
                           company_name=tup[9])
         return company
+
     def inner(self):
         req = """
         select *
@@ -84,8 +86,8 @@ class CompanyDAO:
         """
         self.bdd.cursor.execute(req)
         self.bdd.connexion.commit()
-        jointure=self.bdd.cursor.fetchall()
-        #for i in jointure:
+        jointure = self.bdd.cursor.fetchall()
+        # for i in jointure:
         #    print(i,"\n")
         return jointure
 
@@ -93,21 +95,21 @@ class CompanyDAO:
 if __name__ == "__main__":
     dao = CompanyDAO.get_instance()
     comp = Company("LeRoy", "Ben", "Karim", "287489404",
-                "LeRoy83@sfr.fr", "12 ZAC de La Crau", "0345678910")
-    #dao.inser(comp)
-    #dao.inner()
-    #pour update
+                   "LeRoy83@sfr.fr", "12 ZAC de La Crau", "0345678910")
+    # dao.inser(comp)
+    # dao.inner()
+    # pour update
     client = dao.inner()
-    #selection de id
+    # selection de id
 
-    id=11
+    id = 11
     for i in client:
         if id == i[0]:
             client = i
             break
     client = dao._gen_company(client)
-    #attribut a modifier
-    client.first_name="geoge"
-    client.company_name="caca"
+    # attribut a modifier
+    client.first_name = "geoge"
+    client.company_name = "caca"
 
     dao.update(client)
