@@ -78,7 +78,7 @@ class DBManager:
             description STRING,
             price float,
             quantity INTEGER,
-            id_receip INTEGER)""")
+            id_receipt INTEGER)""")
         self.connexion.commit()
 
     def _creation_table_receipt(self):
@@ -86,6 +86,7 @@ class DBManager:
             CREATE TABLE IF NOT EXISTS receipt
             (id_receipt INTEGER PRIMARY KEY AUTOINCREMENT,
             balance FLOAT,
+            taxes FLOAT,
             date INTEGER,
             note STRING,
             id_client INTEGER,
@@ -94,7 +95,6 @@ class DBManager:
             FOREIGN KEY(id_client) REFERENCES client(id_client)
             ON DELETE CASCADE)""")
         self.connexion.commit()
-
 
     # def _creation_table_art_dev(self):
     #     self.cursor.execute("""
@@ -111,7 +111,9 @@ class DBManager:
         self.cursor.execute("""
         CREATE TABLE IF NOT EXISTS invoice
         (id_invoice INTEGER PRIMARY KEY AUTOINCREMENT,
-        solde INTEGER)""")
+        solde INTEGER,
+        FOREIGN KEY(id_invoice) REFERENCES receipt(id_receipt)
+        ON DELETE CASCADE)""")
         self.connexion.commit()
 
     def _creation_table_advance(self):

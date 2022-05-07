@@ -22,6 +22,8 @@ class AdvanceDAO():
         request = """INSERT INTO advance(date, balance, id_invoice)
                      VALUES(?, ?, ?)"""
         # TODO s'assurer que le id_invoice existe sur la table invoice
+        if advance.id_invoice is None:
+            raise ValueError
         values = (advance.date, advance.balance, advance.id_invoice)
         self.bdd.cursor.execute(request, values)
         self.bdd.connexion.commit()
@@ -30,6 +32,15 @@ class AdvanceDAO():
         assert(len(id_) == 1)
         advance.id_ = id_[0]
         return
+
+    def get_all_with_id_invoice(self, id_inv):
+        request = f"SELECT * FROM advance WHERE id_invoice={id_inv}"
+        advances_tup = self.bdd.cursor.execute(request).fetchall()
+        res = []
+        for tup in advances_tup:
+            res.append(self._gen_advance(tup))
+        return res
+
 
 
     # TODO:
