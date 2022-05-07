@@ -1,24 +1,27 @@
 #!/usr/bin/env python3
+import gi
+gi.require_version("Gtk", "3.0")
+from gi.repository import Gtk, GObject, Gdk
+
 from facturio.classes.client import Company, Client
 from facturio.classes.user import User
 from facturio.classes.invoice_misc import Article, Invoice, Advance, Estimate
 from facturio.gui.home import HeaderBarSwitcher
 from facturio.build_pdf.build_pdf import build_pdf
 from facturio.gui.autocompletion import FacturioEntryCompletion
+from facturio.db.invoicedao import InvoiceDAO
 from facturio import examples
 from datetime import datetime
 import re
 from datetime import date
-import gi
-gi.require_version("Gtk", "3.0")
-from gi.repository import Gtk, GObject, Gdk
+from facturio.build_pdf.build_pdf import build_pdf
 
 
 class InvoicePage(Gtk.ScrolledWindow):
     def __init__(self):
         super().__init__()
         # client | date | solde restant
-        self.grid = Gtk.Grid( row_homogeneous=True,
+        self.grid = Gtk.Grid(row_homogeneous=True,
                              column_spacing=20, row_spacing=20)
         self._init_treeview()
 
@@ -38,6 +41,7 @@ class InvoicePage(Gtk.ScrolledWindow):
         create_btn = Gtk.Button(label="Creer nouvelle facture")
         create_btn.connect("clicked", self.switch_to_create_invoice)
         export_btn = Gtk.Button(label="Exporter PDF")
+        export_btn.connect("clicked", self._gen_invoice)
         add_advance_btn = Gtk.Button(label="Ajouter acompte")
         delete_btn = Gtk.Button(label="Supprimer")
         update_style_btn = Gtk.Label(label="Style PDF")
@@ -95,10 +99,22 @@ class InvoicePage(Gtk.ScrolledWindow):
 
         self.add(main_grid)
 
+    def _gen_invoice(self, btn):
+        model, sel_iter = self.treeview.get_selection().get_selected()
+        id_= model[sel_iter][-1]
+        invoice = self.id_inv[id_]
+        print(invoice)
+        build_pdf(invoice, path="facture.pdf") #, show_advances_table=True)
+        import webbrowser
+        webbrowser.open_new("facture.pdf")
+
+        # print(invoice)
+        # build_pdf(fact, 490, "exemple_facture", color="#de260d", show_advances_table=True)
+        # build_pdf()
+
     def switch_to_create_invoice(self, *args):
         hb = HeaderBarSwitcher.get_instance()
         hb.active_button(page="create_invoice_page")
-
 
     def style_update_window(self, *args):
         self.set_sensitive(False)
@@ -114,11 +130,29 @@ class InvoicePage(Gtk.ScrolledWindow):
         window.show_all()
 
     def _init_treeview(self):
-        self.store = Gtk.ListStore(str, str, str, float)
+        self.store = Gtk.ListStore(str, str, str, float, int)
 
-        self.store.append(["Prenom", "nom", "11/23/1900", 123.4])
-        self.store.append(["Prenom1", "nom1", "11/23/1700", 323.4])
-        self.store.append(["Prenom2", "nom2", "11/23/1800", 423.4])
+        from facturio.generation.generation import create_random_invoice
+        dao_inv = InvoiceDAO.get_instance()
+        for i in range(10):
+            invoice = create_random_invoice()
+            dao_inv.insert(invoice)
+        invoices = dao_inv.get_all()
+        print(invoices)
+        # dico pour lier chaque id a l'instance
+        inv_dao = InvoiceDAO.get_instance()
+        self.id_inv = {}
+        for invoice in inv_dao.get_all():
+            iter_ = self.store.append([invoice.client.first_name,
+                                      invoice.client.last_name,
+                                      invoice.date_string(),
+                                      invoice.balance,
+                                      invoice.id_])
+            self.id_inv[invoice.id_] = invoice
+            print(iter_)
+        # self.store.append(["Prenom", "nom", "11/23/1900", 123.4])
+        # self.store.append(["Prenom1", "nom1", "11/23/1700", 323.4])
+        # self.store.append(["Prenom2", "nom2", "11/23/1800", 423.4])
 
         self.treeview = Gtk.TreeView(model=self.store, headers_clickable=True)
         renderer_text = Gtk.CellRendererText()
@@ -169,15 +203,21 @@ class InvoicePage(Gtk.ScrolledWindow):
         self.liststore_hardware[path][1] = text
 
     def sort_first_name(self, *args):
+        """Tri par prenom."""
         raise NotImplementedError()
     def sort_last_name(self, *args):
         raise NotImplementedError()
+        """Tri par nom."""
     def sort_date(self, *args):
+        """Tri par date."""
         raise NotImplementedError()
     def sort_balance(self, *args):
+        """Tri par solde restant."""
         raise NotImplementedError()
     def refresh_store(self, *args):
+        """Syncro avec la bd."""
         raise NotImplementedError()
+
 
 class CreateInvoicePage(Gtk.ScrolledWindow):
     """Page pour la creation invoice."""
@@ -881,10 +921,6 @@ class CreateInvoicePage(Gtk.ScrolledWindow):
         total = float(self.total.get_text()[:-2])
         inv = Invoice(user=user, client=client, articles_list=art_instances,
                       date=epoch_date, taxes=tax, amount=total)
-        print(inv)
-        build_pdf(inv, 27, "exemple_avec_gui.pdf")
-        import webbrowser
-        webbrowser.open_new("exemple_avec_gui.pdf")
 
     def _logo_dialog(self, *args):
         file_chooser = Gtk.FileChooserNative(title="Selectionnez une image",
@@ -897,22 +933,21 @@ class CreateInvoicePage(Gtk.ScrolledWindow):
         filter_.add_pattern("*.jpeg")
         file_chooser.set_filter(filter_)
         if file_chooser.run() == Gtk.ResponseType.ACCEPT:
-           self.logo_fn = file_chooser.get_filename()
-           # self.logo_button.set_sensitive(False)
-           self.logo_button.set_label(" Ajouté")
+            self.logo_fn = file_chooser.get_filename()
+            # self.logo_button.set_sensitive(False)
+            self.logo_button.set_label(" Ajouté")
 
     def _put_percentage(self, spin_btn):
-        """
-        ajoute un pourcentage a la fin pour les taxes
-        """
-        adjustement = spin_btn.get_adjustment()
+        """Ajout d'un pourcentage(%) a la fin pour les taxes."""
         value = spin_btn.get_value()
         spin_btn.set_text(f"{value} %")
     def _modify_tax_fields(self, spin_btn=None):
         """
-        modifie le porcentage des taxes ainsi que la valeur et le total
+        Modifie le porcentage.
+
+        Modifie le porcentage des taxes ainsi que la valeur et le total
         """
-        if spin_btn == None:
+        if spin_btn is None:
             spin_btn = self.spin_btn
         adjustement = spin_btn.get_adjustment()
         value = adjustement.get_value()
@@ -920,15 +955,13 @@ class CreateInvoicePage(Gtk.ScrolledWindow):
             value = int(value)
         self.tax_label.set_text(f"Tax ({value}%)")
         sub_total_val = float(self.sub_total.get_text()[:-2])
-        res = round((value/100) * sub_total_val, 2)
+        res = round((value / 100) * sub_total_val, 2)
         self.total_taxes.set_text(f"{res} €")
         self._put_percentage(spin_btn)
         self._modify_total()
 
     def _modify_sub_total(self):
-        """
-        modifie le sous total
-        """
+        """Modifie le sous total."""
         total = 0
         for label in self.total_articles:
             print(label.get_text())
@@ -943,9 +976,7 @@ class CreateInvoicePage(Gtk.ScrolledWindow):
         self.total.set_text(f"{round(sub_total + total_taxes, 2)} €")
 
     def _article_header(self):
-        """
-        Entete pour l'ajout des articles
-        """
+        """Entete pour l'ajout des articles."""
         self.article_grid = Gtk.Grid(column_homogeneous=False,
                                      row_homogeneous=True,
                              column_spacing=20, row_spacing=20)
@@ -973,13 +1004,15 @@ class CreateInvoicePage(Gtk.ScrolledWindow):
 
     def _first_article_row(self):
         """
-        premier ligne des article different des autres car pas de button
-        supprimer
+        Premier ligne des articles.
+
+        Premier ligne des article different des autres
+        car pas de button supprimer
         """
         self.article_list = []
-        self.total_articles= []
+        self.total_articles = []
         article_entries = {}
-        left_space= Gtk.Label("")
+        left_space = Gtk.Label("")
         left_space.set_hexpand(True)
         self.article_grid.attach(left_space, 1, 2, 1, 1)
 
@@ -1019,7 +1052,7 @@ class CreateInvoicePage(Gtk.ScrolledWindow):
         self.article_list.append(article_entries)
 
     def _plus_btn_row(self):
-        """Ajoute un lige avec un button plus."""
+        """Ajoute un linge avec un button plus."""
         self.plus_btn_row = 5
         button = Gtk.Button.new_from_icon_name("list-add-symbolic",
                                                     Gtk.IconSize.BUTTON)
@@ -1028,9 +1061,7 @@ class CreateInvoicePage(Gtk.ScrolledWindow):
         button.connect("clicked", self._new_article)
 
     def _new_article(self, btn=None):
-        """
-        insere une nouvelle formulaire pour ajouter un article
-        """
+        """Insere une nouvelle formulaire pour ajouter un article."""
         i = self.plus_btn_row
         self.plus_btn_row += 3
         for _ in range(3):
@@ -1090,9 +1121,7 @@ class CreateInvoicePage(Gtk.ScrolledWindow):
             wid.set_visible(True)
 
     def _update_total_article(self, entry, entries: dict, label):
-        """
-        Met a jour le total prix * quantite
-        """
+        """Met a jour le total prix * quantite."""
         price_txt = entries["price"].get_text()
         qty_txt = entries["quantity"].get_text()
         # Si le text n'a pas ete saisi sur un des champs arrete du program
@@ -1105,20 +1134,20 @@ class CreateInvoicePage(Gtk.ScrolledWindow):
 
     def _update_dict(self, i):
         """
-        mis a jour du dictionaire liant chaque button supprimer a la ligne
+        Mis a jour du dictionaire.
+
+        Mis a jour liant chaque button supprimer a la ligne
         dans la grille
         """
         for btn, row in self.btns.items():
             if row > i:
-                self.btns[btn] = row-3
+                self.btns[btn] = row - 3
 
     def _remove_article_form(self, btn):
-        """
-        supprime le formulaire article correspondant au button
-        """
+        """Supprime le formulaire article correspondant au button."""
         line = self.btns.pop(btn)
-        self.total_articles.pop(line//3)
-        self.article_list.pop(line//3)
+        self.total_articles.pop(line // 3)
+        self.article_list.pop(line // 3)
         self.article_grid.remove_row(line)
         self.article_grid.remove_row(line)
         self.article_grid.remove_row(line)

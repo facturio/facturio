@@ -95,6 +95,7 @@ class User:
 
 
     def __str__(self):
+        return str(vars(self))
         return (f"{self.id_} | {self.logo } | {self.company_name}"
                 f" | {self.email} | {self.address}  | {self.phone_number} | "
                 f"{self.first_name} {self.last_name} | {self.business_number}")

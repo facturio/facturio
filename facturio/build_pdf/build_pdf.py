@@ -226,7 +226,7 @@ def pdf_provider_client(receipt: Union[Estimate, Invoice]):
     
     #Si le champ email pour l'utilisateur n'est pas remplit,
     #On supprime l'élément dans la liste
-    if(provider_list[1]):
+    if(not provider_list[1]):
         del provider_icon_list[1]
         del provider_list[1]
     # On appelle une fonction si le client est une entité morale
@@ -302,7 +302,7 @@ def provider_individual_table(
         for i in range(3, 0, -1):
             #On supprime tous les champs optionnels qui n'ont pas été
             #remplit
-            if(client_list[i]):
+            if(not client_list[i]):
                 del client_icon_list[i]
                 del client_list[i]
         i = 0
@@ -820,7 +820,6 @@ def pdf_advance_table(receipt: Invoice, currency: str, color: str):
 
 def build_pdf(
     receipt: Union[Invoice, Estimate],
-    id: int,
     path: str = "output.pdf",
     color: str = "5f5f5f",
     currency: str = "€",
@@ -843,7 +842,7 @@ def build_pdf(
     # page_layout.vertical_margin = page.get_page_info().get_height() \
     # * Decimal(0.02)
     # Construction de l'entête
-    layout_array[-1].add(pdf_header(receipt, id))
+    layout_array[-1].add(pdf_header(receipt, receipt.id_))
 
     if prominent_article_table:
         # Tableaux des articles et des taxes
@@ -869,6 +868,7 @@ def build_pdf(
 
     else:
         tb1, tb2 = pdf_provider_client(receipt)
+        print(layout_array)
         layout_array[-1].add(tb1)
         layout_array[-1].add(tb2)
 
@@ -907,79 +907,86 @@ def build_pdf(
 
 
 if __name__ == "__main__":
-    artisan = User(
-        "Facturio",
-        "15 rue des champs Cuers",
-        "0734567221",
-        "128974654",
-        "Tom",
-        "Pommier",
-        "facturio@gmail.com",
-    )
+    # artisan = User(
+    #     "Facturio",
+    #     "15 rue des champs Cuers",
+    #     "0734567221",
+    #     "128974654",
+    #     "Tom",
+    #     "Pommier",
+    #     "facturio@gmail.com",
+    # )
 
-    client_physique = Client(
-        "Lombardo",
-        "Quentin",
-        "quentin.lombardo@email.com",
-        "HLM Sainte-Muse Toulon",
-        "0678905324",
-    )
+    # client_physique = Client(
+    #     "Lombardo",
+    #     "Quentin",
+    #     "quentin.lombardo@email.com",
+    #     "HLM Sainte-Muse Toulon",
+    #     "0678905324",
+    # )
 
-    client_moral = Company(
-        "LeRoy",
-        "LeRoy83@sfr.fr",
-        "12 ZAC de La Crau",
-        "0345678910",
-        "Ben",
-        "Karim",
-        "287489404",
-    )
+    # client_moral = Company(
+    #     "LeRoy",
+    #     "LeRoy83@sfr.fr",
+    #     "12 ZAC de La Crau",
+    #     "0345678910",
+    #     "Ben",
+    #     "Karim",
+    #     "287489404",
+    # )
 
-    ordinateur = Article("ordinateur", 1684.33, 3, "Asus spire")
-    cable_ethernet = Article("cable ethernet", 9.99, 10, "15m")
-    telephone = Article("telephone", 399.99, 1, "téléphone clapet")
-    casque = Article("casque", 69.99, 6, "casque sans fils")
-    bureau = Article("Bureau", 500, 2, "Bureau à 6pieds")
+    # ordinateur = Article("ordinateur", 1684.33, 3, "Asus spire")
+    # cable_ethernet = Article("cable ethernet", 9.99, 10, "15m")
+    # telephone = Article("telephone", 399.99, 1, "téléphone clapet")
+    # casque = Article("casque", 69.99, 6, "casque sans fils")
+    # bureau = Article("Bureau", 500, 2, "Bureau à 6pieds")
 
-    paiements = [Advance(1230.0), Advance(654)]
+    # paiements = [Advance(1230.0), Advance(654)]
 
-    # desc = ""
-    # nom_artc = ""
-    # for i in range(2):
-    #     nom_artc += 15*"a" +" "
-    # for i in range(4):
-    #     desc+= 25*"a" + " "
+    # # desc = ""
+    # # nom_artc = ""
+    # # for i in range(2):
+    # #     nom_artc += 15*"a" +" "
+    # # for i in range(4):
+    # #     desc+= 25*"a" + " "
 
-    # ordinateur = Article(nom_artc, 1684.33, 3, desc)
-    # cable_ethernet = Article(nom_artc, 9.99, 10, desc)
-    # telephone = Article(nom_artc, 399.99, 1,desc)
-    # casque = Article(nom_artc, 69.99, 6, desc)
-    # bureau = Article(nom_artc, 500,2,desc)
+    # # ordinateur = Article(nom_artc, 1684.33, 3, desc)
+    # # cable_ethernet = Article(nom_artc, 9.99, 10, desc)
+    # # telephone = Article(nom_artc, 399.99, 1,desc)
+    # # casque = Article(nom_artc, 69.99, 6, desc)
+    # # bureau = Article(nom_artc, 500,2,desc)
 
-    articles = [ordinateur, cable_ethernet, telephone, casque, bureau]
-    # articles = [ordinateur]
-    # for i in range(10):
-    #     paiements.append(Advance(78,2009 ))
-    # for i in range(6):
-    #     articles.append(Article("truc",35))
+    # articles = [ordinateur, cable_ethernet, telephone, casque, bureau]
+    # # articles = [ordinateur]
+    # # for i in range(10):
+    # #     paiements.append(Advance(78,2009 ))
+    # # for i in range(6):
+    # #     articles.append(Article("truc",35))
 
-    fact = Invoice(
-        artisan,
-        client_moral,
-        articles,
-        advances_list=paiements,
-        taxes=0.2,
-        note="Invoice de matériel informatiques",
-        date=1230,
-        amount=100,
-    )
-    dev = Estimate(
-        artisan,
-        client_physique,
-        articles,
-        taxes=0,
-        note="Invoice de matériel informatiques",
-    )
+    # fact = Invoice(
+    #     artisan,
+    #     client_physique,
+    #     articles,
+    #     advances_list=paiements,
+    #     taxes=0.2,
+    #     note="Invoice de matériel informatiques",
+    #     date=1230,
+    #     balance=100,
+    #     id_=490
+    # )
+    # dev = Estimate(
+    #     artisan,
+    #     client_physique,
+    #     articles,
+    #     taxes=0,
+    #     note="Invoice de matériel informatiques",
+    #     #id_ = 27
+    # )
 
-    build_pdf(dev, 27, "exemple_devis.pdf")
-    build_pdf(fact, 490, "exemple_facture", color="#de260d", show_advances_table=True)
+    # build_pdf(dev, "exemple_devis.pdf")
+    #
+    from facturio.generation.generation import create_random_invoice
+    invoice = create_random_invoice()
+    build_pdf(invoice, "exemple_facture",  show_advances_table=True)
+    # from facturio.db.invoicedao import InvoiceDAO
+    # dao = InvoiceDAO.get_instance()

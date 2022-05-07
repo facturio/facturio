@@ -43,11 +43,11 @@ class Advance:
     """Classe contenant toutes les informations liées à un devis."""
 
     def __init__(self,
-                 balance: float,
+                 amount: float,
                  date: int = None,
                  id_: int = None,
                  id_invoice: int = None):
-        self.balance = balance
+        self.amount = amount
         self.id_ = id_
         self.id_invoice = id_invoice
 
@@ -58,7 +58,7 @@ class Advance:
             self.date = int(time.time())
 
     def __str__(self):
-        return (f"id = {self.id_} | {self.date_string()} | {self.balance} | "
+        return (f"id = {self.id_} | {self.date_string()} | {self.amount} | "
                 f"id_invoice = {self.id_invoice}")
 
     def __repr__(self):
@@ -74,7 +74,7 @@ class Advance:
         """
         Renvoie une liste de toutes les variables de classes
         """
-        return [self.balance, self.date]
+        return [self.amount, self.date]
 
 class Receipt:
     """
@@ -194,8 +194,8 @@ class Invoice(Receipt):
         balance = 0
         if(self.advances_list != None):
             for adv in self.advances_list:
-                balance += adv.balance
-        return round(balance,2)
+                balance += adv.amount
+        return round(balance, 2)
 
 
 class Estimate(Receipt):

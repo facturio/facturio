@@ -1,6 +1,5 @@
-from datetime import date
 from facturio.classes.invoice_misc import Article
-from dbmanager import DBManager
+from facturio.db.dbmanager import DBManager
 
 class ArticleDAO:
     # TODO tester

@@ -37,7 +37,7 @@ class Map(PageGui):
         list_client= self.db.selection_table("client")
         list_adress=[client[4] for client in list_client ]
         print(list_adress)
-        self.print_all_customer(list_adress)
+        # self.print_all_customer(list_adress)
 
 
     def __init_map(self):
