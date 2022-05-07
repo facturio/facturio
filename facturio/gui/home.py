@@ -53,7 +53,7 @@ class HomePage(Gtk.Box):
         """
         Création des buttons et atach dans la self.grid
         """
-        labels = (i18n.t('home.bill'), i18n.t('home.history'), i18n.t('home.invoice'),
+        labels = (i18n.t('home.invoice'), i18n.t('home.history'), i18n.t('home.estimate'),
                   i18n.t('home.map'), i18n.t('home.client'), i18n.t('home.user'))
         positions = ((3, 5, 2, 1), (5, 5, 2, 1), (7, 5, 2, 1), (3, 6, 2, 1),
                      (5, 6, 2, 1), (7, 6, 2, 1))

@@ -36,7 +36,7 @@ class InvoicePage(Gtk.ScrolledWindow):
         Gtk.StyleContext.add_class(hbox.get_style_context(), "linked")
 
         vbox = Gtk.VBox()
-        create_btn = Gtk.Button(label=i18n.t('invoice.create_new_bill'))
+        create_btn = Gtk.Button(label=i18n.t('invoice.create_new_invoice'))
         create_btn.connect("clicked", self.switch_to_create_invoice)
         export_btn = Gtk.Button(label=i18n.t('invoice.export_to_pdf'))
         add_advance_btn = Gtk.Button(label=i18n.t('invoice.add_deposit'))
@@ -247,7 +247,7 @@ class CreateInvoicePage(Gtk.ScrolledWindow):
         """Facture texte et logo"""
         self.header_grid = Gtk.Grid(row_homogeneous=True,
                                     column_homogeneous=True)
-        label = Gtk.Label("<big>" + i18n.t('invoice.bill') + "</big>")
+        label = Gtk.Label("<big>" + i18n.t('invoice.invoice') + "</big>")
         label.set_hexpand(True)
         label.set_use_markup(True)
         self.header_grid.attach(label, 1, 1, 4, 1)
