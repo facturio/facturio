@@ -96,7 +96,7 @@ class Receipt:
         self.taxes = taxes
         self.balance = balance
         self.note = note
-        self.id_ = None
+        self.id_ = id_
         if date:
             self.date = date
         else:
@@ -162,9 +162,8 @@ class Invoice(Receipt):
                  note: str = None,
                  id_: int = None):
         super().__init__(user, client, articles_list, date, taxes, balance,
-                         note)
+                         note, id_)
         self.advances_list = advances_list
-        self.id_ = id_
 
     def __str__(self):
         return (f"User :\n{self.user}\nClient :\n {self.client}\n"
@@ -212,10 +211,10 @@ class Estimate(Receipt):
         balance: float = None,
         taxes: float = None,
         note: str = None,
+        id_: int = None
     ):
-
         super().__init__(user, client, articles_list, date, taxes, balance,
-                                                                         note)
+                         note, id_)
 
 
 if __name__ == "__main__":
