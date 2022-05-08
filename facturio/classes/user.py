@@ -7,15 +7,15 @@ class User:
 
     def __init__(
         self,
-        company_name: str,
-        first_name: str,
-        last_name: str,
-        email: str,
-        address: str,
-        phone_number: str,
-        business_number: str,
-        logo: str = None,
-        id_: int = None
+        company_name,
+        first_name,
+        last_name,
+        email,
+        address,
+        phone_number,
+        business_number,
+        logo=None,
+        id_=None
     ):
         """Les attributs sont initialisés selon leur ordre d'apparition."""
         # Si l'utilisateur cree une deuxieme instance on leve une
@@ -36,7 +36,7 @@ class User:
         self.business_number = business_number
         self.id_ = id_
 
-    def get_attr(self, name: str) :
+    def get_attr(self, name):
         """Renvoie l'attribut passe en parametre."""
         if name == "company_name":
             return self.company_name
@@ -58,7 +58,7 @@ class User:
             print(f"No attribute {name} found")
             raise KeyError
 
-    def set_attr(self, name: str, val: str) :
+    def set_attr(self, name, val):
         """Maj l'attribut name passe en parametre."""
         if name == "company_name":
             self.company_name = val
@@ -93,12 +93,8 @@ class User:
         """Renvoie vrai si il exist une instance du singleton."""
         return True if User.instance else False
 
-
     def __str__(self):
         return str(vars(self))
-        return (f"{self.id_} | {self.logo } | {self.company_name}"
-                f" | {self.email} | {self.address}  | {self.phone_number} | "
-                f"{self.first_name} {self.last_name} | {self.business_number}")
 
     def __repr__(self):
         return self.__str__()
@@ -128,3 +124,18 @@ class User:
                   email=data_dict["email"], logo=data_dict["logo"])
         User.instance = res
         return res
+
+
+if __name__ == "__main__":
+    artisan = User(
+        company_name="Facturio",
+        address="15 rue des champs Cuers",
+        phone_number="0734567221",
+        business_number="128974654",
+        first_name="Tom",
+        last_name="Pommier",
+        email="facturio@gmail.com",
+        logo="logo.jpg",
+        id_=1
+    )
+    print(artisan.dump_to_list())

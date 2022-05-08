@@ -5,13 +5,12 @@ import i18n
 # Import librairie standard
 from decimal import Decimal
 from pathlib import Path
-from typing import Union
 
 # from borb.pdf import SingleColumnLayout
 from borb.pdf import PDF, Document, Page, Paragraph
 from borb.pdf.canvas.color.color import HexColor
 from borb.pdf.canvas.layout.image.image import Image
-from borb.pdf.canvas.layout.layout_element import Alignment, LayoutElement
+from borb.pdf.canvas.layout.layout_element import Alignment
 
 from borb.pdf.canvas.layout.page_layout.browser_layout import BrowserLayout
 # from borb.pdf.canvas.layout.page_layout.page_layout import PageLayout
@@ -25,40 +24,44 @@ from facturio.classes.client import Client, Company
 from facturio.classes.invoice_misc import Advance, Article, Estimate, Invoice
 from facturio.classes.user import User
 
+i18n.load_path.append(__path__[0] + "/data/translations/")
+i18n.set('filename_format', '{namespace}.{format}')
+i18n.set('locale', 'en')
+
 #######################################
 
 data_dir = Path(__path__[0])
 
 # Layout Element pour l'insertion d'icônes dans le pdf
-mail_icon: LayoutElement = Image(
+mail_icon = Image(
     image=Path(data_dir / "data/icons/mail.png"),
     width=Decimal(10),
     height=Decimal(10),
     padding_top=Decimal(5),
     padding_left=Decimal(3),
 )
-email_icon: LayoutElement = Image(
+email_icon = Image(
     image=Path(data_dir / "data/icons/email.png"),
     width=Decimal(10),
     height=Decimal(10),
     padding_top=Decimal(5),
     padding_left=Decimal(3),
 )
-phone_icon: LayoutElement = Image(
+phone_icon = Image(
     image=Path(data_dir / "data/icons/phone.png"),
     width=Decimal(10),
     height=Decimal(10),
     padding_top=Decimal(5),
     padding_left=Decimal(3),
 )
-business_icon: LayoutElement = Image(
+business_icon = Image(
     image=Path(data_dir / "data/icons/business.png"),
     width=Decimal(10),
     height=Decimal(10),
     padding_top=Decimal(5),
     padding_left=Decimal(3),
 )
-person_icon: LayoutElement = Image(
+person_icon = Image(
     image=Path(data_dir / "data/icons/person.png"),
     width=Decimal(10),
     height=Decimal(10),
@@ -66,7 +69,7 @@ person_icon: LayoutElement = Image(
     padding_left=Decimal(3),
 )
 
-dot_icon: LayoutElement = Image(
+dot_icon = Image(
     image=Path(data_dir / "data/icons/dot.png"),
     width=Decimal(3),
     height=Decimal(3),
@@ -75,7 +78,7 @@ dot_icon: LayoutElement = Image(
 )
 
 
-small_phone_icon: LayoutElement = Image(
+small_phone_icon = Image(
     image=Path(data_dir / "data/icons/phone.png"),
     width=Decimal(7),
     height=Decimal(7),
@@ -83,14 +86,14 @@ small_phone_icon: LayoutElement = Image(
     padding_left=Decimal(3),
 )
 
-small_mail_icon: LayoutElement = Image(
+small_mail_icon = Image(
     image=Path(data_dir / "data/icons/mail.png"),
     width=Decimal(7),
     height=Decimal(7),
     padding_top=Decimal(3),
     padding_left=Decimal(3),
 )
-small_email_icon: LayoutElement = Image(
+small_email_icon = Image(
     image=Path(data_dir / "data/icons/email.png"),
     width=Decimal(7),
     height=Decimal(7),
@@ -98,7 +101,7 @@ small_email_icon: LayoutElement = Image(
     padding_left=Decimal(3),
 )
 
-small_person_icon: LayoutElement = Image(
+small_person_icon = Image(
     image=Path(data_dir / "data/icons/person.png"),
     width=Decimal(7),
     height=Decimal(7),
@@ -106,7 +109,7 @@ small_person_icon: LayoutElement = Image(
     padding_left=Decimal(3),
 )
 
-small_business_icon: LayoutElement = Image(
+small_business_icon = Image(
     image=Path(data_dir / "data/icons/business.png"),
     width=Decimal(7),
     height=Decimal(7),
@@ -115,19 +118,19 @@ small_business_icon: LayoutElement = Image(
 )
 
 
-def hex_to_rgb(value: str):
+def hex_to_rgb(value):
     """Return (red, green, blue) for the color given as #rrggbb."""
     value = value.lstrip("#")
     lv = len(value)
     return tuple(int(value[i: i + lv // 3], 16) for i in range(0, lv, lv // 3))
 
 
-def rgb_to_hex(red: int, green: int, blue: int):
+def rgb_to_hex(red, green, blue):
     """Return color as #rrggbb for the given color values."""
     return "#%02x%02x%02x" % (red, green, blue)
 
 
-def shade_color(color: tuple[int, int, int], factor: int):
+def shade_color(color, factor):
     """
     Retourne la couleur rgb assombri ou éclaircir
     """
@@ -142,14 +145,14 @@ def shade_color(color: tuple[int, int, int], factor: int):
     return shaded_color
 
 
-def pdf_header(receipt: Union[Invoice, Estimate], id: int):
+def pdf_header(receipt):
     """
     Construction de l'entête du pdf
     """
     # Initialisation d'une table avec des colones flexibles
     table = FlexibleColumnWidthTable(number_of_rows=2, number_of_columns=4)
     ### Première ligne
-    #Insertion du logo si il existe
+    # Insertion du logo si il existe
     if(receipt.user.logo):
         table.add(TableCell(   
         Image(        
@@ -177,7 +180,7 @@ def pdf_header(receipt: Union[Invoice, Estimate], id: int):
             )
         )
 
-    table.add(Paragraph(f" {i18n.t('pdf.number')}{id}", respect_spaces_in_text=True))
+    table.add(Paragraph(f" {i18n.t('pdf.number')}{receipt.id_}", respect_spaces_in_text=True))
     ### Deuxième Ligne
     table.add(Paragraph(" "))
     table.add(
@@ -188,7 +191,7 @@ def pdf_header(receipt: Union[Invoice, Estimate], id: int):
     return table
 
 
-def pdf_provider_client(receipt: Union[Estimate, Invoice]):
+def pdf_provider_client(receipt):
     """
     Retourne une table liée aux informations du prestataire et du client
     """
@@ -289,7 +292,6 @@ def provider_company_table(
     business_number_table.add(Paragraph(client_list[-1], padding_left=Decimal(2)))
     return table, business_number_table
 
-
 def provider_individual_table(
         table : FlexibleColumnWidthTable, 
         business_number_table : FlexibleColumnWidthTable, 
@@ -341,7 +343,7 @@ def provider_individual_table(
 
         return table, business_number_table
 
-def pdf_provider_inline(receipt: Union[Invoice, Estimate]):
+def pdf_provider_inline(receipt):
     """
     Retourne une table avec les informations liées à l'utilisateur
     en ligne
@@ -392,7 +394,7 @@ def pdf_provider_inline(receipt: Union[Invoice, Estimate]):
     return table_01
 
 
-def pdf_company_inline(receipt: Union[Invoice, Estimate]):
+def pdf_company_inline(receipt):
     """
     Retourne une table avec les informations liées à un client moral
     en ligne
@@ -432,7 +434,7 @@ def pdf_company_inline(receipt: Union[Invoice, Estimate]):
     return table_01
 
 
-def pdf_individual_inline(receipt: Union[Invoice, Estimate]):
+def pdf_individual_inline(receipt):
     """
     Retourne une table avec les informations liées à un client moral
     en ligne
@@ -443,7 +445,7 @@ def pdf_individual_inline(receipt: Union[Invoice, Estimate]):
     # On supprime tous les champs optionnels qui n'ont pas été
     # remplit
     for i in range(2, -1, -1):
-        if(client_list[i]):
+        if(not client_list[i]):
             del client_icon_list[i]
             del client_list[i]
 
@@ -469,7 +471,7 @@ def pdf_individual_inline(receipt: Union[Invoice, Estimate]):
     return table_01
 
 
-def pdf_client_inline(receipt: Union[Invoice, Estimate]):
+def pdf_client_inline(receipt):
     """
     Retourne une table avec les informations liées à un client
     """
@@ -480,7 +482,7 @@ def pdf_client_inline(receipt: Union[Invoice, Estimate]):
         return pdf_individual_inline(receipt)
 
 
-def pdf_articles_total(receipt: Union[Invoice, Estimate], currency: str, color: str):
+def pdf_articles_total(receipt, currency, color):
     """
     Construit la listes des articles et des taxes
     """
@@ -561,12 +563,20 @@ def pdf_articles_total(receipt: Union[Invoice, Estimate], currency: str, color: 
                     background_color=c,
                 )
             )
-            table_array[i].add(
-                TableCell(
-                    Paragraph(f"{list_art[cpt_art].description}", font_size=Decimal(8)),
-                    background_color=c,
+            if(not list_art[cpt_art].description):
+                table_array[i].add(
+                    TableCell(
+                        Paragraph(f"{list_art[cpt_art].description}", font_size=Decimal(8)),
+                        background_color=c,
+                    )
                 )
-            )
+            else:
+                table_array[i].add(
+                    TableCell(
+                        Paragraph(" ", font_size=Decimal(8)),
+                        background_color=c,
+                    )
+                )
             table_array[i].add(TableCell(Paragraph(" "), background_color=c))
             table_array[i].add(TableCell(Paragraph(" "), background_color=c))
             table_array[i].add(TableCell(Paragraph(" "), background_color=c))
@@ -601,12 +611,20 @@ def pdf_articles_total(receipt: Union[Invoice, Estimate], currency: str, color: 
                 background_color=c,
             )
         )
-        table_array[-1].add(
-            TableCell(
-                Paragraph(f"{list_art[cpt_art].description}", font_size=Decimal(8)),
-                background_color=c,
-            )
-        )
+        if(not list_art[cpt_art].description):
+                table_array[-1].add(
+                    TableCell(
+                        Paragraph(f"{list_art[cpt_art].description}", font_size=Decimal(8)),
+                        background_color=c,
+                    )
+                )
+        else:
+                table_array[-1].add(
+                    TableCell(
+                        Paragraph(" ", font_size=Decimal(8)),
+                        background_color=c,
+                    )
+                )
         table_array[-1].add(TableCell(Paragraph(" "), background_color=c))
         table_array[-1].add(TableCell(Paragraph(" "), background_color=c))
         table_array[-1].add(TableCell(Paragraph(" "), background_color=c))
@@ -642,7 +660,7 @@ def pdf_articles_total(receipt: Union[Invoice, Estimate], currency: str, color: 
     return table_array
 
 
-def pdf_invoice_total(table: Table, receipt: Invoice, currency: str):
+def pdf_invoice_total(table: Table, receipt: Invoice, currency):
     """
     Construit la partie liée aux calcul des totaux pour les factures
     """
@@ -705,7 +723,7 @@ def pdf_invoice_total(table: Table, receipt: Invoice, currency: str):
     return table
 
 
-def pdf_estimate_total(table: Table, receipt: Estimate, currency: str):
+def pdf_estimate_total(table: Table, receipt: Estimate, currency):
     """
     Construit la partie liée aux taxes pour les factures
     """
@@ -748,7 +766,7 @@ def pdf_estimate_total(table: Table, receipt: Estimate, currency: str):
     return table
 
 
-def pdf_advance_table(receipt: Invoice, currency: str, color: str):
+def pdf_advance_table(receipt: Invoice, currency, color):
     """
     Construit la table des acomptes pour les pdf
     """
@@ -836,13 +854,13 @@ def pdf_advance_table(receipt: Invoice, currency: str, color: str):
 
 
 def build_pdf(
-    receipt: Union[Invoice, Estimate],
-    path: str = "output.pdf",
-    color: str = "5f5f5f",
-    currency: str = "€",
-    inline: bool = False,
-    prominent_article_table: bool = False,
-    show_advances_table: bool = False,
+    receipt,
+    path="output.pdf",
+    color="5f5f5f",
+    currency="€",
+    inline=False,
+    prominent_article_table=False,
+    show_advances_table=False,
 ):
     """
     Fonction d'assemblage du pdf
@@ -859,7 +877,7 @@ def build_pdf(
     # page_layout.vertical_margin = page.get_page_info().get_height() \
     # * Decimal(0.02)
     # Construction de l'entête
-    layout_array[-1].add(pdf_header(receipt, receipt.id_))
+    layout_array[-1].add(pdf_header(receipt))
 
     if prominent_article_table:
         # Tableaux des articles et des taxes
@@ -924,86 +942,82 @@ def build_pdf(
 
 
 if __name__ == "__main__":
-    # artisan = User(
-    #     "Facturio",
-    #     "15 rue des champs Cuers",
-    #     "0734567221",
-    #     "128974654",
-    #     "Tom",
-    #     "Pommier",
-    #     "facturio@gmail.com",
-    # )
+    artisan = User(
+        company_name="Facturio",
+        address="15 rue des champs Cuers",
+        phone_number="0734567221",
+        business_number="128974654",
+        first_name="Tom",
+        last_name="Pommier",
+        email="facturio@gmail.com",
+        logo="logo.jpg"
+    )
 
-    # client_physique = Client(
-    #     "Lombardo",
-    #     "Quentin",
-    #     "quentin.lombardo@email.com",
-    #     "HLM Sainte-Muse Toulon",
-    #     "0678905324",
-    # )
+    client_physique = Client(
+        last_name="Lombardo",
+        first_name="Quentin",
+        email="quentin.lombardo@email.com",
+        address="HLM Sainte-Muse Toulon",
+        phone_number="0678905324",
+    )
 
-    # client_moral = Company(
-    #     "LeRoy",
-    #     "LeRoy83@sfr.fr",
-    #     "12 ZAC de La Crau",
-    #     "0345678910",
-    #     "Ben",
-    #     "Karim",
-    #     "287489404",
-    # )
+    client_moral = Company(
+        company_name="LeRoy",
+        email="LeRoy83@sfr.fr",
+        address="12 ZAC de La Crau",
+        phone_number="0345678910",
+        first_name="Ben",
+        last_name="Karim",
+        business_number="287489404",
+    )
 
-    # ordinateur = Article("ordinateur", 1684.33, 3, "Asus spire")
-    # cable_ethernet = Article("cable ethernet", 9.99, 10, "15m")
-    # telephone = Article("telephone", 399.99, 1, "téléphone clapet")
-    # casque = Article("casque", 69.99, 6, "casque sans fils")
-    # bureau = Article("Bureau", 500, 2, "Bureau à 6pieds")
+    ordinateur = Article("ordinateur", 1684.33, 3, "Asus spire")
+    cable_ethernet = Article("cable ethernet", 9.99, 10, "15m")
+    telephone = Article("telephone", 399.99, 1, "téléphone clapet")
+    casque = Article("casque", 69.99, 6, "casque sans fils")
+    bureau = Article("Bureau", 500, 2, "Bureau à 6pieds")
 
-    # paiements = [Advance(1230.0), Advance(654)]
+    paiements = [Advance(1230.0), Advance(654)]
 
-    # # desc = ""
-    # # nom_artc = ""
-    # # for i in range(2):
-    # #     nom_artc += 15*"a" +" "
-    # # for i in range(4):
-    # #     desc+= 25*"a" + " "
+    # desc = ""
+    # nom_artc = ""
+    # for i in range(2):
+    #     nom_artc += 15*"a" +" "
+    # for i in range(4):
+    #     desc+= 25*"a" + " "
 
-    # # ordinateur = Article(nom_artc, 1684.33, 3, desc)
-    # # cable_ethernet = Article(nom_artc, 9.99, 10, desc)
-    # # telephone = Article(nom_artc, 399.99, 1,desc)
-    # # casque = Article(nom_artc, 69.99, 6, desc)
-    # # bureau = Article(nom_artc, 500,2,desc)
+    # ordinateur = Article(nom_artc, 1684.33, 3, desc)
+    # cable_ethernet = Article(nom_artc, 9.99, 10, desc)
+    # telephone = Article(nom_artc, 399.99, 1,desc)
+    # casque = Article(nom_artc, 69.99, 6, desc)
+    # bureau = Article(nom_artc, 500,2,desc)
 
-    # articles = [ordinateur, cable_ethernet, telephone, casque, bureau]
-    # # articles = [ordinateur]
-    # # for i in range(10):
-    # #     paiements.append(Advance(78,2009 ))
-    # # for i in range(6):
-    # #     articles.append(Article("truc",35))
+    articles = [ordinateur, cable_ethernet, telephone, casque, bureau]
+    # articles = [ordinateur]
+    # for i in range(10):
+    #     paiements.append(Advance(78,2009 ))
+    # for i in range(6):
+    #     articles.append(Article("truc",35))
 
-    # fact = Invoice(
-    #     artisan,
-    #     client_physique,
-    #     articles,
-    #     advances_list=paiements,
-    #     taxes=0.2,
-    #     note="Invoice de matériel informatiques",
-    #     date=1230,
-    #     balance=100,
-    #     id_=490
-    # )
-    # dev = Estimate(
-    #     artisan,
-    #     client_physique,
-    #     articles,
-    #     taxes=0,
-    #     note="Invoice de matériel informatiques",
-    #     #id_ = 27
-    # )
+    fact = Invoice(
+        user=artisan,
+        client=client_moral,
+        articles_list=articles,
+        advances_list=paiements,
+        taxes=0.2,
+        note="Invoice de matériel informatiques",
+        date=1230,
+        balance=100,
+        id_=1
+    )
+    dev = Estimate(
+        user=artisan,
+        client=client_physique,
+        articles_list=articles,
+        taxes=0,
+        note="Invoice de matériel informatiques",
+        id_=2
+    )
 
-    # build_pdf(dev, "exemple_devis.pdf")
-    #
-    from facturio.generation.generation import create_random_invoice
-    invoice = create_random_invoice()
-    build_pdf(invoice, "exemple_facture",  show_advances_table=True)
-    # from facturio.db.invoicedao import InvoiceDAO
-    # dao = InvoiceDAO.get_instance()
+    build_pdf(dev, "exemple_devis.pdf")
+    build_pdf(fact,"exemple_facture", color="#de260d", show_advances_table=True)
