@@ -126,7 +126,7 @@ def rgb_to_hex(red: int, green: int, blue: int):
     return "#%02x%02x%02x" % (red, green, blue)
 
 
-def shade_color(color: tuple[int, int, int], factor: int):
+def shade_color(color, factor: int):
     """
     Retourne la couleur rgb assombri ou éclaircir
     """
@@ -226,7 +226,7 @@ def pdf_provider_client(receipt: Union[Estimate, Invoice]):
     
     #Si le champ email pour l'utilisateur n'est pas remplit,
     #On supprime l'élément dans la liste
-    if(provider_list[1]):
+    if(not provider_list[1]):
         del provider_icon_list[1]
         del provider_list[1]
     # On appelle une fonction si le client est une entité morale
@@ -286,7 +286,6 @@ def provider_company_table(
     business_number_table.add(Paragraph(client_list[-1], padding_left=Decimal(2)))
     return table, business_number_table
 
-
 def provider_individual_table(
         table : FlexibleColumnWidthTable, 
         business_number_table : FlexibleColumnWidthTable, 
@@ -302,7 +301,7 @@ def provider_individual_table(
         for i in range(3, 0, -1):
             #On supprime tous les champs optionnels qui n'ont pas été
             #remplit
-            if(client_list[i]):
+            if(not client_list[i]):
                 del client_icon_list[i]
                 del client_list[i]
         i = 0
@@ -440,7 +439,7 @@ def pdf_individual_inline(receipt: Union[Invoice, Estimate]):
     # On supprime tous les champs optionnels qui n'ont pas été
     # remplit
     for i in range(2, -1, -1):
-        if(client_list[i]):
+        if(not client_list[i]):
             del client_icon_list[i]
             del client_list[i]
 
@@ -553,12 +552,20 @@ def pdf_articles_total(receipt: Union[Invoice, Estimate], currency: str, color: 
                     background_color=c,
                 )
             )
-            table_array[i].add(
-                TableCell(
-                    Paragraph(f"{list_art[cpt_art].description}", font_size=Decimal(8)),
-                    background_color=c,
+            if(not list_art[cpt_art].description):
+                table_array[i].add(
+                    TableCell(
+                        Paragraph(f"{list_art[cpt_art].description}", font_size=Decimal(8)),
+                        background_color=c,
+                    )
                 )
-            )
+            else:
+                table_array[i].add(
+                    TableCell(
+                        Paragraph(" ", font_size=Decimal(8)),
+                        background_color=c,
+                    )
+                )
             table_array[i].add(TableCell(Paragraph(" "), background_color=c))
             table_array[i].add(TableCell(Paragraph(" "), background_color=c))
             table_array[i].add(TableCell(Paragraph(" "), background_color=c))
@@ -593,12 +600,20 @@ def pdf_articles_total(receipt: Union[Invoice, Estimate], currency: str, color: 
                 background_color=c,
             )
         )
-        table_array[-1].add(
-            TableCell(
-                Paragraph(f"{list_art[cpt_art].description}", font_size=Decimal(8)),
-                background_color=c,
-            )
-        )
+        if(not list_art[cpt_art].description):
+                table_array[-1].add(
+                    TableCell(
+                        Paragraph(f"{list_art[cpt_art].description}", font_size=Decimal(8)),
+                        background_color=c,
+                    )
+                )
+        else:
+                table_array[-1].add(
+                    TableCell(
+                        Paragraph(" ", font_size=Decimal(8)),
+                        background_color=c,
+                    )
+                )
         table_array[-1].add(TableCell(Paragraph(" "), background_color=c))
         table_array[-1].add(TableCell(Paragraph(" "), background_color=c))
         table_array[-1].add(TableCell(Paragraph(" "), background_color=c))
@@ -908,31 +923,31 @@ def build_pdf(
 
 if __name__ == "__main__":
     artisan = User(
-        "Facturio",
-        "15 rue des champs Cuers",
-        "0734567221",
-        "128974654",
-        "Tom",
-        "Pommier",
-        "facturio@gmail.com",
+        company_name="Facturio",
+        address="15 rue des champs Cuers",
+        phone_number="0734567221",
+        business_number="128974654",
+        first_name="Tom",
+        last_name="Pommier",
+        email="facturio@gmail.com",
     )
 
     client_physique = Client(
-        "Lombardo",
-        "Quentin",
-        "quentin.lombardo@email.com",
-        "HLM Sainte-Muse Toulon",
-        "0678905324",
+        last_name="Lombardo",
+        first_name="Quentin",
+        email="quentin.lombardo@email.com",
+        address="HLM Sainte-Muse Toulon",
+        phone_number="0678905324",
     )
 
     client_moral = Company(
-        "LeRoy",
-        "LeRoy83@sfr.fr",
-        "12 ZAC de La Crau",
-        "0345678910",
-        "Ben",
-        "Karim",
-        "287489404",
+        company_name="LeRoy",
+        email="LeRoy83@sfr.fr",
+        address="12 ZAC de La Crau",
+        phone_number="0345678910",
+        first_name="Ben",
+        last_name="Karim",
+        business_number="287489404",
     )
 
     ordinateur = Article("ordinateur", 1684.33, 3, "Asus spire")
@@ -964,9 +979,9 @@ if __name__ == "__main__":
     #     articles.append(Article("truc",35))
 
     fact = Invoice(
-        artisan,
-        client_moral,
-        articles,
+        user=artisan,
+        client=client_moral,
+        articles_list=articles,
         advances_list=paiements,
         taxes=0.2,
         note="Invoice de matériel informatiques",
@@ -974,9 +989,9 @@ if __name__ == "__main__":
         amount=100,
     )
     dev = Estimate(
-        artisan,
-        client_physique,
-        articles,
+        user=artisan,
+        client=client_physique,
+        articles_list=articles,
         taxes=0,
         note="Invoice de matériel informatiques",
     )
