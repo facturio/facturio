@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+import i18n
 import gi
 from facturio.gui.page_gui import PageGui
 from facturio.gui.home import HeaderBarSwitcher
@@ -27,7 +28,7 @@ class Customer(PageGui):
         super().__init__()
         self.header_bar = HeaderBarSwitcher.get_instance()
         self.__init_grid()
-        self.title("Clients")
+        self.title(i18n.t('gui.client'))
         self.__space_info()
         self.search_bar_client()
         self.__summon_button()
@@ -62,8 +63,8 @@ class Customer(PageGui):
         """
         Invoque les boutons: Importer,Exporter,Creer
         """
-        p_button=(("Importer", (4,3,1,1)), ("Plus", (4,4,1,1)),
-                  ("Exporter", (4,5,1,1)))
+        p_button=((i18n.t('gui.import'), (4,3,1,1)), (i18n.t('gui.plus'), (4,4,1,1)),
+                  (i18n.t('gui.export'), (4,5,1,1)))
         but = Gtk.Button.new_from_icon_name("list-add-symbolic",
                                                     Gtk.IconSize.BUTTON)
         but.connect("clicked", self.header_bar.active_button, "add_customer")
@@ -89,7 +90,7 @@ class Customer(PageGui):
         filechooserdialog.add_buttons("_Cancel", Gtk.ResponseType.CANCEL)
         filechooserdialog.set_default_response(Gtk.ResponseType.OK)
         filter_ = Gtk.FileFilter()
-        filter_.set_name("Client")
+        filter_.set_name(i18n.t('gui.client'))
         filter_.add_pattern("*.clt")
         filter_.add_pattern("*.csv")
         filechooserdialog.set_filter(filter_)

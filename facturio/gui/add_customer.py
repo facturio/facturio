@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+import i18n
 import sqlite3
 import gi
 from facturio.gui.page_gui import PageGui
@@ -16,8 +17,8 @@ class Add_Customer(PageGui):
     +--------+
     """
     def __init__(self):
-        self.list_att_par=["Nom ","Prenom ","Mail ","Adresse ",
-                           "Numero ","Remarque "]
+        self.list_att_par=[i18n.t('gui.surname'),i18n.t('gui.name'),i18n.t('gui.email'),i18n.t('gui.address'),
+                           i18n.t('gui.number'), i18n.t('gui.remark')]
         super().__init__()
         self.is_pro=True
         self.cent = Gtk.Grid(column_homogeneous=False,

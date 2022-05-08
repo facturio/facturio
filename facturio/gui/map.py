@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
+import i18n
 import gi
 from facturio.gui.page_gui import PageGui
-gi.require_version("Gtk", "3.0")
-gi.require_version("OsmGpsMap", "1.0")
 import concurrent.futures
 from facturio.db.db import Data_base
 from geopy.geocoders import Nominatim
+gi.require_version("Gtk", "3.0")
+gi.require_version("OsmGpsMap", "1.0")
 from gi.repository import Gtk, Gdk, Gio, GdkPixbuf, OsmGpsMap
-
 from facturio import __path__
 
 class Map(PageGui):
@@ -29,7 +29,7 @@ class Map(PageGui):
                              column_spacing=20, row_spacing=20)
         self.add(self.grid)
         (
-            self.title("Carte")
+            self.title(i18n.t('gui.map'))
                 .space()
                 .search((1,3,5,1))
                 .__init_map()

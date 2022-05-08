@@ -552,7 +552,7 @@ class CreateInvoicePage(Gtk.ScrolledWindow):
         self.user_grid.attach(self.update_user_btn, 3, 11, 2, 1)
         if User.exits():
             self._load_user_entries()
-            self.logo_button.set_label(" Ajouté")
+            self.logo_button.set_label(i18n.t('gui.added'))
             self.logo_button.set_sensitive(False)
             self.save_user_btn.set_sensitive(False)
         else:

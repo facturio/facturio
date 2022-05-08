@@ -39,7 +39,7 @@ class HomePage(Gtk.Box):
         self.grid.attach(space, 1, 4, 10, 1)
         # ajout de la search bar
         self.searchbar = FacturioOmnisearch(examples.clients,
-                                            placeholder_text=i18n.t("home.search"))
+                                            placeholder_text=i18n.t('home.search'))
         self.grid.attach(self.searchbar, 3, 3, 6, 1)
         # creation des buttons
         self.__init_buttons()
