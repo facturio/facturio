@@ -19,29 +19,33 @@ class InfoPerson (PageGui):
     """
     __instance = None
 
+    @staticmethod
     def get_instance():
         """Renvoie le singleton."""
         if InfoPerson.__instance is None:
             InfoPerson.__instance = InfoPerson()
         return InfoPerson.__instance
 
-    def __init__(self,*args, **kwargs):
+    def __init__(self,is_ut=True,num_client=0,*args, **kwargs):
         super().__init__()
-        self.is_ut=True
-        self.num_client=0
-        print("num=",self.num_client)
+        self.is_ut=is_ut
+        self.num_client=int(num_client)
+        print(id(self))
+        print("num=",self.num_client,self.is_ut)
         self.header_bar = HeaderBarSwitcher.get_instance()
         super().__init__(*args, **kwargs)
         self.cent = Gtk.Grid(column_homogeneous=False,
                                   row_homogeneous=False, column_spacing=20,
                                   row_spacing=20)
         self.__init_grid()
+        self.__title(str(self.num_client))
         self.grid.attach(self.cent, 1, 2, 2, 1)
         self.__space_info()
         if self.is_ut:
             self.utilisateur()
         else:
             self.client()
+
 
     def __init_grid(self):
         """
@@ -55,6 +59,7 @@ class InfoPerson (PageGui):
         self.grid.set_row_spacing(20)
         self.grid.set_column_spacing(20)
         return self
+
 
     def __title(self, ttl):
         bttl= Gtk.Box()
@@ -107,7 +112,7 @@ class InfoPerson (PageGui):
             att_usr=[["","","","",
                       "","","",""]]
         self.imp = Gtk.Button(label="Modifier")
-        self.cent.attach(self.imp, 6, 12, 3, 1)
+        self.cent.attach(self.imp, 6, 10, 2, 1)
         self.imp.connect("clicked", self.header_bar.active_button, "modify_usr")
         att_usr=att_usr[0]
         self.__title(att_usr[1])
@@ -175,7 +180,7 @@ class InfoPerson (PageGui):
         label.set_hexpand(True)
         label.set_hexpand(True)
         entry = Gtk.Entry()
-        entry.set_text(c_txt[1])
+        entry.set_text(str(self.num_client))
         entry.set_hexpand(True)
         entry.set_editable(False)
         self.cent.attach(entry,pos[0]+2,pos[1],2,1)
@@ -184,35 +189,48 @@ class InfoPerson (PageGui):
         self.cent.attach(spacer,pos[0]+4,pos[1],1,1)
 
     def first_name(self,fn):
-        self.__creat_labelbox(("Prenom ",fn),(1,4,3,1))
+        self.__creat_labelbox(("Prenom ",fn),(0,2,3,1))
         return self
 
     def last_name(self,nm):
-        self.__creat_labelbox(("Nom ",nm),(1,6,3,1))
+        self.__creat_labelbox(("Nom ",nm),(4,2,3,1))
         return self
 
     def adrss(self,adr):
-        self.__creat_labelbox(("Adresse ",adr),(1,8,3,1))
+        self.__creat_labelbox(("Adresse ",adr),(1,4,3,1))
         return self
 
 
     def mails(self,mail):
-        self.__creat_labelbox(("Mail ",mail),(1,10,3,1))
+        self.__creat_labelbox(("Mail ",mail),(1,6,3,1))
         return self
 
 
     def nums(self,n):
-        self.__creat_labelbox(("Numero ",n),(1,12,3,1))
+        self.__creat_labelbox(("Numero ",n),(1,8,3,1))
         return self
 
 
-    def entreprise(self,ent):
-        self.__creat_labelbox(("entreprise ",ent),(1,14,3,1))
-        return self
+    def entreprise(self,ent,pos):
+        label = Gtk.Label()
+        label.set_markup("<b>Entreprise</b>:    ")
+        label.set_justify(Gtk.Justification.RIGHT)
+        self.cent.attach(label,pos[0],pos[1],2,1)
+        label.set_hexpand(True)
+        label.set_hexpand(True)
+        entry = Gtk.Entry()
+        entry.set_text(ent)
+        entry.set_hexpand(True)
+        entry.set_editable(False)
+        self.cent.attach(entry,pos[0]+2,pos[1],2,1)
+        spacer = Gtk.Label("")
+        spacer.set_hexpand(True)
+        self.cent.attach(spacer,pos[0]+4,pos[1],1,1)
+
 
 
     def siret(self,sir):
-        self.__creat_labelbox(("Siret ",sir),(1,16,3,1))
+        self.__creat_labelbox(("Siret ",sir),(1,10,3,1))
         return self
 
     def logo(self,path):

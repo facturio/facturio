@@ -32,7 +32,10 @@ class Customer(PageGui):
         self.header_bar = HeaderBarSwitcher.get_instance()
         self.__init_grid()
         self.__space_info()
+        self.init_result(["Nom","Prenom","adress"],
+                         (1, 4, 2, 3))
         self.search_bar_client()
+        self.add_result(["prout","prout","prout",])
         self.__summon_button()
 
 
@@ -138,13 +141,19 @@ class Customer(PageGui):
         searchbar.completion.connect('match-selected', self.switch_to_display)
         self.cent.attach(searchbar, 1,3,2,1)
 
+    def fill_tree(self, completion, model, iter):
+        """
+        Remplit la treeview
+        """
+        print(completion)
+
     def switch_to_display(self, completion, model, iter):
         """
         recupere les info de la completion et les affiche
         avec la page info_persone
         """
         num_client = str(list((completion.props.model.get_value(iter, 0)))[1])
-        page=InfoPerson()
+        page=InfoPerson(False,num_client)
         page.is_ut=False
         page.num_client=int(num_client)
         if num_client.isnumeric():

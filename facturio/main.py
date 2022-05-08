@@ -63,7 +63,7 @@ class Window(Gtk.ApplicationWindow):
         self.stack.add_named(self.history_page, "history_page")
         self.map_page = Map()
         self.stack.add_named(self.map_page, "map_page")
-        self.user_page = InfoPerson()
+        self.user_page = InfoPerson.get_instance()
         self.stack.add_named(self.user_page, "user_page")
         self.add(self.stack)
 
