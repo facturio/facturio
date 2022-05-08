@@ -1,9 +1,10 @@
+import i18n
+from facturio.gui.omnisearch import FacturioOmnisearch
+from facturio import examples
+from facturio.gui.headerbar import HeaderBarSwitcher
 import gi
 gi.require_version("Gtk", "3.0")
 from gi.repository import Gtk, Gio
-from gui.omnisearch import FacturioOmnisearch
-from facturio import examples
-from gui.headerbar import HeaderBarSwitcher
 
 class ButtonIcon(Gtk.RadioButton):
     """
@@ -38,7 +39,7 @@ class HomePage(Gtk.Box):
         self.grid.attach(space, 1, 4, 10, 1)
         # ajout de la search bar
         self.searchbar = FacturioOmnisearch(examples.clients,
-                                            placeholder_text="Recherche")
+                                            placeholder_text=i18n.t('home.search'))
         self.grid.attach(self.searchbar, 3, 3, 6, 1)
         # creation des buttons
         self.__init_buttons()
@@ -52,8 +53,8 @@ class HomePage(Gtk.Box):
         """
         Création des buttons et atach dans la self.grid
         """
-        labels = ("Facture", "Historique", "Devis", "Carte", "Client",
-                  "Utilisateur")
+        labels = (i18n.t('home.invoice'), i18n.t('home.history'), i18n.t('home.estimate'),
+                  i18n.t('home.map'), i18n.t('home.client'), i18n.t('home.user'))
         positions = ((3, 5, 2, 1), (5, 5, 2, 1), (7, 5, 2, 1), (3, 6, 2, 1),
                      (5, 6, 2, 1), (7, 6, 2, 1))
         page_names = ("invoice_page", "history_page", "quotation_page",

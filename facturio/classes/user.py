@@ -7,14 +7,15 @@ class User:
 
     def __init__(
         self,
-        company_name: str,
-        first_name: str,
-        last_name: str,
-        email: str,
-        adress: str,
-        phone_number: str,
-        business_number: str,
-        logo: str = None,
+        company_name,
+        first_name,
+        last_name,
+        email,
+        address,
+        phone_number,
+        business_number,
+        logo=None,
+        id_=None
     ):
         """Les attributs sont initialisés selon leur ordre d'apparition."""
         # Si l'utilisateur cree une deuxieme instance on leve une
@@ -22,19 +23,20 @@ class User:
         if User.instance is None:
             User.instance = self
         else:
-            print("Class singleton User already exits")
+            print("Class singleton User already exists")
             raise ValueError
 
         self.logo = logo
-        self.company_name = company_name
-        self.email = email
-        self.adress = adress
-        self.phone_number = phone_number
         self.first_name = first_name
         self.last_name = last_name
+        self.company_name = company_name
+        self.email = email
+        self.address = address
+        self.phone_number = phone_number
         self.business_number = business_number
+        self.id_ = id_
 
-    def get_attr(self, name: str) :
+    def get_attr(self, name) :
         """Renvoie l'attribut passe en parametre."""
         if name == "company_name":
             return self.company_name
@@ -44,8 +46,8 @@ class User:
             return self.first_name
         elif name == "email":
             return self.email
-        elif name == "adress":
-            return self.adress
+        elif name == "address":
+            return self.address
         elif name == "phone_number":
             return self.phone_number
         elif name == "business_number":
@@ -56,7 +58,7 @@ class User:
             print(f"No attribute {name} found")
             raise KeyError
 
-    def set_attr(self, name: str, val: str) :
+    def set_attr(self, name, val) :
         """Maj l'attribut name passe en parametre."""
         if name == "company_name":
             self.company_name = val
@@ -66,8 +68,8 @@ class User:
             self.first_name = val
         elif name == "email":
             self.email = val
-        elif name == "adress":
-            self.adress = val
+        elif name == "address":
+            self.address = val
         elif name == "phone_number":
             self.phone_number = val
         elif name == "business_number":
@@ -77,23 +79,25 @@ class User:
         else:
             print(f"No attribute {name} found")
             raise KeyError
+
     @staticmethod
     def get_instance():
         """Recupere l'instance."""
         if User.instance is None:
-            print("Class singleton User already exits")
+            print("Class singleton User already exists")
             raise ValueError
         return User.instance
 
     @staticmethod
-    def exits():
+    def exists():
         """Renvoie vrai si il exist une instance du singleton."""
         return True if User.instance else False
 
 
     def __str__(self):
-        return (f"{self.logo } | {self.company_name} | {self.email} | "
-                f"{self.adress}  | {self.phone_number} | "
+        return str(vars(self))
+        return (f"{self.id_} | {self.logo } | {self.company_name}"
+                f" | {self.email} | {self.address}  | {self.phone_number} | "
                 f"{self.first_name} {self.last_name} | {self.business_number}")
 
     def __repr__(self):
@@ -102,7 +106,7 @@ class User:
     def dump_to_list(self):
         """Renvoie une liste de toutes les variables de classes."""
         return [self.logo, self.company_name, self.email,
-                self.adress, self.phone_number, self.first_name,
+                self.address, self.phone_number, self.first_name,
                 self.last_name, self.business_number]
 
     def dump_to_field(self):
@@ -110,13 +114,13 @@ class User:
         Renvoie la liste des variables utiles pour l'affichage des champs
         liés au client moral
         """
-        return [self.company_name, self.email, self.adress, self.phone_number,
+        return [self.company_name, self.email, self.address, self.phone_number,
                 f"{self.first_name} {self.last_name}", self.business_number]
 
     @classmethod
     def from_dict(cls, data_dict):
         res = cls(company_name=data_dict["company_name"],
-                  adress=data_dict["adress"],
+                  address=data_dict["address"],
                   phone_number=data_dict["phone_number"],
                   business_number=data_dict["business_number"],
                   first_name=data_dict["first_name"],

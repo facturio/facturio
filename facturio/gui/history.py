@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
+import i18n
+from facturio.gui.page_gui import PageGui
 import gi
 gi.require_version("Gtk", "3.0")
-from gui.page_gui import PageGui
 from gi.repository import Gtk
 
 class History(PageGui):
@@ -22,9 +23,10 @@ class History(PageGui):
                              column_spacing=20, row_spacing=20)
         (
             self.init_grid()
-                .title("Historique")
+                .title(i18n.t('gui.history'))
                 .search((1,3,5,1))
                 .space()
-                .init_result(["Nom", "date", "Description"],
+                .init_result([i18n.t('gui.name'), i18n.t('gui.date'),
+                              i18n.t('gui.description')],
                           (1,4,5,10))
         )

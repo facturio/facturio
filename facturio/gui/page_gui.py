@@ -1,11 +1,13 @@
 #!/usr/bin/env python3
-import gi
-gi.require_version("Gtk", "3.0")
-from gi.repository import Gtk
+import i18n
 import re
 from facturio.db.db import Data_base
 from facturio.gui.omnisearch import FacturioOmnisearch
+from facturio.gui.autocompletion import FacturioEntryCompletion
 from facturio import examples
+import gi
+gi.require_version("Gtk", "3.0")
+from gi.repository import Gtk
 
 class PageGui(Gtk.ScrolledWindow):
     """
@@ -14,6 +16,7 @@ class PageGui(Gtk.ScrolledWindow):
     """
 
     def __init__(self) -> None:
+        self.liste_customer= Gtk.ListStore(str, str, str)
         self.db= Data_base("facturio")
         super().__init__()
 
@@ -39,6 +42,28 @@ class PageGui(Gtk.ScrolledWindow):
             return False
         return True
 
+    def is_usr_valid_for_db(self,l_client):
+        """
+        retourn si les element de la liste
+        l_client est correct ou non pour
+        la base de donnee
+        """
+        print(l_client)
+        regex_mail = re.compile(r'([A-Za-z0-9]+[.-_])*[A-Za-z0-9]+@[A-Za-z0-9-]+(\.[A-Z|a-z]{2,})+')
+        if not l_client[1].isalpha():
+            print(l_client[1],"est incorrect")
+            return False
+        if not (re.fullmatch(regex_mail, l_client[2])):
+            print(l_client[2],"est incorrect")
+            return False
+        if not l_client[4][1:].strip(" ").isnumeric():
+            print(l_client[4],"est incorrect")
+            return False
+        if not l_client[5].strip(" ").isnumeric():
+            print(l_client[5],"est incorrect")
+            return False
+        return True
+
 
     def space(self):
         """
@@ -53,7 +78,7 @@ class PageGui(Gtk.ScrolledWindow):
     def title(self, ttl):
         facturio_label = Gtk.Label(label=ttl)
         facturio_label.set_markup("<span font_weight=\"bold\" size=\"xx-large\">"+ttl+"</span>")
-        self.grid.attach(facturio_label, 0, 2, 6, 1 )
+        self.grid.attach(facturio_label, 1, 2, 1, 1 )
         return self
 
 
@@ -63,7 +88,8 @@ class PageGui(Gtk.ScrolledWindow):
         Invoque la barre de recherche
         a cette emplacement
         """
-        searchbar = FacturioOmnisearch(examples.clients, placeholder_text="Recherche")
+        searchbar = FacturioOmnisearch(examples.clients,
+                                       placeholder_text=i18n.t('gui.search'))
         self.grid.attach(searchbar, *l_attach)
         return self
 
@@ -88,7 +114,6 @@ class PageGui(Gtk.ScrolledWindow):
         a la methode add_result
         """
         l_customer= []
-        self.liste_customer= Gtk.ListStore(str, str, str)
         for customer in l_customer:
             self.liste_customer.append(customer)
         self.treeview = Gtk.TreeView(model=self.liste_customer)

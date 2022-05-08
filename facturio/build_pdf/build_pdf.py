@@ -1,16 +1,16 @@
 from facturio import __path__
+import i18n
 
 # Import de borb
 # Import librairie standard
 from decimal import Decimal
 from pathlib import Path
-from typing import Union
 
 # from borb.pdf import SingleColumnLayout
 from borb.pdf import PDF, Document, Page, Paragraph
 from borb.pdf.canvas.color.color import HexColor
 from borb.pdf.canvas.layout.image.image import Image
-from borb.pdf.canvas.layout.layout_element import Alignment, LayoutElement
+from borb.pdf.canvas.layout.layout_element import Alignment
 
 from borb.pdf.canvas.layout.page_layout.browser_layout import BrowserLayout
 # from borb.pdf.canvas.layout.page_layout.page_layout import PageLayout
@@ -24,40 +24,44 @@ from facturio.classes.client import Client, Company
 from facturio.classes.invoice_misc import Advance, Article, Estimate, Invoice
 from facturio.classes.user import User
 
+i18n.load_path.append(__path__[0] + "/data/translations/")
+i18n.set('filename_format', '{namespace}.{format}')
+i18n.set('locale', 'en')
+
 #######################################
 
 data_dir = Path(__path__[0])
 
 # Layout Element pour l'insertion d'icônes dans le pdf
-mail_icon: LayoutElement = Image(
+mail_icon = Image(
     image=Path(data_dir / "data/icons/mail.png"),
     width=Decimal(10),
     height=Decimal(10),
     padding_top=Decimal(5),
     padding_left=Decimal(3),
 )
-email_icon: LayoutElement = Image(
+email_icon = Image(
     image=Path(data_dir / "data/icons/email.png"),
     width=Decimal(10),
     height=Decimal(10),
     padding_top=Decimal(5),
     padding_left=Decimal(3),
 )
-phone_icon: LayoutElement = Image(
+phone_icon = Image(
     image=Path(data_dir / "data/icons/phone.png"),
     width=Decimal(10),
     height=Decimal(10),
     padding_top=Decimal(5),
     padding_left=Decimal(3),
 )
-business_icon: LayoutElement = Image(
+business_icon = Image(
     image=Path(data_dir / "data/icons/business.png"),
     width=Decimal(10),
     height=Decimal(10),
     padding_top=Decimal(5),
     padding_left=Decimal(3),
 )
-person_icon: LayoutElement = Image(
+person_icon = Image(
     image=Path(data_dir / "data/icons/person.png"),
     width=Decimal(10),
     height=Decimal(10),
@@ -65,7 +69,7 @@ person_icon: LayoutElement = Image(
     padding_left=Decimal(3),
 )
 
-dot_icon: LayoutElement = Image(
+dot_icon = Image(
     image=Path(data_dir / "data/icons/dot.png"),
     width=Decimal(3),
     height=Decimal(3),
@@ -74,7 +78,7 @@ dot_icon: LayoutElement = Image(
 )
 
 
-small_phone_icon: LayoutElement = Image(
+small_phone_icon = Image(
     image=Path(data_dir / "data/icons/phone.png"),
     width=Decimal(7),
     height=Decimal(7),
@@ -82,14 +86,14 @@ small_phone_icon: LayoutElement = Image(
     padding_left=Decimal(3),
 )
 
-small_mail_icon: LayoutElement = Image(
+small_mail_icon = Image(
     image=Path(data_dir / "data/icons/mail.png"),
     width=Decimal(7),
     height=Decimal(7),
     padding_top=Decimal(3),
     padding_left=Decimal(3),
 )
-small_email_icon: LayoutElement = Image(
+small_email_icon = Image(
     image=Path(data_dir / "data/icons/email.png"),
     width=Decimal(7),
     height=Decimal(7),
@@ -97,7 +101,7 @@ small_email_icon: LayoutElement = Image(
     padding_left=Decimal(3),
 )
 
-small_person_icon: LayoutElement = Image(
+small_person_icon = Image(
     image=Path(data_dir / "data/icons/person.png"),
     width=Decimal(7),
     height=Decimal(7),
@@ -105,7 +109,7 @@ small_person_icon: LayoutElement = Image(
     padding_left=Decimal(3),
 )
 
-small_business_icon: LayoutElement = Image(
+small_business_icon = Image(
     image=Path(data_dir / "data/icons/business.png"),
     width=Decimal(7),
     height=Decimal(7),
@@ -114,19 +118,19 @@ small_business_icon: LayoutElement = Image(
 )
 
 
-def hex_to_rgb(value: str):
+def hex_to_rgb(value):
     """Return (red, green, blue) for the color given as #rrggbb."""
     value = value.lstrip("#")
     lv = len(value)
     return tuple(int(value[i: i + lv // 3], 16) for i in range(0, lv, lv // 3))
 
 
-def rgb_to_hex(red: int, green: int, blue: int):
+def rgb_to_hex(red, green, blue):
     """Return color as #rrggbb for the given color values."""
     return "#%02x%02x%02x" % (red, green, blue)
 
 
-def shade_color(color, factor: int):
+def shade_color(color, factor):
     """
     Retourne la couleur rgb assombri ou éclaircir
     """
@@ -141,14 +145,14 @@ def shade_color(color, factor: int):
     return shaded_color
 
 
-def pdf_header(receipt: Union[Invoice, Estimate], id: int):
+def pdf_header(receipt):
     """
     Construction de l'entête du pdf
     """
     # Initialisation d'une table avec des colones flexibles
     table = FlexibleColumnWidthTable(number_of_rows=2, number_of_columns=4)
     ### Première ligne
-    #Insertion du logo si il existe
+    # Insertion du logo si il existe
     if(receipt.user.logo):
         table.add(TableCell(   
         Image(        
@@ -165,29 +169,29 @@ def pdf_header(receipt: Union[Invoice, Estimate], id: int):
     if isinstance(receipt, Invoice):
         table.add(
             Paragraph(
-                "Facture", font="Helvetica-Bold", horizontal_alignment=Alignment.LEFT
+                i18n.t('pdf.invoice'), font="Helvetica-Bold", horizontal_alignment=Alignment.LEFT
             )
         )
 
     elif isinstance(receipt, Estimate):
         table.add(
             Paragraph(
-                f"Devis", font="Helvetica-Bold", horizontal_alignment=Alignment.LEFT
+                i18n.t('pdf.estimate'), font="Helvetica-Bold", horizontal_alignment=Alignment.LEFT
             )
         )
 
-    table.add(Paragraph(f" # {id}", respect_spaces_in_text=True))
+    table.add(Paragraph(f" {i18n.t('pdf.number')}{receipt.id_}", respect_spaces_in_text=True))
     ### Deuxième Ligne
     table.add(Paragraph(" "))
     table.add(
-        Paragraph("Date", font="Helvetica-Bold", horizontal_alignment=Alignment.LEFT)
+        Paragraph(i18n.t('pdf.date'), font="Helvetica-Bold", horizontal_alignment=Alignment.LEFT)
     )
     table.add(Paragraph(f" {receipt.date_string()}", respect_spaces_in_text=True))
     table.no_borders()
     return table
 
 
-def pdf_provider_client(receipt: Union[Estimate, Invoice]):
+def pdf_provider_client(receipt):
     """
     Retourne une table liée aux informations du prestataire et du client
     """
@@ -200,11 +204,13 @@ def pdf_provider_client(receipt: Union[Estimate, Invoice]):
     )
 
     table.add(
-        Paragraph("De ", font="Helvetica-Bold", horizontal_alignment=Alignment.LEFT)
+        Paragraph(f"{i18n.t('pdf.from')} ", font="Helvetica-Bold",
+                  horizontal_alignment=Alignment.LEFT)
     )
     table.add(Paragraph(" ", padding_left=Decimal(240)))
     table.add(
-        Paragraph("A ", font="Helvetica-Bold", horizontal_alignment=Alignment.RIGHT)
+        Paragraph(f"{i18n.t('pdf.to')} ", font="Helvetica-Bold",
+                  horizontal_alignment=Alignment.RIGHT)
     )
     table.add(Paragraph(" "))
 
@@ -217,7 +223,7 @@ def pdf_provider_client(receipt: Union[Estimate, Invoice]):
     provider_icon_list = [business_icon, email_icon, mail_icon, phone_icon, person_icon]
     # Numero SIREN de l'artisan
     business_number_table.add(
-        Paragraph("N°SIREN", font="Helvetica-Bold", horizontal_alignment=Alignment.LEFT)
+        Paragraph(i18n.t('pdf.siren'), font="Helvetica-Bold", horizontal_alignment=Alignment.LEFT)
     )
     business_number_table.add(
         Paragraph(provider_list[-1], horizontal_alignment=Alignment.RIGHT)
@@ -281,7 +287,7 @@ def provider_company_table(
     # Comme toutes les colones d'un tableu doivent être de même
     # taille on fait un 2ème tableu pour le numero SIREN
     business_number_table.add(
-        Paragraph("N°SIREN", font="Helvetica-Bold", horizontal_alignment=Alignment.LEFT)
+        Paragraph(i18n.t('pdf.siren'), font="Helvetica-Bold", horizontal_alignment=Alignment.LEFT)
     )
     business_number_table.add(Paragraph(client_list[-1], padding_left=Decimal(2)))
     return table, business_number_table
@@ -337,7 +343,7 @@ def provider_individual_table(
 
         return table, business_number_table
 
-def pdf_provider_inline(receipt: Union[Invoice, Estimate]):
+def pdf_provider_inline(receipt):
     """
     Retourne une table avec les informations liées à l'utilisateur
     en ligne
@@ -358,7 +364,7 @@ def pdf_provider_inline(receipt: Union[Invoice, Estimate]):
         table_01.add(dot_icon)
 
     table_01.add(small_mail_icon)
-    table_01.add(Paragraph(artisan.adress, font_size=Decimal(8)))
+    table_01.add(Paragraph(artisan.address, font_size=Decimal(8)))
     table_01.add(dot_icon)
     table_01.add(small_phone_icon)
     table_01.add(Paragraph(artisan.phone_number, font_size=Decimal(8)))
@@ -374,7 +380,7 @@ def pdf_provider_inline(receipt: Union[Invoice, Estimate]):
     table_01.add(dot_icon)
     table_01.add(
         Paragraph(
-            "N°SIREN",
+            i18n.t('pdf.siren'),
             font="Helvetica-Bold",
             font_size=Decimal(8),
             horizontal_alignment=Alignment.LEFT,
@@ -388,7 +394,7 @@ def pdf_provider_inline(receipt: Union[Invoice, Estimate]):
     return table_01
 
 
-def pdf_company_inline(receipt: Union[Invoice, Estimate]):
+def pdf_company_inline(receipt):
     """
     Retourne une table avec les informations liées à un client moral
     en ligne
@@ -403,7 +409,7 @@ def pdf_company_inline(receipt: Union[Invoice, Estimate]):
     table_01.add(Paragraph(client.email, font_size=Decimal(8)))
     table_01.add(dot_icon)
     table_01.add(small_mail_icon)
-    table_01.add(Paragraph(client.adress, font_size=Decimal(8)))
+    table_01.add(Paragraph(client.address, font_size=Decimal(8)))
     table_01.add(dot_icon)
     table_01.add(small_phone_icon)
     table_01.add(Paragraph(client.phone_number, font_size=Decimal(8)))
@@ -415,7 +421,7 @@ def pdf_company_inline(receipt: Union[Invoice, Estimate]):
     table_01.add(dot_icon)
     table_01.add(
         Paragraph(
-            "N°SIREN",
+            i18n.t('pdf.siren'),
             font="Helvetica-Bold",
             font_size=Decimal(8),
             horizontal_alignment=Alignment.LEFT,
@@ -428,7 +434,7 @@ def pdf_company_inline(receipt: Union[Invoice, Estimate]):
     return table_01
 
 
-def pdf_individual_inline(receipt: Union[Invoice, Estimate]):
+def pdf_individual_inline(receipt):
     """
     Retourne une table avec les informations liées à un client moral
     en ligne
@@ -465,7 +471,7 @@ def pdf_individual_inline(receipt: Union[Invoice, Estimate]):
     return table_01
 
 
-def pdf_client_inline(receipt: Union[Invoice, Estimate]):
+def pdf_client_inline(receipt):
     """
     Retourne une table avec les informations liées à un client
     """
@@ -476,7 +482,7 @@ def pdf_client_inline(receipt: Union[Invoice, Estimate]):
         return pdf_individual_inline(receipt)
 
 
-def pdf_articles_total(receipt: Union[Invoice, Estimate], currency: str, color: str):
+def pdf_articles_total(receipt, currency, color):
     """
     Construit la listes des articles et des taxes
     """
@@ -509,7 +515,12 @@ def pdf_articles_total(receipt: Union[Invoice, Estimate], currency: str, color: 
     else:
         table_array = [Table(number_of_rows=rows_nb, number_of_columns=4)]
 
-    for h in ["DESCRIPTION", "QUANTITÉ", "PRIX UNITAIRE", "TOTAL"]:
+    for h in [
+            i18n.t('pdf.description').upper(),
+            i18n.t('pdf.quantity').upper(),
+            i18n.t('pdf.unit_price').upper(),
+            i18n.t('pdf.total').upper()
+    ]:
         table_array[0].add(
             TableCell(
                 Paragraph(h, font_color=HexColor("ffffff")),
@@ -623,7 +634,7 @@ def pdf_articles_total(receipt: Union[Invoice, Estimate], currency: str, color: 
     table_array[-1].add(
         TableCell(
             Paragraph(
-                "Sous-total",
+                i18n.t('pdf.subtotal'),
                 font="Helvetica-Bold",
                 horizontal_alignment=Alignment.RIGHT,
             ),
@@ -649,7 +660,7 @@ def pdf_articles_total(receipt: Union[Invoice, Estimate], currency: str, color: 
     return table_array
 
 
-def pdf_invoice_total(table: Table, receipt: Invoice, currency: str):
+def pdf_invoice_total(table: Table, receipt: Invoice, currency):
     """
     Construit la partie liée aux calcul des totaux pour les factures
     """
@@ -657,7 +668,7 @@ def pdf_invoice_total(table: Table, receipt: Invoice, currency: str):
     table.add(
         TableCell(
             Paragraph(
-                "Acomptes",
+                i18n.t('pdf.deposit'),
                 font="Helvetica-Bold",
                 horizontal_alignment=Alignment.RIGHT,
             ),
@@ -677,7 +688,7 @@ def pdf_invoice_total(table: Table, receipt: Invoice, currency: str):
     table.add(
         TableCell(
             Paragraph(
-                f"Taxes ({receipt.taxes*100}%)",
+                f"{i18n.t('pdf.tax')} ({receipt.taxes*100}%)",
                 font="Helvetica-Bold",
                 horizontal_alignment=Alignment.RIGHT,
             ),
@@ -696,7 +707,7 @@ def pdf_invoice_total(table: Table, receipt: Invoice, currency: str):
     table.add(
         TableCell(
             Paragraph(
-                "Total", font="Helvetica-Bold", horizontal_alignment=Alignment.RIGHT
+                i18n.t('pdf.total'), font="Helvetica-Bold", horizontal_alignment=Alignment.RIGHT
             ),
             col_span=3,
         )
@@ -712,7 +723,7 @@ def pdf_invoice_total(table: Table, receipt: Invoice, currency: str):
     return table
 
 
-def pdf_estimate_total(table: Table, receipt: Estimate, currency: str):
+def pdf_estimate_total(table: Table, receipt: Estimate, currency):
     """
     Construit la partie liée aux taxes pour les factures
     """
@@ -720,7 +731,7 @@ def pdf_estimate_total(table: Table, receipt: Estimate, currency: str):
     table.add(
         TableCell(
             Paragraph(
-                f"Taxes ({receipt.taxes*100}%)",
+                f"{i18n.t('pdf.tax')} ({receipt.taxes*100}%)",
                 font="Helvetica-Bold",
                 horizontal_alignment=Alignment.RIGHT,
             ),
@@ -755,7 +766,7 @@ def pdf_estimate_total(table: Table, receipt: Estimate, currency: str):
     return table
 
 
-def pdf_advance_table(receipt: Invoice, currency: str, color: str):
+def pdf_advance_table(receipt: Invoice, currency, color):
     """
     Construit la table des acomptes pour les pdf
     """
@@ -778,7 +789,11 @@ def pdf_advance_table(receipt: Invoice, currency: str, color: str):
     else:
         table_array = [Table(number_of_rows=nb_of_rows, number_of_columns=3)]
     # Entete
-    for h in ["ACOMPTE", "DATE", "MONTANT"]:
+    for h in [
+            i18n.t('pdf.deposit').upper(),
+            i18n.t('pdf.date').upper(),
+            i18n.t('pdf.amount').upper(),
+    ]:
         table_array[0].add(
             TableCell(
                 Paragraph(h, font_color=HexColor("ffffff")),
@@ -789,7 +804,9 @@ def pdf_advance_table(receipt: Invoice, currency: str, color: str):
     # Tableau intermediaires
     for i in range(len(table_array) - 1):
         for j in range(10):
-            table_array[i].add(TableCell(Paragraph(f"Acomptes n°{cpt_adv+1}")))
+            table_array[i].add(TableCell(
+                Paragraph(f"{i18n.t('pdf.deposit')} {i18n.t('pdf.number')}{cpt_adv+1}")
+            ))
             table_array[i].add(
                 TableCell(Paragraph(f"{adv_tab[cpt_adv].date_string()}"))
             )
@@ -803,7 +820,9 @@ def pdf_advance_table(receipt: Invoice, currency: str, color: str):
     left_adv = nb_of_advances - cpt_adv
     # Derniere table
     while left_adv > 0:
-        table_array[-1].add(TableCell(Paragraph(f"Acomptes n°{cpt_adv+1}")))
+        table_array[-1].add(TableCell(
+            Paragraph(f"{i18n.t('pdf.deposit')} {i18n.t('pdf.number')}{cpt_adv+1}")
+        ))
         table_array[-1].add(TableCell(Paragraph(f"{adv_tab[cpt_adv].date_string()}")))
         table_array[-1].add(
             TableCell(Paragraph(f"{adv_tab[cpt_adv].amount} {currency}"))
@@ -814,7 +833,8 @@ def pdf_advance_table(receipt: Invoice, currency: str, color: str):
     table_array[-1].add(
         TableCell(
             Paragraph(
-                "Total", font="Helvetica-Bold", horizontal_alignment=Alignment.RIGHT
+                i18n.t('pdf.total'), font="Helvetica-Bold",
+                horizontal_alignment=Alignment.RIGHT
             ),
             col_span=2,
         )
@@ -834,14 +854,13 @@ def pdf_advance_table(receipt: Invoice, currency: str, color: str):
 
 
 def build_pdf(
-    receipt: Union[Invoice, Estimate],
-    id: int,
-    path: str = "output.pdf",
-    color: str = "5f5f5f",
-    currency: str = "€",
-    inline: bool = False,
-    prominent_article_table: bool = False,
-    show_advances_table: bool = False,
+    receipt,
+    path="output.pdf",
+    color="5f5f5f",
+    currency="€",
+    inline=False,
+    prominent_article_table=False,
+    show_advances_table=False,
 ):
     """
     Fonction d'assemblage du pdf
@@ -858,7 +877,7 @@ def build_pdf(
     # page_layout.vertical_margin = page.get_page_info().get_height() \
     # * Decimal(0.02)
     # Construction de l'entête
-    layout_array[-1].add(pdf_header(receipt, id))
+    layout_array[-1].add(pdf_header(receipt))
 
     if prominent_article_table:
         # Tableaux des articles et des taxes
@@ -874,16 +893,17 @@ def build_pdf(
     # Informations du prestatire et du client
     if inline:
         layout_array[-1].add(
-            Paragraph("Prestataire", font="Helvetica-Bold", font_size=Decimal(8))
+            Paragraph(i18n.t('pdf.contractor'), font="Helvetica-Bold", font_size=Decimal(8))
         )
         layout_array[-1].add(pdf_provider_inline(receipt))
         layout_array[-1].add(
-            Paragraph("Client", font="Helvetica-Bold", font_size=Decimal(8))
+            Paragraph(i18n.t('pdf.client'), font="Helvetica-Bold", font_size=Decimal(8))
         )
         layout_array[-1].add(pdf_client_inline(receipt))
 
     else:
         tb1, tb2 = pdf_provider_client(receipt)
+        print(layout_array)
         layout_array[-1].add(tb1)
         layout_array[-1].add(tb2)
 
@@ -930,6 +950,7 @@ if __name__ == "__main__":
         first_name="Tom",
         last_name="Pommier",
         email="facturio@gmail.com",
+        logo="logo.jpg"
     )
 
     client_physique = Client(
@@ -986,7 +1007,8 @@ if __name__ == "__main__":
         taxes=0.2,
         note="Invoice de matériel informatiques",
         date=1230,
-        amount=100,
+        balance=100,
+        id_=1
     )
     dev = Estimate(
         user=artisan,
@@ -994,7 +1016,8 @@ if __name__ == "__main__":
         articles_list=articles,
         taxes=0,
         note="Invoice de matériel informatiques",
+        id_=2
     )
 
-    build_pdf(dev, 27, "exemple_devis.pdf")
-    build_pdf(fact, 490, "exemple_facture", color="#de260d", show_advances_table=True)
+    build_pdf(dev, "exemple_devis.pdf")
+    build_pdf(fact,"exemple_facture", color="#de260d", show_advances_table=True)
