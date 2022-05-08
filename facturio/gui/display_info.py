@@ -94,7 +94,7 @@ class InfoPerson (PageGui):
         if att_usr==[]:
             att_usr=[["","","","",
                       "","","",""]]
-        self.imp = Gtk.Button(label="Modifier")
+        self.imp = Gtk.Button(label=i18n.t('gui.edit'))
         self.cent.attach(self.imp, 6, 12, 3, 1)
         self.imp.connect("clicked", self.header_bar.active_button, "modify_usr")
         att_usr=att_usr[0]
