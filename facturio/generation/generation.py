@@ -7,35 +7,35 @@ from facturio.classes.invoice_misc import Advance, Article, Invoice, \
 from facturio.classes.client import Company, Client
 from facturio.classes.user import User
 
-def random_firstname()->str:
+def random_firstname():
     """
     Return a random first name from a list
     """
     with open("generation/datasets/firstnames.txt","r") as f:
         return choice([n[:-1] for n in f.readlines()])
 
-def random_lastname()->str:
+def random_lastname():
     """
     Return a random last name from a list
     """
     with open("generation/datasets/lastnames.txt","r") as f:
         return choice([n[:-1] for n in f.readlines()])
 
-def random_address()->str:
+def random_address():
     """
     Return a random address from a list
     """
     with open("generation/datasets/adress.txt","r") as f:
         return choice([n[:-1] for n in f.readlines()])
 
-def random_companyname()->str:
+def random_companyname():
     """
     Return a random address from a list
     """
     with open("generation/datasets/companynames.txt","r") as f:
         return choice([n[:-1] for n in f.readlines()])
 
-def random_date()->int:
+def random_date():
     """
     Return a random date in Unix format
     """
@@ -43,7 +43,7 @@ def random_date()->int:
         return int(choice([n[:-1] for n in f.readlines()]))
 
 
-def create_random_articles(nb_articles: int):
+def create_random_articles(nb_articles):
     """
     Return an array of articles
     """
@@ -55,7 +55,7 @@ def create_random_articles(nb_articles: int):
             float(article_list[i][2]), int(article_list[i][1]),"blank description")
         return article_list
 
-def create_random_advances(nb_advances: int):
+def create_random_advances(nb_advances):
     """
     Return an array of advances
     """
@@ -68,7 +68,7 @@ def create_random_advances(nb_advances: int):
         return advance_list
 
 
-def create_random_phone_number() ->str:
+def create_random_phone_number():
     """
     Create randomly a phone number
     """
@@ -77,7 +77,7 @@ def create_random_phone_number() ->str:
         phone_number += str(randint(0,9))
     return phone_number
 
-def create_random_email_address(firstname: str, lastname: str) -> str:
+def create_random_email_address(firstname, lastname):
     """
     Create a mail address from a firstname and last name:
     """
@@ -85,7 +85,7 @@ def create_random_email_address(firstname: str, lastname: str) -> str:
     extension = ["fr", "us", "uk", "gr", "jp"]
     return f"{firstname}.{lastname}@.{choice(domain)}.{choice(extension)}"
 
-def create_random_business_number() -> str:
+def create_random_business_number():
     """
     Create randomly a business number
     """
@@ -94,7 +94,7 @@ def create_random_business_number() -> str:
         business_number += str(randint(0, 9))
     return business_number
 
-def create_random_client(is_company: bool = True):
+def create_random_client(is_company=True):
     """
     Return a random client
     """

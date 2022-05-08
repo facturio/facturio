@@ -30,35 +30,35 @@ from facturio.classes.user import User
 data_dir = Path(__path__[0])
 
 # Layout Element pour l'insertion d'icônes dans le pdf
-mail_icon: LayoutElement = Image(
+mail_icon = Image(
     image=Path(data_dir / "data/icons/mail.png"),
     width=Decimal(10),
     height=Decimal(10),
     padding_top=Decimal(5),
     padding_left=Decimal(3),
 )
-email_icon: LayoutElement = Image(
+email_icon = Image(
     image=Path(data_dir / "data/icons/email.png"),
     width=Decimal(10),
     height=Decimal(10),
     padding_top=Decimal(5),
     padding_left=Decimal(3),
 )
-phone_icon: LayoutElement = Image(
+phone_icon = Image(
     image=Path(data_dir / "data/icons/phone.png"),
     width=Decimal(10),
     height=Decimal(10),
     padding_top=Decimal(5),
     padding_left=Decimal(3),
 )
-business_icon: LayoutElement = Image(
+business_icon = Image(
     image=Path(data_dir / "data/icons/business.png"),
     width=Decimal(10),
     height=Decimal(10),
     padding_top=Decimal(5),
     padding_left=Decimal(3),
 )
-person_icon: LayoutElement = Image(
+person_icon = Image(
     image=Path(data_dir / "data/icons/person.png"),
     width=Decimal(10),
     height=Decimal(10),
@@ -66,7 +66,7 @@ person_icon: LayoutElement = Image(
     padding_left=Decimal(3),
 )
 
-dot_icon: LayoutElement = Image(
+dot_icon = Image(
     image=Path(data_dir / "data/icons/dot.png"),
     width=Decimal(3),
     height=Decimal(3),
@@ -75,7 +75,7 @@ dot_icon: LayoutElement = Image(
 )
 
 
-small_phone_icon: LayoutElement = Image(
+small_phone_icon = Image(
     image=Path(data_dir / "data/icons/phone.png"),
     width=Decimal(7),
     height=Decimal(7),
@@ -83,14 +83,14 @@ small_phone_icon: LayoutElement = Image(
     padding_left=Decimal(3),
 )
 
-small_mail_icon: LayoutElement = Image(
+small_mail_icon = Image(
     image=Path(data_dir / "data/icons/mail.png"),
     width=Decimal(7),
     height=Decimal(7),
     padding_top=Decimal(3),
     padding_left=Decimal(3),
 )
-small_email_icon: LayoutElement = Image(
+small_email_icon = Image(
     image=Path(data_dir / "data/icons/email.png"),
     width=Decimal(7),
     height=Decimal(7),
@@ -98,7 +98,7 @@ small_email_icon: LayoutElement = Image(
     padding_left=Decimal(3),
 )
 
-small_person_icon: LayoutElement = Image(
+small_person_icon = Image(
     image=Path(data_dir / "data/icons/person.png"),
     width=Decimal(7),
     height=Decimal(7),
@@ -106,7 +106,7 @@ small_person_icon: LayoutElement = Image(
     padding_left=Decimal(3),
 )
 
-small_business_icon: LayoutElement = Image(
+small_business_icon = Image(
     image=Path(data_dir / "data/icons/business.png"),
     width=Decimal(7),
     height=Decimal(7),
@@ -115,19 +115,19 @@ small_business_icon: LayoutElement = Image(
 )
 
 
-def hex_to_rgb(value: str):
+def hex_to_rgb(value):
     """Return (red, green, blue) for the color given as #rrggbb."""
     value = value.lstrip("#")
     lv = len(value)
     return tuple(int(value[i: i + lv // 3], 16) for i in range(0, lv, lv // 3))
 
 
-def rgb_to_hex(red: int, green: int, blue: int):
+def rgb_to_hex(red, green, blue):
     """Return color as #rrggbb for the given color values."""
     return "#%02x%02x%02x" % (red, green, blue)
 
 
-def shade_color(color: tuple[int, int, int], factor: int):
+def shade_color(color, factor):
     """
     Retourne la couleur rgb assombri ou éclaircir
     """
@@ -142,7 +142,7 @@ def shade_color(color: tuple[int, int, int], factor: int):
     return shaded_color
 
 
-def pdf_header(receipt: Union[Invoice, Estimate], id: int):
+def pdf_header(receipt, id):
     """
     Construction de l'entête du pdf
     """
@@ -188,7 +188,7 @@ def pdf_header(receipt: Union[Invoice, Estimate], id: int):
     return table
 
 
-def pdf_provider_client(receipt: Union[Estimate, Invoice]):
+def pdf_provider_client(receipt):
     """
     Retourne une table liée aux informations du prestataire et du client
     """
@@ -341,7 +341,7 @@ def provider_individual_table(
 
         return table, business_number_table
 
-def pdf_provider_inline(receipt: Union[Invoice, Estimate]):
+def pdf_provider_inline(receipt):
     """
     Retourne une table avec les informations liées à l'utilisateur
     en ligne
@@ -392,7 +392,7 @@ def pdf_provider_inline(receipt: Union[Invoice, Estimate]):
     return table_01
 
 
-def pdf_company_inline(receipt: Union[Invoice, Estimate]):
+def pdf_company_inline(receipt):
     """
     Retourne une table avec les informations liées à un client moral
     en ligne
@@ -432,7 +432,7 @@ def pdf_company_inline(receipt: Union[Invoice, Estimate]):
     return table_01
 
 
-def pdf_individual_inline(receipt: Union[Invoice, Estimate]):
+def pdf_individual_inline(receipt):
     """
     Retourne une table avec les informations liées à un client moral
     en ligne
@@ -469,7 +469,7 @@ def pdf_individual_inline(receipt: Union[Invoice, Estimate]):
     return table_01
 
 
-def pdf_client_inline(receipt: Union[Invoice, Estimate]):
+def pdf_client_inline(receipt):
     """
     Retourne une table avec les informations liées à un client
     """
@@ -480,7 +480,7 @@ def pdf_client_inline(receipt: Union[Invoice, Estimate]):
         return pdf_individual_inline(receipt)
 
 
-def pdf_articles_total(receipt: Union[Invoice, Estimate], currency: str, color: str):
+def pdf_articles_total(receipt, currency, color):
     """
     Construit la listes des articles et des taxes
     """
@@ -642,7 +642,7 @@ def pdf_articles_total(receipt: Union[Invoice, Estimate], currency: str, color: 
     return table_array
 
 
-def pdf_invoice_total(table: Table, receipt: Invoice, currency: str):
+def pdf_invoice_total(table: Table, receipt: Invoice, currency):
     """
     Construit la partie liée aux calcul des totaux pour les factures
     """
@@ -705,7 +705,7 @@ def pdf_invoice_total(table: Table, receipt: Invoice, currency: str):
     return table
 
 
-def pdf_estimate_total(table: Table, receipt: Estimate, currency: str):
+def pdf_estimate_total(table: Table, receipt: Estimate, currency):
     """
     Construit la partie liée aux taxes pour les factures
     """
@@ -748,7 +748,7 @@ def pdf_estimate_total(table: Table, receipt: Estimate, currency: str):
     return table
 
 
-def pdf_advance_table(receipt: Invoice, currency: str, color: str):
+def pdf_advance_table(receipt: Invoice, currency, color):
     """
     Construit la table des acomptes pour les pdf
     """
@@ -836,13 +836,13 @@ def pdf_advance_table(receipt: Invoice, currency: str, color: str):
 
 
 def build_pdf(
-    receipt: Union[Invoice, Estimate],
-    path: str = "output.pdf",
-    color: str = "5f5f5f",
-    currency: str = "€",
-    inline: bool = False,
-    prominent_article_table: bool = False,
-    show_advances_table: bool = False,
+    receipt,
+    path="output.pdf",
+    color="5f5f5f",
+    currency="€",
+    inline=False,
+    prominent_article_table=False,
+    show_advances_table=False,
 ):
     """
     Fonction d'assemblage du pdf

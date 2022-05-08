@@ -8,9 +8,9 @@ class Article:
     Classe contenant toutes les informations liées à un article
     """
 
-    def __init__(self, title: str,  price: float, quantity: int = 1,
-                 description: str = None, id_: int = None,
-                 id_receipt: int = None):
+    def __init__(self, title,  price, quantity,
+                 description=None, id_=None,
+                 id_receipt=None):
         self.title = title
         self.price = price
         self.quantity = quantity
@@ -43,10 +43,10 @@ class Advance:
     """Classe contenant toutes les informations liées à un devis."""
 
     def __init__(self,
-                 amount: float,
-                 date: int = None,
-                 id_: int = None,
-                 id_invoice: int = None):
+                 amount,
+                 date=None,
+                 id_=None,
+                 id_invoice=None):
         self.amount = amount
         self.id_ = id_
         self.id_invoice = id_invoice
@@ -82,14 +82,14 @@ class Receipt:
     factures et devis
     """
     def __init__(self,
-                 user: User,
-                 client: Union[Client, Company],
-                 articles_list: list[Article],
-                 date: int,
-                 taxes: float,
-                 balance: float,
-                 note: str = None,
-                 id_: int = None):
+                 user,
+                 client,
+                 articles_list,
+                 date,
+                 taxes,
+                 balance,
+                 note,
+                 id_=None):
         self.user = user
         self.client = client
         self.articles_list = articles_list
@@ -152,15 +152,15 @@ class Invoice(Receipt):
         Classe contenant toutes les informations liées aux factures
     """
     def __init__(self,
-                 user: User,
-                 client: Union[Client, Company],
-                 articles_list: list[Article],
-                 date: int,
-                 taxes: float,
-                 balance: float,
-                 advances_list: list[Advance] = [],
-                 note: str = None,
-                 id_: int = None):
+                 user,
+                 client,
+                 articles_list,
+                 date,
+                 taxes,
+                 balance,
+                 advances_list=[],
+                 note=None,
+                 id_=None):
         super().__init__(user, client, articles_list, date, taxes, balance,
                          note)
         self.advances_list = advances_list
@@ -204,14 +204,8 @@ class Estimate(Receipt):
         devis.
     """
     def __init__(
-        self,
-        user: User,
-        client: Union[Client, Company],
-        articles_list: list[(Article, int)],
-        date: int = None,
-        balance: float = None,
-        taxes: float = None,
-        note: str = None,
+        self, user, client, articles_list,
+        date=None, balance=None, taxes=None, note=None,
     ):
 
         super().__init__(user, client, articles_list, date, taxes, balance,
