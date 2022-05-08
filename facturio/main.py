@@ -8,6 +8,7 @@ from facturio.gui.customer import Customer
 from facturio.gui.add_customer import Add_Customer
 from facturio.gui.modify_usr import ModifyUsr
 from facturio.gui.history import History
+from facturio.gui.showinvoice import ShowInvoicePage
 from facturio.gui.map import Map
 from facturio.gui.display_info import InfoPerson
 from facturio.db.dbmanager import DBManager
@@ -57,6 +58,8 @@ class Window(Gtk.ApplicationWindow):
         self.stack.add_named(self.create_invoice_page, "create_invoice_page")
         self.estimate_page = EstimatePage()
         self.stack.add_named(self.estimate_page, "estimate_page")
+        self.show_invoice_page = ShowInvoicePage.get_instance()
+        self.stack.add_named(self.show_invoice_page, "show_invoice_page")
         self.add_customer = Add_Customer()
         self.stack.add_named(self.add_customer, "add_customer")
         self.modify_usr = ModifyUsr()

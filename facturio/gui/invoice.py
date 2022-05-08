@@ -6,7 +6,8 @@ import i18n
 from facturio.classes.client import Company, Client
 from facturio.classes.user import User
 from facturio.classes.invoice_misc import Article, Invoice, Estimate
-from facturio.gui.home import HeaderBarSwitcher
+from facturio.gui.headerbar import HeaderBarSwitcher
+from facturio.gui.showinvoice import ShowInvoicePage
 from facturio.build_pdf.build_pdf import build_pdf
 from facturio.gui.autocompletion import FacturioEntryCompletion
 from facturio.db.invoicedao import InvoiceDAO
@@ -44,6 +45,7 @@ class InvoicePage(Gtk.ScrolledWindow):
         export_btn = Gtk.Button(label=i18n.t('gui.export_to_pdf'))
         export_btn.connect("clicked", self._gen_invoice)
         add_advance_btn = Gtk.Button(label=i18n.t('gui.add_deposit'))
+        add_advance_btn.connect("clicked", self.load_and_switch)
         self.delete_btn = Gtk.Button(label=i18n.t('gui.delete'))
         self.show_style = Gtk.ToggleButton(label=i18n.t("gui.pdf_style"))
         self._init_style_settings()
@@ -99,6 +101,17 @@ class InvoicePage(Gtk.ScrolledWindow):
         main_grid.attach(self.style_grid, 4, 4, 1, 1)
 
         self.add(main_grid)
+    def load_and_switch(self, *args):
+        model, sel_iter = self.treeview.get_selection().get_selected()
+        id_ = model[sel_iter][-1]
+        inv_dao = InvoiceDAO.get_instance()
+        invoice = inv_dao.get_with_id(id_)
+        print(invoice)
+        show_inv = ShowInvoicePage.get_instance()
+        print(show_inv)
+        show_inv.load_receipt(invoice)
+        self.hb.switch_page(page="show_invoice_page")
+
 
     def show_hide_style_settings(self, *args):
         """Affiche ou cache la grid des styles."""
@@ -621,10 +634,12 @@ class CreateInvoicePage(Gtk.ScrolledWindow):
             if not char.isdigit() and char != " " and char != "-":
                 GObject.signal_stop_emission_by_name(entry,"insert-text")
 
+
     def allow_only_digits(self, entry, string, *args):
         for char in string:
             if not char.isdigit():
                 GObject.signal_stop_emission_by_name(entry,"insert-text")
+
 
     def allow_only_float(self, entry, string, *args):
         txt = entry.get_text()
@@ -636,7 +651,6 @@ class CreateInvoicePage(Gtk.ScrolledWindow):
                 if not char.isdigit():
                     GObject.signal_stop_emission_by_name(entry, "insert-text")
         return
-
 
 
     def _save_user(self, btn):
@@ -1158,7 +1172,7 @@ class CreateInvoicePage(Gtk.ScrolledWindow):
         """Ajoute un linge avec un button plus."""
         self.plus_btn_row = 5
         button = Gtk.Button.new_from_icon_name("list-add-symbolic",
-                                                    Gtk.IconSize.BUTTON)
+                                               Gtk.IconSize.BUTTON)
         self.article_grid.attach(button, 1, 5, 1, 1)
 
         button.connect("clicked", self._new_article)

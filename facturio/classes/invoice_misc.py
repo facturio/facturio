@@ -127,12 +127,12 @@ class Receipt:
         balance = 0
         for art in self.articles_list:
             balance += art.price * art.quantity
-        return round(balance,2)
+        return round(balance, 2)
     def total_of_taxes(self):
         """
         Calcul le total des taxes
         """
-        return self.subtotal()*self.taxes
+        return self.subtotal() * self.taxes
 
     def total_with_taxes(self):
         """

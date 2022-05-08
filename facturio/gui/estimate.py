@@ -5,11 +5,11 @@ from gi.repository import Gtk, GObject, Gdk
 import i18n
 from facturio.classes.client import Company, Client
 from facturio.classes.user import User
-from facturio.classes.invoice_misc import Article, Invoice, Estimate
+from facturio.classes.invoice_misc import Article, Estimate
 from facturio.gui.home import HeaderBarSwitcher
 from facturio.build_pdf.build_pdf import build_pdf
 from facturio.gui.autocompletion import FacturioEntryCompletion
-from facturio.db.invoicedao import InvoiceDAO
+from facturio.db.estimatedao import EstimateDAO
 from facturio.db.userdao import UserDAO
 from facturio import examples
 from datetime import datetime
@@ -27,29 +27,20 @@ class EstimatePage(Gtk.ScrolledWindow):
 
         header_bar = HeaderBarSwitcher.get_instance()
         self.hb = header_bar
-        hbox = Gtk.HBox()
-        self.paid_switch = Gtk.RadioButton(label=i18n.t('gui.paid'))
-        self.not_paid_switch = Gtk.RadioButton(group=self.paid_switch,
-                                               label=i18n.t('gui.unpaid'))
-        self.paid_switch.set_mode(False)
-        self.not_paid_switch.set_mode(False)
-        hbox.pack_start(self.paid_switch, True, True, 0)
-        hbox.pack_start(self.not_paid_switch, True, True, 0)
-        Gtk.StyleContext.add_class(hbox.get_style_context(), "linked")
 
         vbox = Gtk.VBox()
-        create_btn = Gtk.Button(label=i18n.t('gui.create_new_invoice'))
+        create_btn = Gtk.Button(label="Creer nouveau devis")
         create_btn.connect("clicked", self.switch_to_create_invoice)
         export_btn = Gtk.Button(label=i18n.t('gui.export_to_pdf'))
         export_btn.connect("clicked", self._gen_invoice)
-        add_advance_btn = Gtk.Button(label=i18n.t('gui.add_deposit'))
+        convert_invoice_btn = Gtk.Button(label="Convertir en facture")
         self.delete_btn = Gtk.Button(label=i18n.t('gui.delete'))
         self.show_style = Gtk.ToggleButton(label=i18n.t("gui.pdf_style"))
         self._init_style_settings()
         self.show_style.connect("clicked", self.show_hide_style_settings)
 
         vbox.pack_start(create_btn, True, True, 5)
-        vbox.pack_start(add_advance_btn, True, True, 5)
+        vbox.pack_start(convert_invoice_btn, True, True, 5)
         vbox.pack_start(self.delete_btn, True, True, 5)
         vbox.pack_start(export_btn, True, True, 5)
         vbox.pack_start(self.show_style, True, True, 5)
@@ -86,16 +77,15 @@ class EstimatePage(Gtk.ScrolledWindow):
         vspace.set_vexpand(True)
         main_grid.attach(vspace, 5, 1, 1, 1)
 
-        hbox.set_halign(Gtk.Align.START)
 
         search = Gtk.SearchEntry()
+        search.set_size_request(400, -1)
 
         main_grid.attach(search, 2, 1, 3, 1)
-        main_grid.attach(hbox, 2, 2, 1, 1)
 
-        main_grid.attach(self.treeview_scroll, 2, 3, 2, 9)
-        main_grid.attach(vbox, 4, 3, 1, 1)
-        main_grid.attach(self.style_grid, 4, 4, 1, 1)
+        main_grid.attach(self.treeview_scroll, 2, 2, 2, 10)
+        main_grid.attach(vbox, 4, 2, 1, 1)
+        main_grid.attach(self.style_grid, 4, 3, 1, 1)
 
         self.add(main_grid)
 
@@ -175,20 +165,20 @@ class EstimatePage(Gtk.ScrolledWindow):
 
     def refresh_store(self, *args):
         """Syncro avec la bd."""
-        inv_dao = InvoiceDAO.get_instance()
-        invoices = inv_dao.get_all()
+        estimate_dao = EstimateDAO.get_instance()
+        estimate = estimate_dao.get_all()
         self.store.clear()
-        for invoice in inv_dao.get_all():
-            iter_ = self.store.append([invoice.client.first_name,
-                                      invoice.client.last_name,
-                                      invoice.date_string(),
-                                      invoice.balance,
-                                      invoice.id_])
+        for estimate in estimate_dao.get_all():
+            self.store.append([estimate.client.first_name,
+                               estimate.client.last_name,
+                               estimate.date_string(),
+                               estimate.balance,
+                               estimate.id_])
 
     def _gen_invoice(self, btn):
         model, sel_iter = self.treeview.get_selection().get_selected()
         id_ = model[sel_iter][-1]
-        inv_dao = InvoiceDAO.get_instance()
+        inv_dao = EstimateDAO.get_instance()
         invoice = inv_dao.get_with_id(id_)
         color = self.color.get_rgba().to_string()
         color = self.str_rgb_to_hex(color)
