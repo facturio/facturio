@@ -1,6 +1,7 @@
 from facturio.classes.client import Company, Client
 from facturio.classes.user import User
 import time
+from typing import Union
 
 
 class Article:
