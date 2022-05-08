@@ -19,6 +19,7 @@ class DisplayClient (PageGui):
     +--------+
     """
     __instance = None
+    num_client=0
     entrys={}
     buttons={}
 
@@ -35,6 +36,7 @@ class DisplayClient (PageGui):
         print("inside")
         self.is_ut=is_ut
         self.num_client=int(num_client)
+        DisplayClient.num_client=int(num_client)
         self.header_bar = HeaderBarSwitcher.get_instance()
         super().__init__(*args, **kwargs)
         self.cent = Gtk.Grid(column_homogeneous=False,
@@ -79,13 +81,13 @@ class DisplayClient (PageGui):
                       "","","",""]]
         imp = Gtk.Button(label="Modifier")
         self.cent.attach(imp, 6, 10, 2, 1)
-        imp.connect("clicked", self.header_bar.active_button, "modify_usr")
+        imp.connect("clicked", self.header_bar.active_button, "modify_client")
         DisplayClient.buttons["Modifier"]=imp
 
 
         imp = Gtk.Button(label="Modifier")
         self.cent.attach(imp, 6, 4, 3, 3)
-        imp.connect("clicked", self.header_bar.active_button, "modify_usr")
+        imp.connect("clicked", self.header_bar.active_button, "modify_client")
         DisplayClient.buttons["ModifierClient"]=imp
 
         button = Gtk.Button(label="Supprimer")
@@ -150,7 +152,7 @@ class DisplayClient (PageGui):
 
         imp = Gtk.Button(label="Modifier")
         self.cent.attach(imp, 6, 10, 2, 1)
-        imp.connect("clicked", self.header_bar.active_button, "modify_usr")
+        imp.connect("clicked", self.header_bar.active_button, "modify_client")
         DisplayClient.buttons["Modifier"]=imp
 
         att_usr=att_usr[0]

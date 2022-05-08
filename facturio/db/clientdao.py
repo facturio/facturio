@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-from dbmanager import DBManager
+from facturio.db.dbmanager import DBManager
 from facturio.classes.client import Client
 import unittest
 
@@ -79,6 +79,8 @@ class ClientDAO:
 
     @staticmethod
     def _gen_client(tup):
+        if tup is None:
+            raise ValueError
         client = Client(first_name=tup[1],
                         last_name=tup[2],
                         email=tup[3],

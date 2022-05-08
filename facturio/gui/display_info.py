@@ -48,8 +48,6 @@ class DisplayUser (PageGui):
             self.update2user()
         if self.is_ut:
                 self.update2user()
-        else:
-                self.update2client()
 
 
     def __init_grid(self):
@@ -80,22 +78,9 @@ class DisplayUser (PageGui):
             att_usr=[["","","","",
                       "","","",""]]
         imp = Gtk.Button(label="Modifier")
-        self.cent.attach(imp, 6, 10, 2, 1)
-        imp.connect("clicked", self.header_bar.active_button, "modify_usr")
-        DisplayUser.buttons["Modifier"]=imp
-
-
-        imp = Gtk.Button(label="Modifier")
-        self.cent.attach(imp, 6, 4, 3, 3)
+        self.cent.attach(imp, 6, 9, 3, 2)
         imp.connect("clicked", self.header_bar.active_button, "modify_usr")
         DisplayUser.buttons["ModifierClient"]=imp
-
-        button = Gtk.Button(label="Supprimer")
-        button.connect("clicked", self.__delete_client, self.num_client)
-        self.cent.attach(button, 6, 7, 3, 3)
-        DisplayUser.buttons["Supprimer"]=imp
-
-
         att_usr=att_usr[0]
         self.__title(att_usr[1])
         self.first_name(att_usr[2])
@@ -272,21 +257,6 @@ class DisplayUser (PageGui):
         self.cent.attach(spacer,pos[0]+4,pos[1],1,1)
 
 
-    def update2client(self):
-        DisplayUser.buttons["Modifier"].hide()
-        attr_clt=self.__get_client()
-        if attr_clt is None:
-            raise ValueError
-        DisplayUser.entrys["Logo "].hide()
-        DisplayUser.entrys["Nom "].set_text(attr_clt[1])
-        DisplayUser.entrys["Prenom "].set_text(attr_clt[2])
-        DisplayUser.entrys["Adresse "].set_text(attr_clt[4])
-        DisplayUser.entrys["Numero "].set_text(str(attr_clt[5]))
-        DisplayUser.entrys["Mail "].set_text(str(attr_clt[3]))
-        DisplayUser.entrys["Siret "].set_text(str(attr_clt[6]))
-
-
-
     def siret(self,sir):
         self.__creat_labelbox(("Siret ",sir),(1,10,3,1))
         return self
@@ -299,8 +269,6 @@ class DisplayUser (PageGui):
         self.cent.attach(log, 6, 4, 3, 6 )
 
     def update2user(self):
-        DisplayUser.buttons["ModifierClient"].hide()
-        DisplayUser.buttons["Supprimer"].hide()
         att_usr=self.__get_user()
         if att_usr==[]:
             att_usr=[["","","","",

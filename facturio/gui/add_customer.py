@@ -75,14 +75,15 @@ class Add_Customer(PageGui):
             self.client_entries["Siret "].set_text("")
             if self.is_valid_for_db(self.info) and self.info[-1].isnumeric():
                 self.db.insertion_client_or_company(self.info, 1)
+                self.header_bar.switch_page(None,"home_page")
             else:
                 print("champs incorrect")
         else:
             if self.is_valid_for_db(self.info):
                 self.db.insertion_client_or_company(self.info, 0)
+                self.header_bar.switch_page(None,"home_page")
             else:
                 print("champs incorrect")
-            self.header_bar.switch_page(None,"home_page")
 
 
     def __swicth_client(self):

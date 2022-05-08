@@ -1,14 +1,17 @@
 #!/usr/bin/env python3
 import sqlite3
 import gi
+from facturio.gui import displayclient
 from facturio.gui.page_gui import PageGui
+from facturio.classes.client import Client
 from facturio.gui.home import HeaderBarSwitcher
-from facturio.db.db import Data_base
+from facturio.gui.displayclient import DisplayClient
+from facturio.db.clientdao import ClientDAO
 gi.require_version("Gtk", "3.0")
 from gi.repository import Gtk, Gdk, Gio, GdkPixbuf
 
 
-class ModifyUsr(PageGui):
+class ModifyClient(PageGui):
     """
     Classe IHM de le fenetre de la modification
     de l'utilisateur
@@ -16,34 +19,48 @@ class ModifyUsr(PageGui):
     | --     |
     | --  -- |
     +--------+
+    TODO set text
     """
+    __instance = None
+
+    @staticmethod
+    def get_instance():
+        """Renvoie le singleton."""
+        if ModifyClient.__instance is None:
+            ModifyClient.__instance = ModifyClient()
+        return ModifyClient.__instance
+
     def __init__(self):
-        self.list_att_par=["Entreprise ","Mail ","Adresse ",
-                           "Numero ","Siret "]
+        self.dao=ClientDAO.get_instance()
+        self.num_client=DisplayClient.num_client
         super().__init__()
         self.header_bar = HeaderBarSwitcher.get_instance()
         self.cent = Gtk.Grid(column_homogeneous=False,
                                   row_homogeneous=False, column_spacing=20,
                                   row_spacing=20)
-        self.attr_usr=self.__get_user()
-        if self.attr_usr==[]:
-            self.attr_usr=[["","","",
-                           "","","",""]]
-        self.path=self.attr_usr[0][1]
+        if self.num_client != 0:
+            print("putain")
+            self.attr_usr=self.__get_client()
+        else:
+            self.attr_usr=[""]
         self.client_entries={}
         self.client_label={}
         self.__init_grid()
-        self.title__("Modifier Utilisateur")
+        self.title__("Modifier Client")
         self.__space_info()
         self.utilisateur()
+        self.__swicth_client()
 
-    def __get_user(self):
+    def __get_client(self):
         """
         Recupere de la bd les info utilisateur
         et les retourne sous forme de liste
         """
-        list_client= self.db.selection_table("user")
-        return list_client
+        if self.num_client == 0:
+            return None
+        client = self.dao.get_with_id(self.num_client)
+        print("obj=",client)
+        return client
 
     def __init_grid(self):
         """
@@ -68,27 +85,47 @@ class ModifyUsr(PageGui):
         self.grid.attach(bttl, 1, 1, 3, 1 )
 
 
-    def __add2bd(self, button):
+    def __update_client(self, button):
         """
         Prend un boutton Gtk et un chemin vers la BD
         sqlite et insert les info client
         """
-        self.info=[]
-        if self.path == None:
-            print("pas de logo")
-            return None
-        print("avant path=",self.info)
-        self.info.append(self.path)
-        print("apres path=",self.info)
-        for i in self.list_att_par:
-            self.info.append(self.client_entries[i].get_text())
-        if self.is_usr_valid_for_db(self.info):
-            self.info.append("1")
-            print("info=",self.info)
-            self.db.update_user(self.info)
-            self.header_bar.switch_page(None,"home_page")
+        self.client=self.__entry2client()
+        print(self.client.dump_to_list())
+        if self.is_valid_for_db(self.client.dump_to_list()):
+            self.dao.update(self.client)
+            self.header_bar.switch_page(None,"customer_page")
         else:
             print("champs incorrect")
+
+
+    def __entry2client(self):
+        """
+        Prend le dictrionaire d'entry
+        et retourn une instance de client
+        """
+        res = Client(email=self.client_entries["Mail "].get_text(),
+                  address=self.client_entries["Adresse "].get_text(),
+                  phone_number=self.client_entries["Numero "].get_text(),
+                  first_name=self.client_entries["Prenom "].get_text(),
+                  last_name=self.client_entries["Nom "].get_text(),
+                  note=self.client_entries["Remarque "].get_text(),
+                  id_=self.num_client)
+        return res
+
+    def __swicth_client(self):
+        switch_box=Gtk.HBox()
+        pro = Gtk.RadioButton.new_with_label_from_widget(None, "Entreprise")
+        particulier = Gtk.RadioButton.new_from_widget(pro)
+        particulier.set_label("Particulier")
+        particulier.connect("toggled", self.on_button_toggled, "0")
+        pro.connect("toggled", self.on_button_toggled, "1")
+        switch_box.pack_start(particulier, True, True, 0)
+        switch_box.pack_start(pro, True, True, 0)
+        pro.set_mode(False)
+        particulier.set_mode(False)
+        Gtk.StyleContext.add_class(switch_box.get_style_context(), "linked")
+        self.cent.attach(switch_box, 0, 1, 1, 1)
 
 
     def on_button_toggled(self, button, pro):
@@ -111,23 +148,18 @@ class ModifyUsr(PageGui):
         """
         Affichage pour client
         """
-        self.logo_button = Gtk.Button.new_from_icon_name("image-x-generic-symbolic",
-                                                    Gtk.IconSize.BUTTON)
-        self.logo_button.set_label('+ Logo')
-        self.logo_button.set_always_show_image(True)
-        self.logo_button.set_hexpand(True)
-        self.cent.attach(self.logo_button, 4, 11, 2, 1)
-        self.logo_fn = None
-        self.logo_button.connect("clicked", self._logo_dialog)
         self.imp = Gtk.Button.new_with_label(label="Modifier")
-        self.imp.connect("clicked", self.__add2bd)
+        self.imp.connect("clicked", self.__update_client)
         self.grid.attach(self.cent, 1, 2, 2, 1)
         self.cent.attach(self.imp, 1, 16, 5, 1)
         self.adrss()
         self.mails()
+        self.last_name()
+        self.first_name()
         self.nums()
         self.entreprise_name()
         self.siret()
+        self.rmq()
 
 
     def __space_info(self):
@@ -158,7 +190,7 @@ class ModifyUsr(PageGui):
         self.cent.attach(label,*pos)
         self.entry = Gtk.Entry()
         self.entry.set_hexpand(True)
-        self.entry.set_text(str(self.attr_usr[0][ind]))
+        self.entry.set_text(str(self.attr_usr[0]))
         self.cent.attach(self.entry,pos[0]+1,pos[1],2,1)
         space = Gtk.Label()
         self.cent.attach(space,pos[0],pos[1]+1,3,1)
@@ -166,42 +198,35 @@ class ModifyUsr(PageGui):
 
 
     def adrss(self):
-        self.__creat_labelbox("Mail ",(3,5,1,1),3)
+        self.__creat_labelbox("Mail ",(3,8,1,1),3)
         return self
 
 
     def mails(self):
-        self.__creat_labelbox("Adresse ",(0,7,1,1),4)
+        self.__creat_labelbox("Adresse ",(0,10,1,1),4)
         return self
 
 
+    def first_name(self):
+        self.__creat_labelbox("Prenom ",(0,5,1,1),3)
+        return self
+
+    def last_name(self):
+        self.__creat_labelbox("Nom ",(3,5,1,1),2)
+        return self
+
     def nums(self):
-        self.__creat_labelbox("Numero ",(3,7,1,1),5)
+        self.__creat_labelbox("Numero ",(3,10,1,1),5)
         return self
 
 
     def entreprise_name(self):
-        self.__creat_labelbox("Entreprise ",(0,5,1,1),2)
+        self.__creat_labelbox("Entreprise ",(0,8,1,1),2)
         return self
-
-    def _logo_dialog(self, *args):
-        file_chooser = Gtk.FileChooserNative(title="Selectionnez une image",
-                                             accept_label="Selectionner",
-                                             cancel_label="Annuler")
-        filter_ = Gtk.FileFilter()
-        filter_.set_name("Images")
-        filter_.add_pattern("*.jpg")
-        filter_.add_pattern("*.png")
-        filter_.add_pattern("*.jpeg")
-        file_chooser.set_filter(filter_)
-        if file_chooser.run() == Gtk.ResponseType.ACCEPT:
-           self.path = file_chooser.get_filename()
-           self.logo_button.set_sensitive(False)
-           self.logo_button.set_label(" Ajouté")
 
 
     def siret(self):
-        self.__creat_labelbox("Siret ",(0,11,1,1),6)
+        self.__creat_labelbox("Siret ",(0,14,1,1),6)
         return self
 
 

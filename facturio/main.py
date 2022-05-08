@@ -7,6 +7,7 @@ from facturio.gui.displayclient import DisplayClient
 from facturio.gui.customer import Customer
 from facturio.gui.add_customer import Add_Customer
 from facturio.gui.modify_usr import ModifyUsr
+from facturio.gui.modify_client import ModifyClient
 from facturio.gui.display_info import DisplayUser
 from facturio.gui.history import History
 from facturio.gui.map import Map
@@ -58,6 +59,8 @@ class Window(Gtk.ApplicationWindow):
         self.stack.add_named(self.add_customer, "add_customer")
         self.modify_usr = ModifyUsr()
         self.stack.add_named(self.modify_usr, "modify_usr")
+        self.modify_client = ModifyClient.get_instance()
+        self.stack.add_named(self.modify_client, "modify_client")
         self.customer_page = Customer()
         self.stack.add_named(self.customer_page, "customer_page")
         self.history_page = History()
