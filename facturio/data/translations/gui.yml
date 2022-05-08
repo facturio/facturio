@@ -72,7 +72,7 @@ fr:
   columns: "Colonnes"
   edit_style: "Éditer le style"
   name: "Prénom"
-  surname: "Nom de famille"
+  surname: "Nom"
   date: "Date"
   balance_left: "Solde restant"
   refresh: "Rafraîchir"
