@@ -1,6 +1,7 @@
 import sys
 import i18n
 from facturio.gui.invoice import InvoicePage, CreateInvoicePage
+from facturio.gui.estimate import EstimatePage
 from facturio.gui.home import HomePage
 from facturio.gui.headerbar import HeaderBarSwitcher
 from facturio.gui.customer import Customer
@@ -54,6 +55,8 @@ class Window(Gtk.ApplicationWindow):
         self.stack.add_named(self.invoice_page, "invoice_page")
         self.create_invoice_page = CreateInvoicePage()
         self.stack.add_named(self.create_invoice_page, "create_invoice_page")
+        self.estimate_page = EstimatePage()
+        self.stack.add_named(self.estimate_page, "estimate_page")
         self.add_customer = Add_Customer()
         self.stack.add_named(self.add_customer, "add_customer")
         self.modify_usr = ModifyUsr()

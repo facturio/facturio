@@ -57,7 +57,7 @@ class HomePage(Gtk.Box):
                   i18n.t('home.map'), i18n.t('home.client'), i18n.t('home.user'))
         positions = ((3, 5, 2, 1), (5, 5, 2, 1), (7, 5, 2, 1), (3, 6, 2, 1),
                      (5, 6, 2, 1), (7, 6, 2, 1))
-        page_names = ("invoice_page", "history_page", "quotation_page",
+        page_names = ("invoice_page", "history_page", "estimate_page",
                     "map_page", "customer_page", "user_page")
         self.buttons = []
         for label, pos, page in zip(labels, positions, page_names):
