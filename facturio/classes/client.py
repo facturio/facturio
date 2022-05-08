@@ -5,13 +5,13 @@ class Client:
 	
     def __init__(
         self,
-        first_name: str,
-        last_name: str,
-        email: str = None,
-        address: str = None,
-        phone_number: str = None,
-        note: str = None,
-        id_: int = None
+        first_name,
+        last_name,
+        email=None,
+        address=None,
+        phone_number=None,
+        note=None,
+        id_=None
     ):
         """
         Les attributs sont initialisés selon leur ordre d'apparition
@@ -66,15 +66,15 @@ class Company(Client):
 
     def __init__(
         self,
-        company_name: str,
-        first_name: str,
-        last_name: str,
-        email: str,
-        address: str,
-        phone_number: str,
-        business_number: str,
-        note: str = None,
-        id_: int =None
+        company_name,
+        first_name,
+        last_name,
+        email,
+        address,
+        phone_number,
+        business_number,
+        note=None,
+        id_=None
     ):
         """
         Les attributs sont initialisés selon leur ordre d'apparition

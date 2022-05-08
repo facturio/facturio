@@ -7,15 +7,15 @@ class User:
 
     def __init__(
         self,
-        company_name: str,
-        first_name: str,
-        last_name: str,
-        email: str,
-        address: str,
-        phone_number: str,
-        business_number: str,
-        logo: str = None,
-        id_: int = None
+        company_name,
+        first_name,
+        last_name,
+        email,
+        address,
+        phone_number,
+        business_number,
+        logo=None,
+        id_=None
     ):
         """Les attributs sont initialisés selon leur ordre d'apparition."""
         # Si l'utilisateur cree une deuxieme instance on leve une
@@ -36,7 +36,7 @@ class User:
         self.business_number = business_number
         self.id_ = id_
 
-    def get_attr(self, name: str) :
+    def get_attr(self, name) :
         """Renvoie l'attribut passe en parametre."""
         if name == "company_name":
             return self.company_name
@@ -58,7 +58,7 @@ class User:
             print(f"No attribute {name} found")
             raise KeyError
 
-    def set_attr(self, name: str, val: str) :
+    def set_attr(self, name, val) :
         """Maj l'attribut name passe en parametre."""
         if name == "company_name":
             self.company_name = val
