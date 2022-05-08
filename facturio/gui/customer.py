@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import gi
+from facturio.gui.displayclient import DisplayClient
 from facturio.gui.page_gui import PageGui
 from facturio.gui.home import HeaderBarSwitcher
 from facturio.gui.add_customer import Add_Customer
@@ -9,7 +10,6 @@ from facturio.gui.page_gui import PageGui
 from facturio.gui.home import HeaderBarSwitcher
 from facturio.gui.add_customer import Add_Customer
 from facturio.gui.headerbar import HeaderBarSwitcher
-from facturio.gui.display_info import InfoPerson
 from facturio.db.db import Data_base
 gi.require_version("Gtk", "3.0")
 from gi.repository import Gtk, Gdk, Gio, GdkPixbuf
@@ -153,11 +153,11 @@ class Customer(PageGui):
         avec la page info_persone
         """
         num_client = str(list((completion.props.model.get_value(iter, 0)))[1])
-        page=InfoPerson(False,num_client)
+        page=DisplayClient(False,num_client)
         page.is_ut=False
         page.num_client=int(num_client)
         if num_client.isnumeric():
-            self.header_bar.switch_page(None,"user_page")
+            self.header_bar.switch_page(None,"client_page")
 
 
     def add_result(self,res):

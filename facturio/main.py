@@ -3,12 +3,13 @@ import i18n
 from facturio.gui.invoice import InvoicePage, CreateInvoicePage
 from facturio.gui.home import HomePage
 from facturio.gui.headerbar import HeaderBarSwitcher
+from facturio.gui.displayclient import DisplayClient
 from facturio.gui.customer import Customer
 from facturio.gui.add_customer import Add_Customer
 from facturio.gui.modify_usr import ModifyUsr
+from facturio.gui.display_info import DisplayUser
 from facturio.gui.history import History
 from facturio.gui.map import Map
-from facturio.gui.display_info import InfoPerson
 from pathlib import Path
 from facturio import __path__
 import gi
@@ -63,8 +64,10 @@ class Window(Gtk.ApplicationWindow):
         self.stack.add_named(self.history_page, "history_page")
         self.map_page = Map()
         self.stack.add_named(self.map_page, "map_page")
-        self.user_page = InfoPerson.get_instance()
+        self.user_page = DisplayUser.get_instance()
         self.stack.add_named(self.user_page, "user_page")
+        self.client_page = DisplayClient.get_instance()
+        self.stack.add_named(self.client_page, "client_page")
         self.add(self.stack)
 
     def initial_show(self):

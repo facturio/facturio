@@ -66,16 +66,6 @@ class HeaderBarSwitcher(Gtk.HeaderBar):
     def get_stack(self):
         return self.stack
 
-    def change_page_client(self,num_client):
-        """
-        Change la page actuelle de client pour
-        celle avec le numero donenr en parametre
-        """
-        self.stack.remove("client_page")
-        self.client_page = InfoPerson(False,num_client)
-        self.stack.add_named(self.client_page, "client_page")
-        self.header_bar.set_stack(self.stack)
-
 
     def __init_buttons(self):
         """

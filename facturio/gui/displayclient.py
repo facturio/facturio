@@ -9,7 +9,7 @@ from facturio.gui.page_gui import PageGui
 from gi.repository import Gtk, Gdk, Gio, GdkPixbuf, OsmGpsMap
 from facturio import __path__
 
-class DisplayUser (PageGui):
+class DisplayClient (PageGui):
     """
     Classe IHM de le fenetre d'affichage, elle permet soit d'afficher la page
     d'utilisateur soit la page d'un client
@@ -25,13 +25,14 @@ class DisplayUser (PageGui):
     @staticmethod
     def get_instance():
         """Renvoie le singleton."""
-        if DisplayUser.__instance is None:
-            DisplayUser.__instance = DisplayUser(True)
-        return DisplayUser.__instance
+        if DisplayClient.__instance is None:
+            DisplayClient.__instance = DisplayClient()
+        return DisplayClient.__instance
 
 
-    def __init__(self,is_ut=True,num_client=0,*args, **kwargs):
+    def __init__(self,is_ut=False,num_client=0,*args, **kwargs):
         super().__init__()
+        print("inside")
         self.is_ut=is_ut
         self.num_client=int(num_client)
         self.header_bar = HeaderBarSwitcher.get_instance()
@@ -43,11 +44,8 @@ class DisplayUser (PageGui):
         self.__title(str(self.num_client))
         self.grid.attach(self.cent, 1, 2, 2, 1)
         self.__space_info()
-        if DisplayUser.__instance is None:
+        if DisplayClient.__instance is None:
             self.ini_page()
-            self.update2user()
-        if self.is_ut:
-                self.update2user()
         else:
                 self.update2client()
 
@@ -82,18 +80,18 @@ class DisplayUser (PageGui):
         imp = Gtk.Button(label="Modifier")
         self.cent.attach(imp, 6, 10, 2, 1)
         imp.connect("clicked", self.header_bar.active_button, "modify_usr")
-        DisplayUser.buttons["Modifier"]=imp
+        DisplayClient.buttons["Modifier"]=imp
 
 
         imp = Gtk.Button(label="Modifier")
         self.cent.attach(imp, 6, 4, 3, 3)
         imp.connect("clicked", self.header_bar.active_button, "modify_usr")
-        DisplayUser.buttons["ModifierClient"]=imp
+        DisplayClient.buttons["ModifierClient"]=imp
 
         button = Gtk.Button(label="Supprimer")
         button.connect("clicked", self.__delete_client, self.num_client)
         self.cent.attach(button, 6, 7, 3, 3)
-        DisplayUser.buttons["Supprimer"]=imp
+        DisplayClient.buttons["Supprimer"]=imp
 
 
         att_usr=att_usr[0]
@@ -104,7 +102,6 @@ class DisplayUser (PageGui):
         self.mails(att_usr[4])
         self.nums(str(att_usr[6]))
         self.siret(str(att_usr[7]))
-        self.logo(__path__[0] + "/data/icons/Moi.png")
 
 
 
@@ -154,7 +151,7 @@ class DisplayUser (PageGui):
         imp = Gtk.Button(label="Modifier")
         self.cent.attach(imp, 6, 10, 2, 1)
         imp.connect("clicked", self.header_bar.active_button, "modify_usr")
-        DisplayUser.buttons["Modifier"]=imp
+        DisplayClient.buttons["Modifier"]=imp
 
         att_usr=att_usr[0]
         self.__title(att_usr[1])
@@ -164,7 +161,6 @@ class DisplayUser (PageGui):
         self.mails(att_usr[4])
         self.nums(str(att_usr[6]))
         self.siret(str(att_usr[7]))
-        self.logo(__path__[0] + "/data/icons/Moi.png")
 
 
     def new_client(self):
@@ -229,7 +225,7 @@ class DisplayUser (PageGui):
         self.cent.attach(entry,pos[0]+2,pos[1],2,1)
         spacer = Gtk.Label("")
         spacer.set_hexpand(True)
-        DisplayUser.entrys[c_txt[0]] = entry
+        DisplayClient.entrys[c_txt[0]] = entry
         self.cent.attach(spacer,pos[0]+4,pos[1],1,1)
 
     def first_name(self,fn):
@@ -273,45 +269,22 @@ class DisplayUser (PageGui):
 
 
     def update2client(self):
-        DisplayUser.buttons["Modifier"].hide()
+        DisplayClient.buttons["Modifier"].hide()
         attr_clt=self.__get_client()
         if attr_clt is None:
             raise ValueError
-        DisplayUser.entrys["Logo "].hide()
-        DisplayUser.entrys["Nom "].set_text(attr_clt[1])
-        DisplayUser.entrys["Prenom "].set_text(attr_clt[2])
-        DisplayUser.entrys["Adresse "].set_text(attr_clt[4])
-        DisplayUser.entrys["Numero "].set_text(str(attr_clt[5]))
-        DisplayUser.entrys["Mail "].set_text(str(attr_clt[3]))
-        DisplayUser.entrys["Siret "].set_text(str(attr_clt[6]))
+        DisplayClient.entrys["Nom "].set_text(attr_clt[1])
+        DisplayClient.entrys["Prenom "].set_text(attr_clt[2])
+        DisplayClient.entrys["Adresse "].set_text(attr_clt[4])
+        DisplayClient.entrys["Numero "].set_text(str(attr_clt[5]))
+        DisplayClient.entrys["Mail "].set_text(str(attr_clt[3]))
+        DisplayClient.entrys["Siret "].set_text(str(attr_clt[6]))
 
 
 
     def siret(self,sir):
         self.__creat_labelbox(("Siret ",sir),(1,10,3,1))
         return self
-
-    def logo(self,path):
-        log = Gtk.Image.new_from_pixbuf(
-            GdkPixbuf.Pixbuf.new_from_file_at_size(path, 200, 200))
-        log.set_name("lg")
-        DisplayUser.entrys["Logo "]=log
-        self.cent.attach(log, 6, 4, 3, 6 )
-
-    def update2user(self):
-        DisplayUser.buttons["ModifierClient"].hide()
-        DisplayUser.buttons["Supprimer"].hide()
-        att_usr=self.__get_user()
-        if att_usr==[]:
-            att_usr=[["","","","",
-                      "","","",""]]
-        att_usr=att_usr[0]
-        DisplayUser.entrys["Nom "].set_text(att_usr[1])
-        DisplayUser.entrys["Prenom "].set_text(att_usr[2])
-        DisplayUser.entrys["Adresse "].set_text(att_usr[5])
-        DisplayUser.entrys["Numero "].set_text(str(att_usr[6]))
-        DisplayUser.entrys["Mail "].set_text(str(att_usr[4]))
-        DisplayUser.entrys["Siret "].set_text(str(att_usr[7]))
 
 
     def commentaire(self,com):
@@ -325,5 +298,5 @@ class DisplayUser (PageGui):
         entry.set_text(com)
         entry.set_hexpand(True)
         entry.set_editable(False)
-        DisplayUser.entrys["Com "]=entry
+        DisplayClient.entrys["Com "]=entry
         self.cent.attach(entry,7,17,2,2)
