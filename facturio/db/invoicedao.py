@@ -71,6 +71,7 @@ class InvoiceDAO:
         # entreprise ou client?
         # Verifier si l'id est un entrprise
         id_cli_comp = tup[7]
+        assert(id_cli_comp is not None)
         request = f"SELECT * FROM company where id_company={id_cli_comp}"
         client = None
         if self.db.cursor.execute(request).fetchone() is None:
