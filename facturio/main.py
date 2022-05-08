@@ -18,7 +18,7 @@ from gi.repository import Gtk, Gdk, Gio, GObject
 
 i18n.load_path.append(__path__[0] + "/data/translations/")
 i18n.set('filename_format', '{namespace}.{format}')
-i18n.set('locale', 'en')
+i18n.set('locale', 'fr')
 
 class Window(Gtk.ApplicationWindow):
     def __init__(self, *args, **kwargs):
