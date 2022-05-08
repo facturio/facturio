@@ -56,6 +56,12 @@ class InfoPerson (PageGui):
         bttl.pack_start(self.tl, False, False, 0)
         self.grid.attach(bttl, 1, 1, 3, 1 )
 
+    def __delete_client(self):
+        """
+        """
+        list_client= self.db.selection_table("user")
+        return list_client
+
     def __get_user(self):
         """
         Recupere de la bd les info utilisateur
@@ -88,6 +94,9 @@ class InfoPerson (PageGui):
         if att_usr==[]:
             att_usr=[["","","","",
                       "","","",""]]
+        self.imp = Gtk.Button(label="Modifier")
+        self.cent.attach(self.imp, 6, 12, 3, 1)
+        self.imp.connect("clicked", self.header_bar.active_button, "modify_usr")
         att_usr=att_usr[0]
         self.__title(att_usr[1])
         self.first_name(att_usr[2])
@@ -106,16 +115,22 @@ class InfoPerson (PageGui):
         l_entr=self.__get_ent()
         l_id=[l[0] for l in l_entr]
         self.imp = Gtk.Button(label=i18n.t('gui.settings'))
-        self.cent.attach(self.imp, 7, 2, 2, 1)
+        self.cent.attach(self.imp, 6, 4, 3, 3)
+        self.imp.connect("clicked", self.header_bar.active_button, "modify_usr")
         self.button = Gtk.Button(label=i18n.t('gui.delete'))
-        self.cent.attach(self.button, 9, 2, 2, 1)
+        self.cent.attach(self.button, 6, 7, 3, 3)
+        exporter = Gtk.Button.new_from_icon_name("document-save-symbolic",
+                                                    Gtk.IconSize.BUTTON)
+        self.cent.attach(exporter, 6, 10, 3, 3)
+        self.first_name(att_clt[2])
+        self.last_name(att_clt[3])
         self.adrss(att_clt[4])
         self.mails(att_clt[3])
         self.nums(str(att_clt[5]))
         if self.num_client in l_id:
             self.entreprise(l_entr[self.num_client][1])
             self.siret(str(l_entr[self.num_client][2]))
-        self.commentaire(att_clt[6])
+        #self.commentaire(att_clt[6])
 
     def __space_info(self):
         """
@@ -136,9 +151,9 @@ class InfoPerson (PageGui):
         prend un couple de chaine de charactere ainsi que un
         tuple de postion et affhiche un label avec une boite
         """
-        self.imp = Gtk.Button(label=i18n.t('gui.edit'))
-        self.cent.attach(self.imp, 6, 12, 3, 1)
-        self.imp.connect("clicked", self.header_bar.active_button, "modify_usr")
+        # self.imp = Gtk.Button(label=i18n.t('gui.edit'))
+        # self.cent.attach(self.imp, 6, 12, 3, 1)
+        # self.imp.connect("clicked", self.header_bar.active_button, "modify_usr")
         label = Gtk.Label()
         label.set_markup("<b>"+c_txt[0]+"</b>:    ")
         label.set_justify(Gtk.Justification.RIGHT)
@@ -155,11 +170,11 @@ class InfoPerson (PageGui):
         self.cent.attach(spacer,pos[0]+4,pos[1],1,1)
 
     def first_name(self,fn):
-        self.__creat_labelbox((i18n.t('gui.address'),fn),(1,4,3,1))
+        self.__creat_labelbox((i18n.t('gui.name'),fn),(1,4,3,1))
         return self
 
     def last_name(self,nm):
-        self.__creat_labelbox((i18n.t('gui.address'),nm),(1,6,3,1))
+        self.__creat_labelbox((i18n.t('gui.surname'),nm),(1,6,3,1))
         return self
 
     def adrss(self,adr):
@@ -193,12 +208,15 @@ class InfoPerson (PageGui):
         self.cent.attach(log, 6, 4, 3, 6 )
 
 
-    def commentaire(self,adr):
-        boxcom= Gtk.Box()
-        boxcom.set_name("box_afficher")
-        self.com = Gtk.Label(label=adr)
-        self.com.set_line_wrap(True)
-        self.com.set_max_width_chars(32)
-        boxcom.pack_start(self.com, False, False, 0)
-        self.cent.attach(boxcom, 4, 10, 3, 3 )
-
+    def commentaire(self,com):
+        label = Gtk.Label()
+        label.set_markup("<b>"+c_txt[0]+"</b>:    ")
+        label.set_justify(Gtk.Justification.RIGHT)
+        self.cent.attach(label,6,16,2,1)
+        label.set_hexpand(True)
+        label.set_hexpand(True)
+        entry = Gtk.Entry()
+        entry.set_text(com)
+        entry.set_hexpand(True)
+        entry.set_editable(False)
+        self.cent.attach(entry,7,17,2,2)

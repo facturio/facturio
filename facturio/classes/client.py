@@ -27,8 +27,9 @@ class Client:
         self.id_ = id_
 
     def __str__(self):
-        return f"{self.first_name} | {self.last_name} | {self.email} | " \
-               f"{self.address}  | {self.phone_number} | {self.note} | {self.id_}"
+        return str(vars(self))
+        # return f"{self.first_name} | {self.last_name} | {self.email} | " \
+        #        f"{self.address}  | {self.phone_number} | {self.note} | {self.id_}"
 
     def __repr__(self):
         return self.__str__()
@@ -85,9 +86,11 @@ class Company(Client):
         self.id_ = id_
 
     def __str__(self):
-        return f"{self.company_name} | {self.email} | {self.address} | " \
-               f"{self.phone_number} | {self.business_number} | "\
-               f"{self.first_name} {self.last_name} | {self.note} | {self.id_}"
+        return str(vars(self))
+
+        # return f"{company_mame = {self.company_name} | {self.email} | {self.address} | " \
+        #        f"{self.phone_number} | {self.business_number} | "\
+        #        f"{self.first_name} {self.last_name} | {self.note} | {self.id_}"
 
     def __repr__(self):
         return self.__str__()

@@ -215,4 +215,3 @@ class ModifyUsr(PageGui):
         self.client_entries[i18n.t('gui.remark')] = self.entry
         self.cent.attach(self.entry,1,13,5,3)
         return self
-

@@ -26,6 +26,9 @@ class Customer(PageGui):
     """
     def __init__(self):
         super().__init__()
+        self.cent = Gtk.Grid(column_homogeneous=True,
+                                  row_homogeneous=True, column_spacing=20,
+                                  row_spacing=20)
         self.header_bar = HeaderBarSwitcher.get_instance()
         self.__init_grid()
         self.title(i18n.t('gui.client'))
@@ -40,9 +43,9 @@ class Customer(PageGui):
         pour l'ergonomie
         """
         spacel = Gtk.Label("")
-        self.grid.attach(spacel, 0, 1, 1, 1)
+        self.cent.attach(spacel, 0, 1, 1, 1)
         spacer = Gtk.Label("")
-        self.grid.attach(spacer, 10, 2, 1, 1)
+        self.cent.attach(spacer, 10, 2, 1, 1)
         spaceb = Gtk.Label("")
 
 
@@ -68,14 +71,14 @@ class Customer(PageGui):
         but = Gtk.Button.new_from_icon_name("list-add-symbolic",
                                                     Gtk.IconSize.BUTTON)
         but.connect("clicked", self.header_bar.active_button, "add_customer")
-        self.grid.attach(but, *p_button[1][1])
+        self.cent.attach(but, *p_button[1][1])
         but = Gtk.Button.new_from_icon_name("document-save-symbolic",
                                                     Gtk.IconSize.BUTTON)
-        self.grid.attach(but, *p_button[0][1])
+        self.cent.attach(but, *p_button[0][1])
         but = Gtk.Button.new_from_icon_name("document-open-symbolic",
                                                     Gtk.IconSize.BUTTON)
         but.connect("clicked", self.file_explorer)
-        self.grid.attach(but, *p_button[2][1])
+        self.cent.attach(but, *p_button[2][1])
 
 
     def file_explorer(self,button):
@@ -132,7 +135,7 @@ class Customer(PageGui):
         list_client= self.db.selection_table("client",)
         searchbar = FacturioOmnisearch(list_client)
         searchbar.go_to=True
-        self.grid.attach(searchbar, 1,3,2,1)
+        self.cent.attach(searchbar, 1,3,2,1)
 
 
     def add_result(self,res):

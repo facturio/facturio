@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 from facturio.classes.user import User
-from dbmanager import DBManager
+from facturio.db.dbmanager import DBManager
 
 
 class UserDAO:
@@ -27,8 +27,9 @@ class UserDAO:
                      VALUES(?, ?, ?, ?, ?, ?, ?, ?)"""
         # convertir image logo sous forme de fichier binaire
         logo = None
+        print(user.logo)
         if user.logo is not None:
-            with open(texte,"rb") as user.logo:
+            with open(user.logo, "rb") as user.logo:
                 logo = myfile.read()
         values = [logo, user.company_name, user.email, user.address,
                   user.phone_number, user.business_number, user.first_name,
@@ -61,7 +62,7 @@ class UserDAO:
         """Renvoie une liste tous les instances des client sur la BD."""
         data = self.bdd.cursor.execute("select * from user").fetchone()
         # TODO: VERIFIER QUE IL Y A UNE LIGNE SINON ERROR
-        if not User.exits():
+        if not User.exists():
             return self._gen_user(data)
         else:
             return User.get_instance()

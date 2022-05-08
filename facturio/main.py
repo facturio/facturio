@@ -9,6 +9,7 @@ from facturio.gui.modify_usr import ModifyUsr
 from facturio.gui.history import History
 from facturio.gui.map import Map
 from facturio.gui.display_info import InfoPerson
+from facturio.db.dbmanager import DBManager
 from pathlib import Path
 from facturio import __path__
 import gi
@@ -23,6 +24,7 @@ class Window(Gtk.ApplicationWindow):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         # proprietés divers pour la window
+        manager = DBManager.get_instance()
         self.set_position(Gtk.WindowPosition.CENTER)
         self.set_hexpand(True)
         self.set_vexpand(True)
