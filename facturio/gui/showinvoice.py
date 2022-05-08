@@ -143,6 +143,17 @@ class ShowInvoicePage(Gtk.ScrolledWindow):
         self.row_pbtn -= 1
         self._update_adv_total()
 
+    def _clean_advance_grid(self):
+        n = len(self.all_adv_entries)
+        for i in range(n):
+            self.advances_grid.remove_row(3)
+        self.all_adv_entries = []
+        self._update_adv_total()
+        self.row_pbtn = 3
+
+
+
+        return
     def _validate_date(self, entry):
         date_regex = "[0-9]{1,2}\/[0-9]{1,2}\/[0-9]{4}"
         error = True
@@ -166,6 +177,27 @@ class ShowInvoicePage(Gtk.ScrolledWindow):
         adv_total = float(self.adv_total.get_text()[:-2])
         total = round(sub_total + total_taxes - adv_total, 2)
         self.total.set_text(f"{total} €")
+
+    def _new_grayed_adv_row(self):
+        i = self.row_pbtn
+        self.advances_grid.insert_row(i)
+        btn = Gtk.Button.new_from_icon_name("window-close-symbolic",
+                                            Gtk.IconSize.BUTTON)
+        adv_entries = {}
+        # self.btns_row[btn] = i
+        # btn.connect("clicked", self._delete_row)
+        # btn.show()
+        # self.advances_grid.attach(btn, 1, i, 1, 1)
+        entry = self._grayed_entry()
+        entry.show()
+        adv_entries["date"] = entry
+        self.advances_grid.attach(entry, 2, i, 1, 1)
+        entry = self._grayed_entry()
+        adv_entries["amount"] = entry
+        entry.show()
+        self.advances_grid.attach(entry, 3, i, 1, 1)
+        self.row_pbtn += 1
+        self.all_adv_entries.append(adv_entries)
 
     def _new_adv_row(self, *args):
         i = self.row_pbtn
@@ -253,7 +285,6 @@ class ShowInvoicePage(Gtk.ScrolledWindow):
     def reset_context(self, entry):
         context = entry.get_style_context()
         context.remove_class("entry_error")
-
     def load_receipt(self, receipt):
         """Charge les informations de receipt dans la page."""
         user = User.get_instance()
@@ -300,13 +331,23 @@ class ShowInvoicePage(Gtk.ScrolledWindow):
         self.total_taxes.set_text(str(receipt.total_of_taxes()) + " €")
         self.total.set_text(str(receipt.total_with_taxes()) + " €")
         if type(receipt) == Invoice:
+            print(receipt.advances_list)
+            self._clean_advance_grid()
             self.adv_label.show()
             self.adv_total.show()
             self.adv_total.set_text(str(receipt.total_of_advances()) + " €")
+            for _ in range(len(receipt.advances_list)):
+                self._new_grayed_adv_row()
+            for advance, dict_entry in zip(receipt.advances_list,
+                                           self.all_adv_entries):
+                dict_entry["date"].set_text(advance.date_string())
+                dict_entry["amount"].set_text(str(advance.amount))
+            self._update_adv_total()
+
+
         else:
             self.adv_label.hide()
             self.adv_total.hide()
-
 
     def _init_client_grid(self):
         self.client_grid = Gtk.Grid(column_homogeneous=True,
