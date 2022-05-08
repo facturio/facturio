@@ -1,7 +1,7 @@
 from facturio.classes.client import Company, Client
 from facturio.classes.user import User
-from typing import Union
 import time
+
 
 class Article:
     """
@@ -19,9 +19,7 @@ class Article:
         self.id_receipt = id_receipt
 
     def __str__(self):
-        return (f"{{{self.id_} | {self.title} | {self.description}"
-                f" | {self.price} | {self.quantity} | "
-                f"id_receipt = {self.id_receipt}}}")
+        return str(vars(self))
 
     def __repr__(self):
         return self.__str__()
@@ -30,7 +28,10 @@ class Article:
         """
         Renvoie une liste de toutes les variables de classes
         """
-        return [self.title, self.description, self.price, self.quantity]
+        return [
+            self.title, self.description, self.price, self.quantity, self.id_,
+            self.id_receipt
+        ]
 
     @classmethod
     def from_dict(cls, data_dict):
@@ -58,8 +59,7 @@ class Advance:
             self.date = int(time.time())
 
     def __str__(self):
-        return (f"id = {self.id_} | {self.date_string()} | {self.amount} | "
-                f"id_invoice = {self.id_invoice}")
+        return str(vars(self))
 
     def __repr__(self):
         return self.__str__()
@@ -68,13 +68,14 @@ class Advance:
         """
         Retourne la date sous forme de chaîne de caractères
         """
-        return time.strftime("%d/%m/%Y",time.localtime(self.date))
+        return time.strftime("%d/%m/%Y", time.localtime(self.date))
 
     def dump_to_list(self):
         """
         Renvoie une liste de toutes les variables de classes
         """
-        return [self.amount, self.date]
+        return [self.amount, self.date, self.id_, self.id_invoice]
+
 
 class Receipt:
     """
@@ -102,13 +103,11 @@ class Receipt:
         else:
             self.date = int(time.time())
 
-
     def __str__(self):
-        return f"User :\n{self.user}\nClient :\n" \
-        f"{self.client}\nDate :\n {self.date_string()}\nListe des articles :"\
-        f"\n{self.articles_list}\nTaxes :\n{self.taxes}\nMontants :\n"\
-        f"{str(self.balance)}\nCommentaire :\n{self.note}"
-
+        return f"User :\n{self.user}\nClient :\n{self.client}\n" \
+            f"Date :\n {self.date_string()}\nListe des articles :"\
+            f"\n{self.articles_list}\nTaxes :\n{self.taxes}\nMontants :\n"\
+            f"{str(self.balance)}\nCommentaire :\n{self.note}"
 
     def __repr__(self):
         return self.__str__()
@@ -117,8 +116,10 @@ class Receipt:
         """
         Renvoie une liste de toutes les variables de classes
         """
-        return [self.user, self.client, self.date, self.articles_list, 
-                                            self.taxes, self.balance, self.note]
+        return [
+            self.user, self.client, self.date, self.articles_list, self.taxes,
+            self.balance, self.note, self.id_
+        ]
 
     def subtotal(self):
         """
@@ -127,7 +128,8 @@ class Receipt:
         balance = 0
         for art in self.articles_list:
             balance += art.price * art.quantity
-        return round(balance,2)
+        return round(balance, 2)
+
     def total_of_taxes(self):
         """
         Calcul le total des taxes
@@ -144,7 +146,7 @@ class Receipt:
         """
         Retourne la date sous forme de chaîne de caractères
         """
-        return time.strftime("%d/%m/%Y",time.localtime(self.date))
+        return time.strftime("%d/%m/%Y", time.localtime(self.date))
 
 
 class Invoice(Receipt):
@@ -166,19 +168,24 @@ class Invoice(Receipt):
         self.advances_list = advances_list
 
     def __str__(self):
-        return (f"User :\n{self.user}\nClient :\n {self.client}\n"
+        return (
+                f"User :\n{self.user}\nClient :\n {self.client}\n"
                 f"Date :\n{self.date_string()}\nListe des articles :"
                 f"{self.articles_list}\n"
                 f"\nListe des acomptes :\n{self.advances_list}"
                 f"\nTaxes :\n{self.taxes}\n"
-                f"Montants :\n{self.balance}\nCommentaire :\n{self.note}")
+                f"Montants :\n{self.balance}\nCommentaire :\n{self.note}"
+        )
 
     def __repr__(self):
         return self.__str__()
 
     def dump_to_list(self):
-        return [self.user, self.client, self.date, self.articles_list,
-                self.advances_list, self.taxes, self.balance, self.note]
+        return [
+            self.user, self.client, self.date, self.articles_list,
+            self.advances_list, self.taxes, self.balance, self.note,
+            self.id_
+        ]
 
     def total_with_advances(self):
         """
@@ -191,7 +198,7 @@ class Invoice(Receipt):
         Calcule le total des acomptes
         """
         balance = 0
-        if(self.advances_list != None):
+        if(self.advances_list is not None):
             for adv in self.advances_list:
                 balance += adv.amount
         return round(balance, 2)
@@ -199,45 +206,67 @@ class Invoice(Receipt):
 
 class Estimate(Receipt):
     """
-        Classe contenant toutes les informations communes liées aux 
+        Classe contenant toutes les informations communes liées aux
         devis.
     """
     def __init__(
         self, user, client, articles_list,
         date=None, balance=None, taxes=None, note=None, id_=None
     ):
-        super().__init__(user, client, articles_list, date, taxes, 
-        balance, note, id_)
+        super().__init__(
+            user, client, articles_list, date, taxes,
+            balance, note, id_
+        )
 
 
 if __name__ == "__main__":
-    artisan = User("Facturio","15 rue des champs Cuers","0734567221", 
-                                        "128974654", "facturio@gmail.com",
-                                                                "logo.jpg")
+    artisan = User(
+            company_name="Facturio",
+            address="15 rue des champs Cuers",
+            phone_number="0734567221",
+            business_number="128974654",
+            first_name="Tom",
+            last_name="Pommier",
+            email="facturio@gmail.com",
+            logo="logo.jpg",
+            id_=3
+    )
 
-    client_physique = Client("Lombardo", "Quentin", 
-    "quentin.lombardo@email.com", "HLM Sainte-Muse Toulon", "0678905324")
+    client_physique = Client(
+            last_name="Lombardo",
+            first_name="Quentin",
+            email="quentin.lombardo@email.com",
+            address="HLM Sainte-Muse Toulon",
+            phone_number="0678905324",
+            id_=4
+    )
 
-    client_moral = Company(company_name="LeRoy", last_name="Ben",
-                           first_name="Karim", business_number="287489404",
-                           email="LeRoy83@sfr.fr", adress="12 ZAC de La Crau",
-                           phone_number="0345678910")
-
-    ordinateur = Article("Ordinateur", 1684.33, 3)
-    cable_ethernet = Article("Cable ethernet", 5, 10)
-    telephone = Article("Telephone", 399.99, 1)
-    casque = Article("Casque", 69.99, 6)
-
+    client_moral = Company(
+            company_name="LeRoy",
+            email="LeRoy83@sfr.fr",
+            address="12 ZAC de La Crau",
+            phone_number="0345678910",
+            first_name="Ben",
+            last_name="Karim",
+            business_number="287489404",
+            id_=6
+    )
+    ordinateur = Article("ordinateur", 1684.33, 3, "Asus spire", 5, 2)
+    cable_ethernet = Article("cable ethernet", 9.99, 10, "15m", 6, 2)
+    telephone = Article("telephone", 399.99, 1, "téléphone clapet", 8, 2)
+    casque = Article("casque", 69.99, 6, "casque sans fils", 7, 2)
+    bureau = Article("Bureau", 500, 2, "Bureau à 6pieds", 9, 2)
+    print(ordinateur.dump_to_list())
     paiements = [Advance(1230.0), Advance(654)]
 
     articles = [ordinateur, cable_ethernet, telephone, casque]
-
 
     fact = Invoice(user=artisan, client=client_moral, articles_list=articles,
                    advances_list=paiements, date=0, taxes=0.2, balance=12,
                    note="Facture de matériel informatiques")
 
-
-    dev = Estimate(artisan, client_physique, articles, 
-                                note="Facture de matériel informatiques" )
+    dev = Estimate(
+        artisan, client_physique, articles,
+        note="Facture de matériel informatiques"
+    )
     print(fact, dev)

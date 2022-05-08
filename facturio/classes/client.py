@@ -2,7 +2,6 @@ class Client:
     """
     Classe contenant toutes les informations liées à un client physique
     """
-	
     def __init__(
         self,
         first_name,
@@ -28,8 +27,6 @@ class Client:
 
     def __str__(self):
         return str(vars(self))
-        # return f"{self.first_name} | {self.last_name} | {self.email} | " \
-        #        f"{self.address}  | {self.phone_number} | {self.note} | {self.id_}"
 
     def __repr__(self):
         return self.__str__()
@@ -37,15 +34,16 @@ class Client:
     def dump_to_list(self):
         """Renvoie une liste de toutes les variables de classes."""
         return [self.first_name, self.last_name, self.email, self.address,
-                self.phone_number, self.note]
+                self.phone_number, self.note, self.id_]
 
     def dump_to_field(self):
         """
         Renvoie la liste des variables utiles pour l'affichage des champs
         liés au client physique
         """
-        return [f"{self.first_name} {self.last_name}", self.email, self.address,
-                self.phone_number]
+        return [f"{self.first_name} {self.last_name}", self.email,
+                self.address,
+                self.phone_number, self.id_]
 
     @classmethod
     def from_dict(cls, data_dict):
@@ -62,8 +60,6 @@ class Company(Client):
     """
     Classe contenant toutes les informations liées à un client moral
     """
-
-
     def __init__(
         self,
         company_name,
@@ -80,17 +76,15 @@ class Company(Client):
         Les attributs sont initialisés selon leur ordre d'apparition
         dans le pdf
         """
-        super().__init__(first_name, last_name, email, address, phone_number, note)
+        super().__init__(
+            first_name, last_name, email, address, phone_number,
+            note, id_
+        )
         self.company_name = company_name
         self.business_number = business_number
-        self.id_ = id_
 
     def __str__(self):
         return str(vars(self))
-
-        # return f"{company_mame = {self.company_name} | {self.email} | {self.address} | " \
-        #        f"{self.phone_number} | {self.business_number} | "\
-        #        f"{self.first_name} {self.last_name} | {self.note} | {self.id_}"
 
     def __repr__(self):
         return self.__str__()
@@ -99,8 +93,11 @@ class Company(Client):
         """
         Renvoie une liste de toutes les variables de classes
         """
-        return [self.company_name, self.email, self.address, self.phone_number,
-             self.first_name, self.last_name, self.business_number, self.note]
+        return [
+            self.company_name, self.email, self.address, self.phone_number,
+            self.first_name, self.last_name, self.business_number, self.note,
+            self.id_
+        ]
 
     def dump_to_field(self):
         """
@@ -108,7 +105,8 @@ class Company(Client):
         liés au client moral
         """
         return [self.company_name, self.email, self.address, self.phone_number,
-             f"{self.first_name} {self.last_name}", self.business_number]
+                f"{self.first_name} {self.last_name}", self.business_number]
+
     @classmethod
     def from_dict(cls, data_dict):
         res = cls(company_name=data_dict["company_name"],
@@ -122,12 +120,17 @@ class Company(Client):
         return res
 
 
-
 if __name__ == "__main__":
-    client_moral = Client("Lombardo", "Quentin",
-        "quentin.lombardo@email.com", "HLM Sainte-Muse Toulon", "0678905324")
-    print(client_moral.dump_to_list())
+    client_physique = Client(
+        "Quentin", "Lombardo",
+        "quentin.lombardo@email.com", "HLM Sainte-Muse Toulon", "0678905324",
+        note="Personne peu sympathique", id_=13
+        )
+    print(client_physique.dump_to_list())
 
-    client_moral = Company("LeRoy", "Ben", "Karim", "287489404",
-                "LeRoy83@sfr.fr", "12 ZAC de La Crau", "0345678910")
+    client_moral = Company(
+            "LeRoy", "Ben", "Karim", "287489404", "LeRoy83@sfr.fr",
+            "12 ZAC de La Crau", "0345678910", note="Investisseur important",
+            id_=34
+        )
     print(client_moral.dump_to_list())
