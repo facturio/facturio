@@ -110,7 +110,7 @@ class InvoicePage(Gtk.ScrolledWindow):
         show_inv = ShowInvoicePage.get_instance()
         print(show_inv)
         show_inv.load_receipt(invoice)
-        self.hb.switch_page(page="show_invoice_page")
+        self.hb.active_button(page="show_invoice_page")
 
 
     def show_hide_style_settings(self, *args):
@@ -1186,7 +1186,7 @@ class CreateInvoicePage(Gtk.ScrolledWindow):
         row_widgets = []
         article_entries = {}
         button = Gtk.Button.new_from_icon_name("window-close-symbolic",
-                                                    Gtk.IconSize.BUTTON)
+                                               Gtk.IconSize.BUTTON)
         row_widgets.append(button)
         self.article_grid.attach(button, 1, i, 1, 1)
         self.btns[button] = i
