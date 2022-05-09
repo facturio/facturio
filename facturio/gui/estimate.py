@@ -15,11 +15,21 @@ from facturio import examples
 from datetime import datetime
 import re
 from datetime import date
+from facturio.gui.showreceipt import ShowReceiptPage
 import webbrowser
 
 class EstimatePage(Gtk.ScrolledWindow):
+    __instance = None
+
+    def get_instance():
+        """Return l'instance de invoice page."""
+        if EstimatePage.__instance is None:
+            EstimatePage.__instance = EstimatePage()
+        return EstimatePage.__instance
+
     def __init__(self):
         super().__init__()
+        EstimatePage.__instance = self
         # client | date | solde restant
         self.grid = Gtk.Grid(row_homogeneous=True,
                              column_spacing=20, row_spacing=20)
@@ -98,7 +108,7 @@ class EstimatePage(Gtk.ScrolledWindow):
 
     def switch_to_create_invoice(self, *args):
         hb = HeaderBarSwitcher.get_instance()
-        hb.active_button(page="create_invoice_page")
+        hb.switch_page(page="create_invoice_page")
 
     # def style_update_window(self, *args):
     #     self.set_sensitive(False)
@@ -113,11 +123,23 @@ class EstimatePage(Gtk.ScrolledWindow):
     #     window.add(box)
     #     window.show_all()
 
+    def _show_estimate(self, *args):
+        model, sel_iter = self.treeview.get_selection().get_selected()
+        id_ = model[sel_iter][-1]
+        inv_dao = EstimateDAO.get_instance()
+        invoice = inv_dao.get_with_id(id_)
+        print(invoice)
+        show_inv = ShowReceiptPage.get_instance()
+        print(show_inv)
+        show_inv.load_receipt(invoice, add_adv=False)
+        self.hb.switch_page(page="show_invoice_page")
+
     def _init_treeview(self):
         self.treeview_scroll = Gtk.ScrolledWindow()
         self.store = Gtk.ListStore(str, str, str, float, int)
         # self.refresh_store()
         self.treeview = Gtk.TreeView(model=self.store, headers_clickable=True)
+        self.treeview.connect("row-activated", self._show_estimate)
         self.treeview_scroll.add(self.treeview)
         renderer_text = Gtk.CellRendererText()
         column_text = Gtk.TreeViewColumn(i18n.t('gui.name'), renderer_text, text=0)
@@ -156,14 +178,14 @@ class EstimatePage(Gtk.ScrolledWindow):
         renderer_text = Gtk.CellRendererText()
         column_text = Gtk.TreeViewColumn(title=i18n.t('gui.refresh'),
                                          cell_renderer=renderer_text)
-        column_text.get_button().connect("clicked", self.refresh_store)
+        column_text.get_button().connect("clicked", self.refresh)
         column_text.set_clickable(True)
         # column_text.set_halign(Gtk.Align.END)
         # column_text.set_widget(btn)
         # btn.show()
         self.treeview.append_column(column_text)
 
-    def refresh_store(self, *args):
+    def refresh(self, *args):
         """Syncro avec la bd."""
         estimate_dao = EstimateDAO.get_instance()
         estimate = estimate_dao.get_all()

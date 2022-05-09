@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 from facturio.classes.invoice_misc import Advance
+# from facturio.db.invoicedao import InvoiceDAO
 from facturio.db.dbmanager import DBManager
 
 
@@ -27,10 +28,12 @@ class AdvanceDAO():
         values = (advance.date, advance.amount, advance.id_invoice)
         self.bdd.cursor.execute(request, values)
         self.bdd.connexion.commit()
-        max_req = "SELECT max(id_invoice) FROM advance"
+        max_req = "SELECT max(id_advance) FROM advance"
         id_ = self.bdd.cursor.execute(max_req).fetchone()
         assert(len(id_) == 1)
         advance.id_ = id_[0]
+        # inv_dao = InvoiceDAO.get_instance()
+        # inv_dao.update_balance_with_id(advance.id_invoice)
         return
 
     def get_all_with_id_invoice(self, id_inv):

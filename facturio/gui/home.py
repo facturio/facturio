@@ -63,5 +63,5 @@ class HomePage(Gtk.Box):
         for label, pos, page in zip(labels, positions, page_names):
             btn = Gtk.Button(label=label)
             self.grid.attach(btn, *pos)
-            btn.connect("clicked", self.header_bar.active_button, page)
+            btn.connect("clicked", self.header_bar.switch_page, page)
             self.buttons.append(btn)

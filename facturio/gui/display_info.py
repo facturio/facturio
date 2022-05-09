@@ -96,7 +96,7 @@ class InfoPerson (PageGui):
                       "","","",""]]
         self.imp = Gtk.Button(label=i18n.t('gui.edit'))
         self.cent.attach(self.imp, 6, 12, 3, 1)
-        self.imp.connect("clicked", self.header_bar.active_button, "modify_usr")
+        self.imp.connect("clicked", self.header_bar.switch_page, "modify_usr")
         att_usr=att_usr[0]
         self.__title(att_usr[1])
         self.first_name(att_usr[2])
@@ -116,7 +116,7 @@ class InfoPerson (PageGui):
         l_id=[l[0] for l in l_entr]
         self.imp = Gtk.Button(label=i18n.t('gui.settings'))
         self.cent.attach(self.imp, 6, 4, 3, 3)
-        self.imp.connect("clicked", self.header_bar.active_button, "modify_usr")
+        self.imp.connect("clicked", self.header_bar.switch_page, "modify_usr")
         self.button = Gtk.Button(label=i18n.t('gui.delete'))
         self.cent.attach(self.button, 6, 7, 3, 3)
         exporter = Gtk.Button.new_from_icon_name("document-save-symbolic",
@@ -153,7 +153,7 @@ class InfoPerson (PageGui):
         """
         # self.imp = Gtk.Button(label=i18n.t('gui.edit'))
         # self.cent.attach(self.imp, 6, 12, 3, 1)
-        # self.imp.connect("clicked", self.header_bar.active_button, "modify_usr")
+        # self.imp.connect("clicked", self.header_bar.switch_page, "modify_usr")
         label = Gtk.Label()
         label.set_markup("<b>"+c_txt[0]+"</b>:    ")
         label.set_justify(Gtk.Justification.RIGHT)
