@@ -2,7 +2,7 @@
 Type=Application
 Name=Facturio
 Categories=Office;
-Comment=G\u00e9rez vos factures et clients avec Facturio.
-Exec="\\$HOME/.local/bin/facturio"
+Comment=Gérez vos factures et clients avec Facturio.
+Exec=facturio %u
 Icon=
 Terminal=false
