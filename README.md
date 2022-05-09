@@ -3,7 +3,7 @@
 
 # Installation
 
-L'installation est très simple, il suffit de télécharger le script d'installation [install.sh][https://azaleth.xyz/facturio.html], et de l'exécuter.
+L'installation est très simple, il suffit de télécharger le script d'installation [install.sh][https://azaleth.xyz/install.sh], et de l'exécuter.
 
 # Construction du paquet à partir des sources
 
