@@ -26,7 +26,7 @@ from facturio.classes.user import User
 
 i18n.load_path.append(__path__[0] + "/data/translations/")
 i18n.set('filename_format', '{namespace}.{format}')
-i18n.set('locale', 'en')
+
 
 #######################################
 
@@ -449,7 +449,7 @@ def pdf_individual_inline(receipt):
             del client_icon_list[i]
             del client_list[i]
 
-    n = len(client_list)
+    n = len(client_icon_list)
     column_numbers = 2 + 3 * n
     table_01 = FlexibleColumnWidthTable(
         number_of_rows=1, number_of_columns=column_numbers
@@ -563,7 +563,7 @@ def pdf_articles_total(receipt, currency, color):
                     background_color=c,
                 )
             )
-            if(not list_art[cpt_art].description):
+            if(list_art[cpt_art].description):
                 table_array[i].add(
                     TableCell(
                         Paragraph(f"{list_art[cpt_art].description}", font_size=Decimal(8)),
@@ -611,7 +611,7 @@ def pdf_articles_total(receipt, currency, color):
                 background_color=c,
             )
         )
-        if(not list_art[cpt_art].description):
+        if(list_art[cpt_art].description):
                 table_array[-1].add(
                     TableCell(
                         Paragraph(f"{list_art[cpt_art].description}", font_size=Decimal(8)),
@@ -903,7 +903,6 @@ def build_pdf(
 
     else:
         tb1, tb2 = pdf_provider_client(receipt)
-        print(layout_array)
         layout_array[-1].add(tb1)
         layout_array[-1].add(tb2)
 
@@ -952,12 +951,29 @@ if __name__ == "__main__":
         email="facturio@gmail.com",
         logo="logo.jpg"
     )
+    # artisan_1 = User(
+    #     company_name="Facturio",
+    #     address="15 rue des champs Cuers",
+    #     phone_number="0734567221",
+    #     business_number="128974654",
+    #     first_name="Tom",
+    #     last_name="Pommier",
+    #     email= None,
+    #     #logo="logo.jpg"
+    # )
 
     client_physique = Client(
         last_name="Lombardo",
         first_name="Quentin",
         email="quentin.lombardo@email.com",
         address="HLM Sainte-Muse Toulon",
+        phone_number="0678905324",
+    )
+    client_physique_1 = Client(
+        last_name="Lombardo",
+        first_name="Quentin",
+        #email="quentin.lombardo@email.com",
+        #address="HLM Sainte-Muse Toulon",
         phone_number="0678905324",
     )
 
@@ -971,10 +987,10 @@ if __name__ == "__main__":
         business_number="287489404",
     )
 
-    ordinateur = Article("ordinateur", 1684.33, 3, "Asus spire")
-    cable_ethernet = Article("cable ethernet", 9.99, 10, "15m")
-    telephone = Article("telephone", 399.99, 1, "téléphone clapet")
-    casque = Article("casque", 69.99, 6, "casque sans fils")
+    ordinateur = Article("Ordinateur", 1684.33, 3, "Asus spire")
+    cable_ethernet = Article("Cable ethernet", 9.99, 10, "15m")
+    telephone = Article("Téléphone", 399.99, 1, "Téléphone clapet")
+    casque = Article("Casque", 69.99, 6, "Casque sans fils")
     bureau = Article("Bureau", 500, 2, "Bureau à 6pieds")
 
     paiements = [Advance(1230.0), Advance(654)]
@@ -998,7 +1014,9 @@ if __name__ == "__main__":
     #     paiements.append(Advance(78,2009 ))
     # for i in range(6):
     #     articles.append(Article("truc",35))
-
+    articles2= []
+    for i in range(20):
+        articles2.append(Article(f"Truc{i}",34+i,2,"D'occasion"))
     fact = Invoice(
         user=artisan,
         client=client_moral,
@@ -1008,8 +1026,30 @@ if __name__ == "__main__":
         note="Invoice de matériel informatiques",
         date=1230,
         balance=100,
-        id_=1
+        id_=123
     )
+    fact = Invoice(
+        user=artisan,
+        client=client_physique_1,
+        articles_list=articles,
+        advances_list=paiements,
+        taxes=0.2,
+        note="Invoice de matériel informatiques",
+        date=1230,
+        balance=100,
+        id_=123
+    )
+    # fact_1 = Invoice(
+    #     user=artisan_1,
+    #     client=client_physique_1,
+    #     articles_list=articles2,
+    #     advances_list=paiements,
+    #     taxes=0.2,
+    #     note="Invoice de matériel informatiques",
+    #     date=1230,
+    #     balance=100,
+    #     id_=123
+    # )
     dev = Estimate(
         user=artisan,
         client=client_physique,
@@ -1019,5 +1059,14 @@ if __name__ == "__main__":
         id_=2
     )
 
-    build_pdf(dev, "exemple_devis.pdf")
-    build_pdf(fact,"exemple_facture", color="#de260d", show_advances_table=True)
+    i18n.set('locale', 'fr')
+    build_pdf(dev, "devis_normal", )#color="#de260d")
+    build_pdf(fact,"facture_normal", show_advances_table=True)
+    build_pdf(dev, "devis couleur", color="#de260d")
+    #build_pdf(fact_1,"facture_opt_taille_dynamique")
+    build_pdf(fact, "fact_champ_opt")
+    build_pdf(dev,"devis inline", inline=True)
+    build_pdf(fact,"facture_proeminent",prominent_article_table=True)
+    i18n.set('locale', 'en')
+    build_pdf(fact, "facture en anglais")
+
