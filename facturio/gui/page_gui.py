@@ -17,7 +17,6 @@ class PageGui(Gtk.ScrolledWindow):
 
     def __init__(self) -> None:
         self.liste_customer= Gtk.ListStore(str, str, str)
-        self.db= Data_base("facturio")
         super().__init__()
 
 
@@ -122,6 +121,6 @@ class PageGui(Gtk.ScrolledWindow):
             column = Gtk.TreeViewColumn(column_title, renderer, text=i)
             self.treeview.append_column(column)
         self.scrollable_treelist = Gtk.ScrolledWindow()
-        self.grid.attach(self.scrollable_treelist, *pos)
+        self.cent.attach(self.scrollable_treelist, *pos)
         self.scrollable_treelist.add(self.treeview)
         return self

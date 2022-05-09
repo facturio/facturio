@@ -1,3 +1,4 @@
+from xdg import BaseDirectory
 import sqlite3
 from datetime import date
 
@@ -8,7 +9,7 @@ class Data_base:
         self.name=name
         #fonction pour creation ou/et connexion
         # a la data_base
-        self.connexion=sqlite3.connect(self.name+'.db')
+        self.connexion=sqlite3.connect(BaseDirectory.save_data_path("facturio") + self.name+'.db')
 
         # execution des requetes il faut un curseur
         self.cursor=self.connexion.cursor()
@@ -75,6 +76,26 @@ class Data_base:
             )
             """)
             self.connexion.commit()
+
+    def db_delete_client(self, id_):
+        """
+        Prend un objet client et le supprime de la BD
+        """
+        if id_ is None:
+            raise ValueError
+        self.cursor.execute("DELETE FROM CLIENT WHERE id_client="+str(id_))
+        self.connexion.commit()
+
+    def find_client(self, id_):
+            """
+            Prend un objet client et le supprime de la BD
+            """
+            if id_ is None:
+                raise ValueError
+            request = f"SELECT * FROM client where id_client = {id_}"
+            tup = self.cursor.execute(request).fetchone()
+            print(tup)
+            return tup
 
     def __creation_table_invoice_devis(self):
             self.cursor.execute("""

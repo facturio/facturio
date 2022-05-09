@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
+import re
 import gi
-gi.require_version("Gtk", "3.0")
-from gi.repository import Gtk, GObject, Gdk
 import i18n
+import webbrowser
 from facturio.classes.client import Company, Client
 from facturio.classes.user import User
 from facturio.classes.invoice_misc import Article, Invoice, Estimate
@@ -15,9 +15,9 @@ from facturio.db.userdao import UserDAO
 from facturio.db.estimatedao import EstimateDAO
 from facturio import examples
 from datetime import datetime
-import re
 from datetime import date
-import webbrowser
+gi.require_version("Gtk", "3.0")
+from gi.repository import Gtk, GObject, Gdk
 
 class InvoicePage(Gtk.ScrolledWindow):
     __instance = None
@@ -298,6 +298,7 @@ class CreateInvoicePage(Gtk.ScrolledWindow):
         self.main_grid = Gtk.Grid(column_homogeneous=False,
                                   row_homogeneous=False, column_spacing=20,
                                   row_spacing=20)
+        self.userdao = UserDAO.get_instance()
         self._init_header_grid()
         self._init_user_grid()
         self._init_client_grid()
@@ -550,7 +551,7 @@ class CreateInvoicePage(Gtk.ScrolledWindow):
         ]
 
         for c in self.user_completions:
-            c.fill_entry(examples.utilisateurs)
+            #c.fill_entry([self.userdao.get()])
             c.to_update = self.user_completions
 
         label = Gtk.Label(i18n.t('gui.business_name'))
@@ -918,14 +919,14 @@ class CreateInvoicePage(Gtk.ScrolledWindow):
         return error_found
 
     def _get_user(self):
-        userdao = UserDAO.get_instance()
+        self.userdao = UserDAO.get_instance()
         if not User.exists():
             self.user_data = {}
             for name, entry in self.user_entries.items():
                 self.user_data[name] = entry.get_text()
             self.user_data["logo"] = self.logo_fn
             user = User.from_dict(self.user_data)
-            userdao.insert(user)
+            self.userdao.insert(user)
         elif self.update_user_btn.get_active():
             # l'update a ete active
             user = User.get_instance()

@@ -4,14 +4,15 @@ from facturio.gui.invoice import InvoicePage, CreateInvoicePage
 from facturio.gui.estimate import EstimatePage
 from facturio.gui.home import HomePage
 from facturio.gui.headerbar import HeaderBarSwitcher
+from facturio.gui.displayclient import DisplayClient
 from facturio.gui.customer import Customer
 from facturio.gui.add_customer import Add_Customer
 from facturio.gui.modify_usr import ModifyUsr
+from facturio.gui.modify_client import ModifyClient
+from facturio.gui.display_info import DisplayUser
 from facturio.gui.history import History
 from facturio.gui.showreceipt import ShowReceiptPage
 from facturio.gui.map import Map
-from facturio.gui.display_info import InfoPerson
-from facturio.db.dbmanager import DBManager
 from pathlib import Path
 from facturio import __path__
 import gi
@@ -25,8 +26,6 @@ i18n.set('locale', 'fr')
 class Window(Gtk.ApplicationWindow):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        # proprietés divers pour la window
-        manager = DBManager.get_instance()
         self.set_position(Gtk.WindowPosition.CENTER)
         self.set_hexpand(True)
         self.set_vexpand(True)
@@ -66,14 +65,18 @@ class Window(Gtk.ApplicationWindow):
         self.stack.add_named(self.add_customer, "add_customer")
         self.modify_usr = ModifyUsr()
         self.stack.add_named(self.modify_usr, "modify_usr")
+        self.modify_client = ModifyClient.get_instance()
+        self.stack.add_named(self.modify_client, "modify_client")
         self.customer_page = Customer()
         self.stack.add_named(self.customer_page, "customer_page")
         self.history_page = History()
         self.stack.add_named(self.history_page, "history_page")
         self.map_page = Map()
         self.stack.add_named(self.map_page, "map_page")
-        self.user_page = InfoPerson(True, 1)
+        self.user_page = DisplayUser.get_instance()
         self.stack.add_named(self.user_page, "user_page")
+        self.client_page = DisplayClient.get_instance()
+        self.stack.add_named(self.client_page, "client_page")
         self.add(self.stack)
 
     def initial_show(self):

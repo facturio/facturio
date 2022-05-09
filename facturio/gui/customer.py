@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import i18n
 import gi
+from facturio.gui.displayclient import DisplayClient
 from facturio.gui.page_gui import PageGui
 from facturio.gui.home import HeaderBarSwitcher
 from facturio.gui.add_customer import Add_Customer
@@ -10,7 +11,7 @@ from facturio.gui.page_gui import PageGui
 from facturio.gui.home import HeaderBarSwitcher
 from facturio.gui.add_customer import Add_Customer
 from facturio.gui.headerbar import HeaderBarSwitcher
-from facturio.db.db import Data_base
+from facturio.db.clientdao import ClientDAO
 gi.require_version("Gtk", "3.0")
 from gi.repository import Gtk, Gdk, Gio, GdkPixbuf
 
@@ -26,6 +27,7 @@ class Customer(PageGui):
     """
     def __init__(self):
         super().__init__()
+        self.dao = ClientDAO.get_instance()
         self.cent = Gtk.Grid(column_homogeneous=True,
                                   row_homogeneous=True, column_spacing=20,
                                   row_spacing=20)
@@ -34,6 +36,8 @@ class Customer(PageGui):
         self.title(i18n.t('gui.client'))
         self.__space_info()
         self.search_bar_client()
+        #TODO
+        #self.add_result(["prout","prout","prout",])
         self.__summon_button()
 
 
@@ -60,7 +64,9 @@ class Customer(PageGui):
         self.grid.set_row_homogeneous(False)
         self.grid.set_row_spacing(20)
         self.grid.set_column_spacing(20)
+        self.grid.attach(self.cent, 1, 3, 2, 1)
         return self
+
 
     def __summon_button(self):
         """
@@ -84,7 +90,7 @@ class Customer(PageGui):
     def file_explorer(self,button):
         """
         ouvrent un explorateur de fichier et ajoute la
-        bd le contenue du fichier en *.clt
+        bd le contenue du fichier en *.clt et *csv
         """
         filechooserdialog = Gtk.FileChooserDialog(title=" Importer client",
              parent=None,
@@ -132,10 +138,32 @@ class Customer(PageGui):
         """
         Affiche tout les clients de la base de donner
         """
-        list_client= self.db.selection_table("client",)
+        list_obj_client= self.dao.get_all()
+        list_client =[]
+        for i in list_obj_client:
+            list_client.append(i.dump_to_list)
         searchbar = FacturioOmnisearch(list_client)
-        searchbar.go_to=True
+        searchbar.completion.connect('match-selected', self.switch_to_display)
         self.cent.attach(searchbar, 1,3,2,1)
+
+    def fill_tree(self, completion, model, iter):
+        """
+        TODO
+        Remplit la treeview
+        """
+        print(completion)
+
+    def switch_to_display(self, completion, model, iter):
+        """
+        recupere les info de la completion et les affiche
+        avec la page info_persone
+        """
+        num_client = str(list((completion.props.model.get_value(iter, 0)))[1])
+        page=DisplayClient(False,num_client)
+        page.is_ut=False
+        page.num_client=int(num_client)
+        if num_client.isnumeric():
+            self.header_bar.switch_page(None,"client_page")
 
 
     def add_result(self,res):

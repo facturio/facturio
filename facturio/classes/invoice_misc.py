@@ -212,14 +212,14 @@ class Estimate(Receipt):
     """
     def __init__(
         self,
-        user: User,
-        client: Union[Client, Company],
-        articles_list: list[(Article, int)],
-        date: int = None,
-        balance: float = None,
-        taxes: float = None,
-        note: str = None,
-        id_: int = None
+        user,
+        client,
+        articles_list,
+        date=None,
+        balance=None,
+        taxes=None,
+        note=None,
+        id_=None
     ):
         super().__init__(user, client, articles_list, date, taxes, balance,
                          note, id_)

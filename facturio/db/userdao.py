@@ -28,7 +28,7 @@ class UserDAO:
         # convertir image logo sous forme de fichier binaire
         logo = None
         print(user.logo)
-        if user.logo is not None:
+        if user.logo is not None and user.logo != "Aucun":
             with open(user.logo, "rb") as user.logo:
                 logo = myfile.read()
         values = [logo, user.company_name, user.email, user.address,
@@ -41,14 +41,13 @@ class UserDAO:
         # il y une seule instance
         user.id_ = 1
 
-
     def update_user(self, user: User):
         """Maj de l'utilisateur."""
         request = """UPDATE user SET logo=?,company_name=?,e_mail=?,
                      address=?,phone=?,business_num=? WHERE id_user=1"""
         #convertir image logo sous forme de fichier binaire
         logo = None
-        if user.logo is not None:
+        if user.logo is not None and user.logo != "Aucun":
             with open(texte,"rb") as user.logo:
                 logo = myfile.read()
         values = [logo, user.company_name, user.email, user.address,
@@ -62,6 +61,8 @@ class UserDAO:
         """Renvoie une liste tous les instances des client sur la BD."""
         data = self.bdd.cursor.execute("select * from user").fetchone()
         # TODO: VERIFIER QUE IL Y A UNE LIGNE SINON ERROR
+        print(User.exists())
+        print(data)
         if not User.exists():
             return self._gen_user(data)
         else:
@@ -79,6 +80,8 @@ class UserDAO:
                     logo=tup[8],
                     id_=tup[0])
         return user
+
+
 
     # def selection_table(self,nom):
     #     bdd = DBManager.get_instance()

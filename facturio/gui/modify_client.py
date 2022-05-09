@@ -1,40 +1,66 @@
 #!/usr/bin/env python3
-import i18n
 import sqlite3
 import gi
-from facturio.gui.home import HeaderBarSwitcher
+from facturio.gui import displayclient
 from facturio.gui.page_gui import PageGui
+from facturio.classes.client import Client
+from facturio.gui.home import HeaderBarSwitcher
+from facturio.gui.displayclient import DisplayClient
 from facturio.db.clientdao import ClientDAO
 gi.require_version("Gtk", "3.0")
 from gi.repository import Gtk, Gdk, Gio, GdkPixbuf
 
 
-class Add_Customer(PageGui):
+class ModifyClient(PageGui):
     """
-    Classe IHM de le fenetre d'ajoute d'un client
+    Classe IHM de le fenetre de la modification
+    de l'utilisateur
     +--------+
     | --     |
     | --  -- |
     +--------+
+    TODO set text
     """
+    __instance = None
+
+    @staticmethod
+    def get_instance():
+        """Renvoie le singleton."""
+        if ModifyClient.__instance is None:
+            ModifyClient.__instance = ModifyClient()
+        return ModifyClient.__instance
+
     def __init__(self):
-        self.list_att_par=[i18n.t('gui.surname'),i18n.t('gui.name'),i18n.t('gui.email'),i18n.t('gui.address'),
-                           i18n.t('gui.phone_number'), i18n.t('gui.remark')]
+        self.dao=ClientDAO.get_instance()
+        self.num_client=DisplayClient.num_client
         super().__init__()
-        self.is_pro=True
         self.header_bar = HeaderBarSwitcher.get_instance()
         self.cent = Gtk.Grid(column_homogeneous=False,
                                   row_homogeneous=False, column_spacing=20,
                                   row_spacing=20)
+        if self.num_client != 0:
+            print("putain")
+            self.attr_usr=self.__get_client()
+        else:
+            self.attr_usr=[""]
         self.client_entries={}
-        self.client_space={}
         self.client_label={}
         self.__init_grid()
-        self.title__(i18n.t('gui.add_client'))
+        self.title__("Modifier Client")
         self.__space_info()
-        self.client()
+        self.utilisateur()
         self.__swicth_client()
 
+    def __get_client(self):
+        """
+        Recupere de la bd les info utilisateur
+        et les retourne sous forme de liste
+        """
+        if self.num_client == 0:
+            return None
+        client = self.dao.get_with_id(self.num_client)
+        print("obj=",client)
+        return client
 
     def __init_grid(self):
         """
@@ -59,39 +85,37 @@ class Add_Customer(PageGui):
         self.grid.attach(bttl, 1, 1, 3, 1 )
 
 
-    def __add2bd(self, button):
+    def __update_client(self, button):
         """
         Prend un boutton Gtk et un chemin vers la BD
         sqlite et insert les info client
         """
-        self.info=[]
-        self.entry.set_text("")
-        print(self.client_entries)
-        for i in self.list_att_par:
-            print(i)
-            self.info.append(self.client_entries[i].get_text())
-            self.client_entries[i].set_text("")
-        if self.is_pro:
-            self.info.append(self.client_entries[i18n.t('gui.business')].get_text())
-            self.client_entries[i18n.t('gui.business')].set_text("")
-            self.info.append(self.client_entries[i18n.t('gui.siret_number')].get_text())
-            self.client_entries[i18n.t('gui.siret_number')].set_text("")
-            if self.is_valid_for_db(self.info) and self.info[-1].isnumeric():
-                #TODO convert en obj et insere avec DAO
-                self.header_bar.switch_page(None,"home_page")
-            else:
-                print("champs incorrect")
+        self.client=self.__entry2client()
+        print(self.client.dump_to_list())
+        if self.is_valid_for_db(self.client.dump_to_list()):
+            self.dao.update(self.client)
+            self.header_bar.switch_page(None,"customer_page")
         else:
-            if self.is_valid_for_db(self.info):
-                self.header_bar.switch_page(page="home")
-                self.db.insertion_client_or_company(self.info, 0)
-            else:
-                print("champs incorrect")
+            print("champs incorrect")
 
+
+    def __entry2client(self):
+        """
+        Prend le dictrionaire d'entry
+        et retourn une instance de client
+        """
+        res = Client(email=self.client_entries["Mail "].get_text(),
+                  address=self.client_entries["Adresse "].get_text(),
+                  phone_number=self.client_entries["Numero "].get_text(),
+                  first_name=self.client_entries["Prenom "].get_text(),
+                  last_name=self.client_entries["Nom "].get_text(),
+                  note=self.client_entries["Remarque "].get_text(),
+                  id_=self.num_client)
+        return res
 
     def __swicth_client(self):
         switch_box=Gtk.HBox()
-        pro = Gtk.RadioButton.new_with_label_from_widget(None, i18n.t('gui.business'))
+        pro = Gtk.RadioButton.new_with_label_from_widget(None, "Entreprise")
         particulier = Gtk.RadioButton.new_from_widget(pro)
         particulier.set_label("Particulier")
         particulier.connect("toggled", self.on_button_toggled, "0")
@@ -107,33 +131,31 @@ class Add_Customer(PageGui):
     def on_button_toggled(self, button, pro):
         if button.get_active() and pro=="1":
             self.is_pro=True
-            self.client_entries[i18n.t('gui.business')].show()
-            self.client_label[i18n.t('gui.business')].show()
-            self.client_label[i18n.t('gui.siret_number')].show()
-            self.client_entries[i18n.t('gui.siret_number')].show()
+            self.client_entries["Entreprise "].show()
+            self.client_label["Entreprise "].show()
+            self.client_label["Siret "].show()
+            self.client_entries["Siret "].show()
             self.is_pro=True
         elif button.get_active():
             self.is_pro=False
-            self.client_entries[i18n.t('gui.business')].hide()
-            self.client_label[i18n.t('gui.business')].hide()
-            self.client_space[i18n.t('gui.business')].hide()
-            self.client_entries[i18n.t('gui.siret_number')].hide()
-            self.client_label[i18n.t('gui.siret_number')].hide()
-            self.client_space[i18n.t('gui.siret_number')].hide()
+            self.client_entries["Entreprise "].hide()
+            self.client_label["Entreprise "].hide()
+            self.client_entries["Siret "].hide()
+            self.client_label["Siret "].hide()
 
 
-    def client(self):
+    def utilisateur(self):
         """
         Affichage pour client
         """
-        self.imp = Gtk.Button.new_with_label(label=i18n.t('gui.add'))
-        self.imp.connect("clicked", self.__add2bd)
+        self.imp = Gtk.Button.new_with_label(label="Modifier")
+        self.imp.connect("clicked", self.__update_client)
         self.grid.attach(self.cent, 1, 2, 2, 1)
         self.cent.attach(self.imp, 1, 16, 5, 1)
-        self.first_name()
-        self.last_name()
         self.adrss()
         self.mails()
+        self.last_name()
+        self.first_name()
         self.nums()
         self.entreprise_name()
         self.siret()
@@ -150,10 +172,12 @@ class Add_Customer(PageGui):
         self.grid.attach(spacel, 0, 1, 1, 1)
         spacer = Gtk.Label("")
         spacer.set_hexpand(True)
-        self.grid.attach(spacer, 3, 1, 1, 1)
+        self.grid.attach(spacer, 3, 2, 2, 1)
+        spaceh = Gtk.Label("")
+        self.grid.attach(spaceh, 0, 0, 5, 1)
 
 
-    def __creat_labelbox(self,c_txt,pos):
+    def __creat_labelbox(self,c_txt,pos,ind):
         """
         prend un couple de chaine de charactere ainsi que un
         tuple de postion et affhiche un label avec une boite
@@ -166,63 +190,55 @@ class Add_Customer(PageGui):
         self.cent.attach(label,*pos)
         self.entry = Gtk.Entry()
         self.entry.set_hexpand(True)
+        self.entry.set_text(str(self.attr_usr[0]))
         self.cent.attach(self.entry,pos[0]+1,pos[1],2,1)
-        self.space = Gtk.Label()
-        self.cent.attach(self.space,pos[0],pos[1]+1,3,1)
+        space = Gtk.Label()
+        self.cent.attach(space,pos[0],pos[1]+1,3,1)
         self.client_entries[c_txt] = self.entry
-        self.client_space[c_txt] = self.space
-
-
-    def last_name(self):
-        self.__creat_labelbox(i18n.t('gui.name'),(0,3,1,1))
-        return self
-
-
-    def first_name(self):
-        self.__creat_labelbox(i18n.t('gui.surname'),(3,3,1,1))
-        return self
 
 
     def adrss(self):
-        self.__creat_labelbox(i18n.t('gui.email'),(3,5,1,1))
+        self.__creat_labelbox("Mail ",(3,8,1,1),3)
         return self
 
 
     def mails(self):
-        self.__creat_labelbox(i18n.t('gui.address'),(0,7,1,1))
+        self.__creat_labelbox("Adresse ",(0,10,1,1),4)
         return self
 
+
+    def first_name(self):
+        self.__creat_labelbox("Prenom ",(0,5,1,1),3)
+        return self
+
+    def last_name(self):
+        self.__creat_labelbox("Nom ",(3,5,1,1),2)
+        return self
 
     def nums(self):
-        self.__creat_labelbox(i18n.t('gui.phone_number'),(0,5,1,1))
-        return self
-
-
-    def entreprise(self):
-        self.__creat_labelbox(i18n.t('gui.remark'),(3,5,1,1))
+        self.__creat_labelbox("Numero ",(3,10,1,1),5)
         return self
 
 
     def entreprise_name(self):
-        self.__creat_labelbox(i18n.t('gui.business'),(3,7,1,1))
+        self.__creat_labelbox("Entreprise ",(0,8,1,1),2)
         return self
 
 
     def siret(self):
-        self.__creat_labelbox(i18n.t('gui.siret_number'),(0,11,1,1))
+        self.__creat_labelbox("Siret ",(0,14,1,1),6)
         return self
 
 
     def rmq(self):
         label = Gtk.Label()
-        label.set_markup("<b>" + i18n.t('gui.remark') + "</b>:")
+        label.set_markup("<b>Remarque</b>:")
         label.set_hexpand(True)
         label.set_justify(Gtk.Justification.CENTER)
-        self.client_label[i18n.t('gui.remark')] = label
+        self.client_label["Remarque "] = label
         self.cent.attach(label,0,13,1,1)
         self.entry = Gtk.Entry()
         self.entry.set_hexpand(True)
-        self.client_entries[i18n.t('gui.remark')] = self.entry
+        self.client_entries["Remarque "] = self.entry
         self.cent.attach(self.entry,1,13,5,3)
         return self
-

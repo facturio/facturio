@@ -26,7 +26,4 @@ class History(PageGui):
                 .title(i18n.t('gui.history'))
                 .search((1,3,5,1))
                 .space()
-                .init_result([i18n.t('gui.name'), i18n.t('gui.date'),
-                              i18n.t('gui.description')],
-                          (1,4,5,10))
         )

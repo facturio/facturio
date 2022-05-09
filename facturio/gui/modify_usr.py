@@ -3,7 +3,9 @@ import i18n
 import sqlite3
 import gi
 from facturio.gui.page_gui import PageGui
-from facturio.db.db import Data_base
+from facturio.gui.home import HeaderBarSwitcher
+from facturio.classes.user import User
+from facturio.db.userdao import UserDAO
 gi.require_version("Gtk", "3.0")
 from gi.repository import Gtk, Gdk, Gio, GdkPixbuf
 
@@ -18,17 +20,20 @@ class ModifyUsr(PageGui):
     +--------+
     """
     def __init__(self):
+        self.dao=UserDAO.get_instance()
         self.list_att_par=[i18n.t('gui.business'),i18n.t('gui.email'),i18n.t('gui.address'),
                            i18n.t('gui.phone_number'),i18n.t('gui.siret_number')]
         super().__init__()
+        self.header_bar = HeaderBarSwitcher.get_instance()
         self.cent = Gtk.Grid(column_homogeneous=False,
                                   row_homogeneous=False, column_spacing=20,
                                   row_spacing=20)
-        self.attr_usr=self.__get_user()
+        self.attr_usr= self.__get_user()
+        print(self.attr_usr)
         if self.attr_usr==[]:
-            self.attr_usr=[["","","",
-                           "","","",""]]
-        self.path=self.attr_usr[0][1]
+            self.attr_usr=["","","",
+                           "","","",""]
+        self.path=self.attr_usr[1]
         self.client_entries={}
         self.client_label={}
         self.__init_grid()
@@ -41,8 +46,15 @@ class ModifyUsr(PageGui):
         Recupere de la bd les info utilisateur
         et les retourne sous forme de liste
         """
-        list_client= self.db.selection_table("user")
-        return list_client
+        if not User.exists():
+            list_client=['Aucun', 'Aucun', 'Aucun', 'Aucun',
+                         'Aucun', 'Aucun', 'Aucun', 'Aucun']
+            return list_client
+        else:
+            self.client= self.dao.get_with_id(self.num_client)
+            list_client=self.client.dump_to_list()
+            return list_client
+
 
     def __init_grid(self):
         """
@@ -85,24 +97,11 @@ class ModifyUsr(PageGui):
             self.info.append("1")
             print("info=",self.info)
             self.db.update_user(self.info)
+            self.header_bar.switch_page(None,"home_page")
         else:
             print("champs incorrect")
 
 
-    def on_button_toggled(self, button, pro):
-        if button.get_active() and pro=="1":
-            self.is_pro=True
-            self.client_entries[i18n.t('gui.business')].show()
-            self.client_label[i18n.t('gui.business')].show()
-            self.client_label[i18n.t('gui.siret_number')].show()
-            self.client_entries[i18n.t('gui.siret_number')].show()
-            self.is_pro=True
-        elif button.get_active():
-            self.is_pro=False
-            self.client_entries[i18n.t('gui.business')].hide()
-            self.client_label[i18n.t('gui.business')].hide()
-            self.client_entries[i18n.t('gui.siret_number')].hide()
-            self.client_label[i18n.t('gui.siret_number')].hide()
 
 
     def utilisateur(self):
@@ -114,13 +113,15 @@ class ModifyUsr(PageGui):
         self.logo_button.set_label('+ Logo')
         self.logo_button.set_always_show_image(True)
         self.logo_button.set_hexpand(True)
-        self.cent.attach(self.logo_button, 4, 11, 2, 1)
+        self.cent.attach(self.logo_button, 5, 11, 2, 1)
         self.logo_fn = None
         self.logo_button.connect("clicked", self._logo_dialog)
         self.imp = Gtk.Button.new_with_label(label=i18n.t('gui.edit'))
         self.imp.connect("clicked", self.__add2bd)
         self.grid.attach(self.cent, 1, 2, 2, 1)
-        self.cent.attach(self.imp, 1, 16, 5, 1)
+        self.cent.attach(self.imp, 2, 16, 5, 1)
+        self.first_name()
+        self.last_name()
         self.adrss()
         self.mails()
         self.nums()
@@ -156,7 +157,7 @@ class ModifyUsr(PageGui):
         self.cent.attach(label,*pos)
         self.entry = Gtk.Entry()
         self.entry.set_hexpand(True)
-        self.entry.set_text(str(self.attr_usr[0][ind]))
+        self.entry.set_text(str(self.attr_usr[ind]))
         self.cent.attach(self.entry,pos[0]+1,pos[1],2,1)
         space = Gtk.Label()
         self.cent.attach(space,pos[0],pos[1]+1,3,1)
@@ -164,22 +165,22 @@ class ModifyUsr(PageGui):
 
 
     def adrss(self):
-        self.__creat_labelbox(i18n.t('gui.email'),(3,5,1,1),3)
+        self.__creat_labelbox(i18n.t('gui.email'),(4,5,1,1),3)
         return self
 
 
     def mails(self):
-        self.__creat_labelbox(i18n.t('gui.address'),(0,7,1,1),4)
+        self.__creat_labelbox(i18n.t('gui.address'),(4,7,1,1),4)
         return self
 
 
     def nums(self):
-        self.__creat_labelbox(i18n.t('gui.phone_number'),(3,7,1,1),5)
+        self.__creat_labelbox(i18n.t('gui.phone_number'),(1,7,1,1),5)
         return self
 
 
     def entreprise_name(self):
-        self.__creat_labelbox(i18n.t('gui.business'),(0,5,1,1),2)
+        self.__creat_labelbox(i18n.t('gui.business'),(1,5,1,1),2)
         return self
 
     def _logo_dialog(self, *args):
@@ -199,9 +200,16 @@ class ModifyUsr(PageGui):
 
 
     def siret(self):
-        self.__creat_labelbox(i18n.t('gui.siret_number'),(0,11,1,1),6)
+        self.__creat_labelbox(i18n.t('gui.siret_number'),(1,11,1,1),6)
         return self
 
+    def first_name(self):
+        self.__creat_labelbox("Prenom ",(1,2,1,1),1)
+        return self
+
+    def last_name(self):
+        self.__creat_labelbox("Nom ",(4,2,1,1),2)
+        return self
 
     def rmq(self):
         label = Gtk.Label()
