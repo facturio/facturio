@@ -12,6 +12,7 @@ from facturio.gui.home import HeaderBarSwitcher
 from facturio.gui.add_customer import Add_Customer
 from facturio.gui.headerbar import HeaderBarSwitcher
 from facturio.db.clientdao import ClientDAO
+from facturio.db.companydao import CompanyDAO
 gi.require_version("Gtk", "3.0")
 from gi.repository import Gtk, Gdk, Gio, GdkPixbuf
 
@@ -28,6 +29,7 @@ class Customer(PageGui):
     def __init__(self):
         super().__init__()
         self.dao = ClientDAO.get_instance()
+        self.cdao = CompanyDAO.get_instance()
         self.cent = Gtk.Grid(column_homogeneous=True,
                                   row_homogeneous=True, column_spacing=20,
                                   row_spacing=20)
@@ -157,10 +159,19 @@ class Customer(PageGui):
         recupere les info de la completion et les affiche
         avec la page info_persone
         """
-        print(str(list((completion.props.model.get_value(iter, 0)))))
-        num_client = str(list((completion.props.model.get_value(iter, 0)))[-2])
-        print("num_client=",num_client)
-        page=DisplayClient(False,num_client)
+        iterr=((list((completion.props.model.get_value(iter, 0)))))
+        iterr=iterr[:-1]
+        num_client=""
+        for i in reversed(iterr):
+            if i == ' ':
+                break
+            else:
+                num_client+=i
+        if self.cdao.get_with_id(num_client)!=None:
+            page=DisplayClient(True,num_client)
+            page.is_pro=True
+        else:
+            page=DisplayClient(False,num_client)
         page.is_ut=False
         page.num_client=int(num_client)
         if num_client.isnumeric():

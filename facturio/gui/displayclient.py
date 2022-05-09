@@ -3,9 +3,11 @@ import gi
 from facturio.gui.home import HeaderBarSwitcher
 gi.require_version("Gtk", "3.0")
 from classes.user import User
+from classes.client import Client
 from gui.add_customer import Add_Customer
 gi.require_version("OsmGpsMap", "1.0")
 from facturio.gui.page_gui import PageGui
+from facturio.db.companydao import CompanyDAO
 from facturio.db.clientdao import ClientDAO
 from gi.repository import Gtk, Gdk, Gio, GdkPixbuf, OsmGpsMap
 from facturio import __path__
@@ -22,7 +24,9 @@ class DisplayClient (PageGui):
     __instance = None
     num_client=0
     entrys={}
+    label={}
     buttons={}
+    is_pro=False
 
     @staticmethod
     def get_instance():
@@ -35,9 +39,10 @@ class DisplayClient (PageGui):
     def __init__(self,is_ut=False,num_client=0,*args, **kwargs):
         super().__init__()
         self.dao=ClientDAO.get_instance()
+        self.cdao=CompanyDAO.get_instance()
         self.num_client=DisplayClient.num_client
         self.is_ut=is_ut
-        print(self.num_client)
+        print("is_pro=",DisplayClient.is_pro)
         self.num_client=int(num_client)
         DisplayClient.num_client=int(num_client)
         self.header_bar = HeaderBarSwitcher.get_instance()
@@ -46,14 +51,24 @@ class DisplayClient (PageGui):
                                   row_homogeneous=False, column_spacing=20,
                                   row_spacing=20)
         self.__init_grid()
-        self.__title(str(self.num_client))
         self.grid.attach(self.cent, 1, 2, 2, 1)
         self.__space_info()
         if DisplayClient.__instance is None:
             self.ini_page()
         else:
                 self.update2client()
-
+        if self.is_ut:
+            DisplayClient.entrys["Siret "].show()
+            DisplayClient.label["Siret "].show()
+            DisplayClient.entrys["Entreprise "].show()
+            DisplayClient.label["Entreprise "].show()
+            DisplayClient.entrys["Siret "].set_text("ESTUN")
+            DisplayClient.entrys["Entreprise "].set_text("ESTUN")
+        else:
+            DisplayClient.entrys["Siret "].hide()
+            DisplayClient.label["Siret "].hide()
+            DisplayClient.entrys["Entreprise "].hide()
+            DisplayClient.label["Entreprise "].hide()
 
     def __init_grid(self):
         """
@@ -100,13 +115,13 @@ class DisplayClient (PageGui):
 
 
         att_usr=self.__get_user()
-        self.__title(att_usr[1])
-        self.first_name(att_usr[2])
+        self.first_name(att_usr[4])
         self.last_name(att_usr[3])
         self.adrss(att_usr[5])
-        self.mails(att_usr[4])
+        self.mails(att_usr[2])
         self.nums(str(att_usr[6]))
         self.siret(str(att_usr[7]))
+        self.entreprise(str(att_usr[7]))
 
 
 
@@ -114,6 +129,7 @@ class DisplayClient (PageGui):
     def __delete_client(self,button,num_client):
         """
         """
+        self.client= self.dao.get_with_id(DisplayClient.num_client)
         self.dao.delete(self.client)
         self.header_bar.switch_page(None,"home_page")
 
@@ -137,8 +153,10 @@ class DisplayClient (PageGui):
         Recupere de la bd les info client
         et les retourne sous forme de liste
         """
-        list_client= self.dao.get_with_id(int(self.num_client))
-        list_client= list_client.dump_to_list()
+        print("num=",self.num_client)
+        self.client= self.dao.get_with_id((self.num_client))
+        list_client= self.client.dump_to_list()
+        print(list_client)
         return list_client
 
 
@@ -166,42 +184,15 @@ class DisplayClient (PageGui):
         DisplayClient.buttons["Modifier"]=imp
 
         att_usr=att_usr[0]
-        self.__title(att_usr[1])
         self.first_name(att_usr[2])
         self.last_name(att_usr[3])
         self.adrss(att_usr[5])
         self.mails(att_usr[4])
         self.nums(str(att_usr[6]))
         self.siret(str(att_usr[7]))
+        self.entreprise(str(att_usr[7]))
 
 
-    def new_client(self):
-        """
-        INATEIGNABLE
-        Affichage pour client
-        """
-        print("error")
-        att_clt=self.__get_client()
-        l_entr=self.__get_ent()
-        l_id=[l[0] for l in l_entr]
-        self.imp = Gtk.Button(label="Modifier")
-        self.cent.attach(self.imp, 6, 4, 3, 3)
-        self.imp.connect("clicked", self.header_bar.switch_page, "modify_usr")
-        self.button = Gtk.Button(label="Supprimer")
-        self.button.connect("clicked", self.__delete_client, self.num_client)
-        self.cent.attach(self.button, 6, 7, 3, 3)
-        exporter = Gtk.Button.new_from_icon_name("document-save-symbolic",
-                                                    Gtk.IconSize.BUTTON)
-        self.cent.attach(exporter, 6, 10, 3, 3)
-        self.first_name(att_clt[2])
-        self.last_name(att_clt[3])
-        self.adrss(att_clt[4])
-        self.mails(att_clt[3])
-        self.nums(str(att_clt[5]))
-        if self.num_client in l_id:
-            self.entreprise(l_entr[self.num_client][1])
-            self.siret(str(l_entr[self.num_client][2]))
-        #self.commentaire(att_clt[6])
 
 
     def __space_info(self):
@@ -230,6 +221,7 @@ class DisplayClient (PageGui):
         self.cent.attach(label,pos[0],pos[1],2,1)
         label.set_hexpand(True)
         label.set_hexpand(True)
+        DisplayClient.label[c_txt[0]] = label
         entry = Gtk.Entry()
         entry.set_text(str(self.num_client))
         entry.set_hexpand(True)
@@ -263,34 +255,16 @@ class DisplayClient (PageGui):
         return self
 
 
-    def entreprise(self,ent,pos):
-        label = Gtk.Label()
-        label.set_markup("<b>Entreprise</b>:    ")
-        label.set_justify(Gtk.Justification.RIGHT)
-        self.cent.attach(label,pos[0],pos[1],2,1)
-        label.set_hexpand(True)
-        label.set_hexpand(True)
-        entry = Gtk.Entry()
-        entry.set_text(ent)
-        entry.set_hexpand(True)
-        entry.set_editable(False)
-        self.cent.attach(entry,pos[0]+2,pos[1],2,1)
-        spacer = Gtk.Label("")
-        spacer.set_hexpand(True)
-        self.cent.attach(spacer,pos[0]+4,pos[1],1,1)
-
-
     def update2client(self):
         DisplayClient.buttons["Modifier"].hide()
         attr_clt=self.__get_client()
         if attr_clt is None:
             raise ValueError
-        DisplayClient.entrys["Nom "].set_text(attr_clt[1])
-        DisplayClient.entrys["Prenom "].set_text(attr_clt[2])
-        DisplayClient.entrys["Adresse "].set_text(attr_clt[4])
-        DisplayClient.entrys["Numero "].set_text(str(attr_clt[5]))
-        DisplayClient.entrys["Mail "].set_text(str(attr_clt[3]))
-        DisplayClient.entrys["Siret "].set_text(str(attr_clt[6]))
+        DisplayClient.entrys["Nom "].set_text(attr_clt[0])
+        DisplayClient.entrys["Prenom "].set_text(attr_clt[1])
+        DisplayClient.entrys["Adresse "].set_text(attr_clt[3])
+        DisplayClient.entrys["Numero "].set_text(str(attr_clt[4]))
+        DisplayClient.entrys["Mail "].set_text(str(attr_clt[2]))
 
 
 
@@ -298,6 +272,9 @@ class DisplayClient (PageGui):
         self.__creat_labelbox(("Siret ",sir),(1,10,3,1))
         return self
 
+    def entreprise(self,ent):
+        self.__creat_labelbox(("Entreprise ",ent),(1,12,3,1))
+        return self
 
     def commentaire(self,com):
         label = Gtk.Label()

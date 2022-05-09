@@ -6,6 +6,7 @@ from facturio.classes.user import User
 from facturio.gui.add_customer import Add_Customer
 from facturio.gui.page_gui import PageGui
 from facturio.db.userdao import UserDAO
+from facturio.db.companydao import CompanyDAO
 from gi.repository import Gtk, Gdk, Gio, GdkPixbuf, OsmGpsMap
 from facturio import __path__
 import gi
@@ -40,6 +41,7 @@ class DisplayUser (PageGui):
         self.is_ut=is_ut
         print("here")
         self.dao=UserDAO.get_instance()
+        self.cdao=CompanyDAO.get_instance()
         self.num_client=int(num_client)
         self.header_bar = HeaderBarSwitcher.get_instance()
         self.cent = Gtk.Grid(column_homogeneous=False,
@@ -301,7 +303,6 @@ class DisplayUser (PageGui):
         DisplayUser.entrys[i18n.t('gui.address')].set_text(self.att_usr[5])
         DisplayUser.entrys[i18n.t('gui.phone_number')].set_text(str(self.att_usr[6]))
         DisplayUser.entrys[i18n.t('gui.email')].set_text(str(self.att_usr[4]))
-        DisplayUser.entrys[i18n.t('gui.siret_number')].set_text(str(self.att_usr[7]))
 
 
     def commentaire(self,com):

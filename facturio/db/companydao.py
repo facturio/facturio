@@ -70,6 +70,8 @@ class CompanyDAO:
                    "company.id_company=client.id_client WHERE "
                    f"id_company={id_comp}")
         tup = self.bdd.cursor.execute(request).fetchone()
+        if tup is None:
+            return None
         return self._gen_company(tup)
 
     @staticmethod

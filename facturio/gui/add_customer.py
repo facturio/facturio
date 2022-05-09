@@ -71,7 +71,6 @@ class Add_Customer(PageGui):
         """
         self.info=[]
         self.entry.set_text("")
-        print(self.client_entries)
         for i in self.list_att_par:
             print(i)
             self.info.append(self.client_entries[i].get_text())
