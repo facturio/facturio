@@ -59,8 +59,8 @@ class DBManager:
         self.cursor.execute("""
             CREATE TABLE IF NOT EXISTS company
             (id_company INTEGER PRIMARY KEY AUTOINCREMENT,
-            company_name STRING,
-            business_num INTEGER ,
+            company_name TEXT,
+            business_num TEXT,
             FOREIGN KEY(id_company) REFERENCES client(id_client)
             ON DELETE CASCADE)""")
         self.connexion.commit()
@@ -69,25 +69,25 @@ class DBManager:
         self.cursor.execute("""
             CREATE TABLE IF NOT EXISTS client
             (id_client INTEGER PRIMARY KEY AUTOINCREMENT,
-            first_name STRING,
-            last_name STRING,
-            e_mail STRING,
-            address STRING,
-            phone STRING,
-            remark STRING)""")
+            first_name TEXT,
+            last_name TEXT,
+            e_mail TEXT,
+            address TEXT,
+            phone TEXT,
+            remark TEXT)""")
         self.connexion.commit()
 
     def _creation_table_user(self):
         self.cursor.execute("""
             CREATE TABLE IF NOT EXISTS user
             (id_user INTEGER PRIMARY KEY AUTOINCREMENT,
-            company_name STRING,
-            first_name STRING,
-            last_name STRING,
-            e_mail STRING,
-            address STRING,
-            phone STRING,
-            business_num STRING,
+            company_name TEXT,
+            first_name TEXT,
+            last_name TEXT,
+            e_mail TEXT,
+            address TEXT,
+            phone TEXT,
+            business_num TEXT,
             logo BLOB)""")
         self.connexion.commit()
 
@@ -95,9 +95,9 @@ class DBManager:
         self.cursor.execute("""
             CREATE TABLE IF NOT EXISTS article
             ( id_article INTEGER PRIMARY KEY AUTOINCREMENT,
-            name STRING,
-            description STRING,
-            price float,
+            name TEXT,
+            description TEXT,
+            price REAL,
             quantity INTEGER,
             id_receipt INTEGER,
             FOREIGN KEY(id_receipt) REFERENCES receipt(id_receipt) ON DELETE CASCADE)""")
@@ -107,10 +107,10 @@ class DBManager:
         self.cursor.execute("""
             CREATE TABLE IF NOT EXISTS receipt
             (id_receipt INTEGER PRIMARY KEY AUTOINCREMENT,
-            balance FLOAT,
-            taxes FLOAT,
+            balance REAL,
+            taxes REAL,
             date INTEGER,
-            note STRING,
+            note TEXT,
             id_client INTEGER,
             id_user INTEGER,
             FOREIGN KEY(id_user) REFERENCES user(id_user) ON DELETE CASCADE,
@@ -143,7 +143,7 @@ class DBManager:
         CREATE TABLE IF NOT EXISTS advance
         (id_advance INTEGER PRIMARY KEY AUTOINCREMENT,
         date INTEGER,
-        balance STRING,
+        amount INTEGER,
         id_invoice INTEGER,
         FOREIGN KEY(id_invoice) REFERENCES invoice(id_invoice)
         ON DELETE CASCADE)""")

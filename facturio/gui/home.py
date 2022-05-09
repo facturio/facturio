@@ -39,7 +39,7 @@ class HomePage(Gtk.Box):
         self.grid.attach(space, 1, 4, 10, 1)
         # ajout de la search bar
         self.searchbar = FacturioOmnisearch(examples.clients,
-                                            placeholder_text=i18n.t("home.search"))
+                                            placeholder_text=i18n.t('home.search'))
         self.grid.attach(self.searchbar, 3, 3, 6, 1)
         # creation des buttons
         self.__init_buttons()
@@ -53,11 +53,11 @@ class HomePage(Gtk.Box):
         """
         Création des buttons et atach dans la self.grid
         """
-        labels = (i18n.t('home.bill'), i18n.t('home.history'), i18n.t('home.invoice'),
+        labels = (i18n.t('home.invoice'), i18n.t('home.history'), i18n.t('home.estimate'),
                   i18n.t('home.map'), i18n.t('home.client'), i18n.t('home.user'))
         positions = ((3, 5, 2, 1), (5, 5, 2, 1), (7, 5, 2, 1), (3, 6, 2, 1),
                      (5, 6, 2, 1), (7, 6, 2, 1))
-        page_names = ("invoice_page", "history_page", "quotation_page",
+        page_names = ("invoice_page", "history_page", "estimate_page",
                     "map_page", "customer_page", "user_page")
         self.buttons = []
         for label, pos, page in zip(labels, positions, page_names):

@@ -1,17 +1,17 @@
 en:
   search: "Search"
-  bill: "Billing"
+  invoice: "Invoices"
   history: "History"
-  invoice: "Invoice"
+  estimate: "Estimates"
   map: "Map"
   client: "Client"
   user: "User"
 
 fr:
   search: "Recherche"
-  bill: "Facture"
+  invoice: "Facture"
   history: "Historique"
-  invoice: "Devis"
+  estimate: "Devis"
   map: "Carte"
   client: "Client"
   user: "Utilisateur"

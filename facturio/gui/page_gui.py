@@ -1,12 +1,13 @@
 #!/usr/bin/env python3
-import gi
-gi.require_version("Gtk", "3.0")
-from gi.repository import Gtk
+import i18n
 import re
 from facturio.db.db import Data_base
 from facturio.gui.omnisearch import FacturioOmnisearch
 from facturio.gui.autocompletion import FacturioEntryCompletion
 from facturio import examples
+import gi
+gi.require_version("Gtk", "3.0")
+from gi.repository import Gtk
 
 class PageGui(Gtk.ScrolledWindow):
     """
@@ -87,7 +88,8 @@ class PageGui(Gtk.ScrolledWindow):
         Invoque la barre de recherche
         a cette emplacement
         """
-        searchbar = FacturioOmnisearch(examples.clients, placeholder_text="Recherche")
+        searchbar = FacturioOmnisearch(examples.clients,
+                                       placeholder_text=i18n.t('gui.search'))
         self.grid.attach(searchbar, *l_attach)
         return self
 

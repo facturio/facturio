@@ -33,14 +33,16 @@ class ReceiptDAO:
         user_dao = UserDAO.get_instance()
         user_dao.insert(receipt.user)
 
-        if type(receipt.client) == Client:
-            # Insertion du client
-            client_dao = ClientDAO.get_instance()
-            client_dao.insert(receipt.client)
-        else:
-            # Insertion de l'entreprise
-            company_dao = CompanyDAO.get_instance()
-            company_dao.insert(receipt.client)
+        if receipt.client.id_ is None:
+            # On insere seulement si le client n'est pas deja sur la bd
+            if type(receipt.client) == Client:
+                # Insertion du client
+                client_dao = ClientDAO.get_instance()
+                client_dao.insert(receipt.client)
+            else:
+                # Insertion de l'entreprise
+                company_dao = CompanyDAO.get_instance()
+                company_dao.insert(receipt.client)
 
         # TODO:Verifier que les id_client et id_user existent et ne soient
         request = """select * from client"""

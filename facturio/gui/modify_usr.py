@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+import i18n
 import sqlite3
 import gi
 from facturio.gui.page_gui import PageGui
@@ -17,8 +18,8 @@ class ModifyUsr(PageGui):
     +--------+
     """
     def __init__(self):
-        self.list_att_par=["Entreprise ","Mail ","Adresse ",
-                           "Numero ","Siret "]
+        self.list_att_par=[i18n.t('gui.business'),i18n.t('gui.email'),i18n.t('gui.address'),
+                           i18n.t('gui.phone_number'),i18n.t('gui.siret_number')]
         super().__init__()
         self.cent = Gtk.Grid(column_homogeneous=False,
                                   row_homogeneous=False, column_spacing=20,
@@ -31,7 +32,7 @@ class ModifyUsr(PageGui):
         self.client_entries={}
         self.client_label={}
         self.__init_grid()
-        self.title__("Modifier Utilisateur")
+        self.title__(i18n.t('gui.edit_user'))
         self.__space_info()
         self.utilisateur()
 
@@ -73,7 +74,7 @@ class ModifyUsr(PageGui):
         """
         self.info=[]
         if self.path == None:
-            print("pas de logo")
+            print(i18n.t('gui.no_logo'))
             return None
         print("avant path=",self.info)
         self.info.append(self.path)
@@ -91,17 +92,17 @@ class ModifyUsr(PageGui):
     def on_button_toggled(self, button, pro):
         if button.get_active() and pro=="1":
             self.is_pro=True
-            self.client_entries["Entreprise "].show()
-            self.client_label["Entreprise "].show()
-            self.client_label["Siret "].show()
-            self.client_entries["Siret "].show()
+            self.client_entries[i18n.t('gui.business')].show()
+            self.client_label[i18n.t('gui.business')].show()
+            self.client_label[i18n.t('gui.siret_number')].show()
+            self.client_entries[i18n.t('gui.siret_number')].show()
             self.is_pro=True
         elif button.get_active():
             self.is_pro=False
-            self.client_entries["Entreprise "].hide()
-            self.client_label["Entreprise "].hide()
-            self.client_entries["Siret "].hide()
-            self.client_label["Siret "].hide()
+            self.client_entries[i18n.t('gui.business')].hide()
+            self.client_label[i18n.t('gui.business')].hide()
+            self.client_entries[i18n.t('gui.siret_number')].hide()
+            self.client_label[i18n.t('gui.siret_number')].hide()
 
 
     def utilisateur(self):
@@ -116,7 +117,7 @@ class ModifyUsr(PageGui):
         self.cent.attach(self.logo_button, 4, 11, 2, 1)
         self.logo_fn = None
         self.logo_button.connect("clicked", self._logo_dialog)
-        self.imp = Gtk.Button.new_with_label(label="Modifier")
+        self.imp = Gtk.Button.new_with_label(label=i18n.t('gui.edit'))
         self.imp.connect("clicked", self.__add2bd)
         self.grid.attach(self.cent, 1, 2, 2, 1)
         self.cent.attach(self.imp, 1, 16, 5, 1)
@@ -163,30 +164,30 @@ class ModifyUsr(PageGui):
 
 
     def adrss(self):
-        self.__creat_labelbox("Mail ",(3,5,1,1),3)
+        self.__creat_labelbox(i18n.t('gui.email'),(3,5,1,1),3)
         return self
 
 
     def mails(self):
-        self.__creat_labelbox("Adresse ",(0,7,1,1),4)
+        self.__creat_labelbox(i18n.t('gui.address'),(0,7,1,1),4)
         return self
 
 
     def nums(self):
-        self.__creat_labelbox("Numero ",(3,7,1,1),5)
+        self.__creat_labelbox(i18n.t('gui.phone_number'),(3,7,1,1),5)
         return self
 
 
     def entreprise_name(self):
-        self.__creat_labelbox("Entreprise ",(0,5,1,1),2)
+        self.__creat_labelbox(i18n.t('gui.business'),(0,5,1,1),2)
         return self
 
     def _logo_dialog(self, *args):
-        file_chooser = Gtk.FileChooserNative(title="Selectionnez une image",
-                                             accept_label="Selectionner",
-                                             cancel_label="Annuler")
+        file_chooser = Gtk.FileChooserNative(title=i18n.t('gui.select_picture'),
+                                             accept_label=i18n.t('gui.select'),
+                                             cancel_label=i18n.t('gui.cancel'))
         filter_ = Gtk.FileFilter()
-        filter_.set_name("Images")
+        filter_.set_name(i18n.t('gui.pictures'))
         filter_.add_pattern("*.jpg")
         filter_.add_pattern("*.png")
         filter_.add_pattern("*.jpeg")
@@ -194,24 +195,23 @@ class ModifyUsr(PageGui):
         if file_chooser.run() == Gtk.ResponseType.ACCEPT:
            self.path = file_chooser.get_filename()
            self.logo_button.set_sensitive(False)
-           self.logo_button.set_label(" Ajouté")
+           self.logo_button.set_label(i18n.t('gui.added'))
 
 
     def siret(self):
-        self.__creat_labelbox("Siret ",(0,11,1,1),6)
+        self.__creat_labelbox(i18n.t('gui.siret_number'),(0,11,1,1),6)
         return self
 
 
     def rmq(self):
         label = Gtk.Label()
-        label.set_markup("<b>Remarque</b>:")
+        label.set_markup("<b>" + i18n.t('gui.remark') + "</b>:")
         label.set_hexpand(True)
         label.set_justify(Gtk.Justification.CENTER)
-        self.client_label["Remarque "] = label
+        self.client_label[i18n.t('gui.remark')] = label
         self.cent.attach(label,0,13,1,1)
         self.entry = Gtk.Entry()
         self.entry.set_hexpand(True)
-        self.client_entries["Remarque "] = self.entry
+        self.client_entries[i18n.t('gui.remark')] = self.entry
         self.cent.attach(self.entry,1,13,5,3)
         return self
-

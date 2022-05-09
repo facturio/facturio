@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 from facturio.classes.invoice_misc import Advance
-from dbmanager import DBManager
+from facturio.db.dbmanager import DBManager
 
 
 class AdvanceDAO():
@@ -19,13 +19,12 @@ class AdvanceDAO():
 
     def insert(self, advance: Advance):
         """Insertion du advance."""
-        request = """INSERT INTO advance(date, balance, id_invoice)
+        request = """INSERT INTO advance(date, amount, id_invoice)
                      VALUES(?, ?, ?)"""
 
         if advance.id_invoice is None:
             raise ValueError
-
-        values = (advance.date, advance.balance, advance.id_invoice)
+        values = (advance.date, advance.amount, advance.id_invoice)
         self.bdd.cursor.execute(request, values)
         self.bdd.connexion.commit()
 
@@ -69,7 +68,7 @@ class AdvanceDAO():
     def _gen_advance(tup):
         return Advance(id_=tup[0],
                        date=tup[1],
-                       balance=tup[2],
+                       amount=tup[2],
                        id_invoice=tup[3])
 
 
