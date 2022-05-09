@@ -11,7 +11,7 @@ fr:
   search: "Recherche"
   invoice: "Facture"
   history: "Historique"
-  estimates: "Devis"
+  estimate: "Devis"
   map: "Carte"
   client: "Client"
   user: "Utilisateur"

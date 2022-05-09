@@ -6,6 +6,7 @@ from classes.user import User
 from gui.add_customer import Add_Customer
 gi.require_version("OsmGpsMap", "1.0")
 from facturio.gui.page_gui import PageGui
+from facturio.db.clientdao import ClientDAO
 from gi.repository import Gtk, Gdk, Gio, GdkPixbuf, OsmGpsMap
 from facturio import __path__
 
@@ -33,7 +34,8 @@ class DisplayClient (PageGui):
 
     def __init__(self,is_ut=False,num_client=0,*args, **kwargs):
         super().__init__()
-        print("inside")
+        self.dao=ClientDAO.get_instance()
+        self.num_client=DisplayClient.num_client
         self.is_ut=is_ut
         self.num_client=int(num_client)
         DisplayClient.num_client=int(num_client)
@@ -96,7 +98,7 @@ class DisplayClient (PageGui):
         DisplayClient.buttons["Supprimer"]=imp
 
 
-        att_usr=att_usr[0]
+        att_usr=self.__get_user()
         self.__title(att_usr[1])
         self.first_name(att_usr[2])
         self.last_name(att_usr[3])
@@ -111,7 +113,7 @@ class DisplayClient (PageGui):
     def __delete_client(self,button,num_client):
         """
         """
-        self.db.db_delete_client(num_client)
+        self.dao.delete(self.client)
         self.header_bar.switch_page(None,"home_page")
 
 
@@ -120,8 +122,14 @@ class DisplayClient (PageGui):
         Recupere de la bd les info utilisateur
         et les retourne sous forme de liste
         """
-        list_client= self.db.selection_table("user")
-        return list_client
+        if self.num_client==0:
+            list_client=['Aucun', 'Aucun', 'Aucun', 'Aucun',
+                         'Aucun', 'Aucun', 'Aucun', 'Aucun']
+            return list_client
+        else:
+            self.client= self.dao.get_with_id(self.num_client)
+            list_client=self.client.dump_to_list()
+            return list_client
 
     def __get_client(self):
         """

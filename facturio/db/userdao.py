@@ -23,7 +23,7 @@ class UserDAO:
         # TODO: Tester que sur la table il n'aie pas deja un user
         # TODO: Modifier l'ordre des attributs pour respecter la table
         request = """INSERT INTO user(logo, company_name, e_mail, address,
-                     phone, num_SIREN, first_name, last_name)
+                     phone, business_num, first_name, last_name)
                      VALUES(?, ?, ?, ?, ?, ?, ?, ?)"""
         # convertir image logo sous forme de fichier binaire
         logo = None
@@ -61,7 +61,7 @@ class UserDAO:
         """Renvoie une liste tous les instances des client sur la BD."""
         data = self.bdd.cursor.execute("select * from user").fetchone()
         # TODO: VERIFIER QUE IL Y A UNE LIGNE SINON ERROR
-        if not User.exits():
+        if not User.exists():
             return self._gen_user(data)
         else:
             return User.get_instance()
@@ -79,29 +79,6 @@ class UserDAO:
                     id_=tup[0])
         return user
 
-    def get_user(self):
-        """
-        Renvoie l'unique user ou None sinon
-        """
-        tuples = self.bdd.cursor.execute("select * from  user").fetchall()
-        self.user=User.get_instance()
-        if len(tuples)>1:
-            raise Exception("Erreur : Plusieurs Utilisateur")
-        else:
-            if tuples == []:
-                self.user.set_attr("company_name","Aucun")
-                self.user.set_attr("first_name","Aucun")
-                self.user.set_attr("last_name","Aucun")
-                self.user.set_attr("email","Aucun")
-                self.user.set_attr("address","Aucun")
-                self.user.set_attr("phone_number","Aucun")
-                self.user.set_attr("business_number","Aucun")
-                self.user.set_attr("logo","Aucun")
-                self.insert(self.user)
-                return self.user
-            else:
-                user=self._gen_user(tuples[0])
-                return user
 
 
     # def selection_table(self,nom):

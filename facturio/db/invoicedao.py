@@ -3,6 +3,7 @@ from facturio.db.clientdao import ClientDAO
 from facturio.db.userdao import UserDAO
 from facturio.db.articledao import ArticleDAO
 from facturio.db.advancedao import AdvanceDAO
+from facturio.db.companydao import CompanyDAO
 from facturio.db.dbmanager import DBManager
 from facturio.classes.invoice_misc import Invoice
 
@@ -34,6 +35,7 @@ class InvoiceDAO:
         for advance in invoice.advances_list:
             advance.id_invoice = id_rcp
             adv_dao.insert(advance)
+        assert(invoice.id_ is not None)
 
     # def _set_id(self, invoice: Invoice, id_inv):
     #     """Mis a jour l'id_invoice des acomptes."""
@@ -51,13 +53,32 @@ class InvoiceDAO:
             res.append(self._gen_invoice(inv))
         return res
 
+    def get_with_id(self, id_inv):
+
+        request = ("SELECT * FROM invoice "
+                   "INNER JOIN receipt ON "
+                   "invoice.id_invoice=receipt.id_receipt "
+                   f"WHERE invoice.id_invoice={id_inv}")
+        tup = self.db.cursor.execute(request).fetchone()
+        return self._gen_invoice(tup)
+
+
     def _gen_invoice(self, tup):
         udao = UserDAO.get_instance()
         cdao = ClientDAO.get_instance()
+        compdao = CompanyDAO.get_instance()
         user = udao.get()
         # entreprise ou client?
-        # TODO: Verifier si l'id est un entrprise
-        client = cdao.get_with_id(tup[7])
+        # Verifier si l'id est un entrprise
+        id_cli_comp = tup[7]
+        assert(id_cli_comp is not None)
+        request = f"SELECT * FROM company where id_company={id_cli_comp}"
+        client = None
+        if self.db.cursor.execute(request).fetchone() is None:
+            client = cdao.get_with_id(id_cli_comp)
+        else:
+            client = compdao.get_with_id(id_cli_comp)
+
         user = udao.get()
         art_dao = ArticleDAO.get_instance()
         articles = art_dao.get_all_with_id_receipt(tup[0])
@@ -91,7 +112,6 @@ if __name__ == "__main__":
     from facturio.classes.client import Client, Company
     from facturio.classes.user import User
     from facturio.db.articledao import ArticleDAO
-    from facturio.db.companydao import CompanyDAO
 
 
     user = User(company_name="Facturio INC", last_name="BENJELLOUN",

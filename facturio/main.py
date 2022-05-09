@@ -1,6 +1,7 @@
 import sys
 import i18n
 from facturio.gui.invoice import InvoicePage, CreateInvoicePage
+from facturio.gui.estimate import EstimatePage
 from facturio.gui.home import HomePage
 from facturio.gui.headerbar import HeaderBarSwitcher
 from facturio.gui.displayclient import DisplayClient
@@ -10,6 +11,7 @@ from facturio.gui.modify_usr import ModifyUsr
 from facturio.gui.modify_client import ModifyClient
 from facturio.gui.display_info import DisplayUser
 from facturio.gui.history import History
+from facturio.gui.showinvoice import ShowInvoicePage
 from facturio.gui.map import Map
 from pathlib import Path
 from facturio import __path__
@@ -19,13 +21,11 @@ from gi.repository import Gtk, Gdk, Gio, GObject
 
 i18n.load_path.append(__path__[0] + "/data/translations/")
 i18n.set('filename_format', '{namespace}.{format}')
-i18n.set('locale', 'en')
+i18n.set('locale', 'fr')
 
 class Window(Gtk.ApplicationWindow):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.TEST=0
-        # proprietés divers pour la window
         self.set_position(Gtk.WindowPosition.CENTER)
         self.set_hexpand(True)
         self.set_vexpand(True)
@@ -55,6 +55,10 @@ class Window(Gtk.ApplicationWindow):
         self.stack.add_named(self.invoice_page, "invoice_page")
         self.create_invoice_page = CreateInvoicePage()
         self.stack.add_named(self.create_invoice_page, "create_invoice_page")
+        self.estimate_page = EstimatePage()
+        self.stack.add_named(self.estimate_page, "estimate_page")
+        self.show_invoice_page = ShowInvoicePage.get_instance()
+        self.stack.add_named(self.show_invoice_page, "show_invoice_page")
         self.add_customer = Add_Customer()
         self.stack.add_named(self.add_customer, "add_customer")
         self.modify_usr = ModifyUsr()

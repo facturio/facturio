@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
-from facturio.db.dbmanager import DBManager
 from facturio.classes.client import Client
+from facturio.db.dbmanager import DBManager
 import unittest
 
 class ClientDAO:
@@ -19,7 +19,6 @@ class ClientDAO:
         return ClientDAO.__instance
 
     def insert(self, client: Client):
-
         """Insertion du client."""
 
         request = """INSERT INTO client(first_name, last_name, e_mail, address,
@@ -31,14 +30,13 @@ class ClientDAO:
         from client
 
         """
-        self.bdd.cursor.execute(req)
-        self.bdd.connexion.commit()
-        jointure=self.bdd.cursor.fetchall()
-        for i in jointure:
-            if i[1]==client.first_name and i[2]==client.last_name:
-                print("tu ne peux pas ")
-                return
-
+        # self.bdd.cursor.execute(req)
+        # self.bdd.connexion.commit()
+        # jointure = self.bdd.cursor.fetchall()
+        # for i in jointure:
+        #     if i[1]==client.first_name and i[2]==client.last_name:
+        #         print("tu ne peux pas ")
+        #         return
         self.bdd.cursor.execute(request, values)
         self.bdd.connexion.commit()
         # On recupere l'id qui vient d'etre insere'

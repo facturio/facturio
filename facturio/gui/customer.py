@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+import i18n
 import gi
 from facturio.gui.displayclient import DisplayClient
 from facturio.gui.page_gui import PageGui
@@ -10,7 +11,7 @@ from facturio.gui.page_gui import PageGui
 from facturio.gui.home import HeaderBarSwitcher
 from facturio.gui.add_customer import Add_Customer
 from facturio.gui.headerbar import HeaderBarSwitcher
-from facturio.db.db import Data_base
+from facturio.db.clientdao import ClientDAO
 gi.require_version("Gtk", "3.0")
 from gi.repository import Gtk, Gdk, Gio, GdkPixbuf
 
@@ -26,16 +27,17 @@ class Customer(PageGui):
     """
     def __init__(self):
         super().__init__()
+        self.dao = ClientDAO.get_instance()
         self.cent = Gtk.Grid(column_homogeneous=True,
                                   row_homogeneous=True, column_spacing=20,
                                   row_spacing=20)
         self.header_bar = HeaderBarSwitcher.get_instance()
         self.__init_grid()
+        self.title(i18n.t('gui.client'))
         self.__space_info()
-        self.init_result(["Nom","Prenom","adress"],
-                         (1, 4, 2, 3))
         self.search_bar_client()
-        self.add_result(["prout","prout","prout",])
+        #TODO
+        #self.add_result(["prout","prout","prout",])
         self.__summon_button()
 
 
@@ -70,8 +72,8 @@ class Customer(PageGui):
         """
         Invoque les boutons: Importer,Exporter,Creer
         """
-        p_button=(("Importer", (4,3,1,1)), ("Plus", (4,4,1,1)),
-                  ("Exporter", (4,5,1,1)))
+        p_button=((i18n.t('gui.import'), (4,3,1,1)), (i18n.t('gui.plus'), (4,4,1,1)),
+                  (i18n.t('gui.export'), (4,5,1,1)))
         but = Gtk.Button.new_from_icon_name("list-add-symbolic",
                                                     Gtk.IconSize.BUTTON)
         but.connect("clicked", self.header_bar.active_button, "add_customer")
@@ -97,7 +99,7 @@ class Customer(PageGui):
         filechooserdialog.add_buttons("_Cancel", Gtk.ResponseType.CANCEL)
         filechooserdialog.set_default_response(Gtk.ResponseType.OK)
         filter_ = Gtk.FileFilter()
-        filter_.set_name("Client")
+        filter_.set_name(i18n.t('gui.client'))
         filter_.add_pattern("*.clt")
         filter_.add_pattern("*.csv")
         filechooserdialog.set_filter(filter_)
@@ -136,13 +138,17 @@ class Customer(PageGui):
         """
         Affiche tout les clients de la base de donner
         """
-        list_client= self.db.selection_table("client",)
+        list_obj_client= self.dao.get_all()
+        list_client =[]
+        for i in list_obj_client:
+            list_client.append(i.dump_to_list)
         searchbar = FacturioOmnisearch(list_client)
         searchbar.completion.connect('match-selected', self.switch_to_display)
         self.cent.attach(searchbar, 1,3,2,1)
 
     def fill_tree(self, completion, model, iter):
         """
+        TODO
         Remplit la treeview
         """
         print(completion)
