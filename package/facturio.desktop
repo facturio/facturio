@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=Facturio
+Categories=Office;
+Comment=G\u00e9rez vos factures et clients avec Facturio.
+Exec="\\$HOME/.local/bin/facturio"
+Icon=
+Terminal=false
