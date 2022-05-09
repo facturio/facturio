@@ -16,7 +16,6 @@ class TestClient(unittest.TestCase):
                 'Personne peu sympathique', 13
             ])
 
-
 class TestCompany(unittest.TestCase):
     """Teste la classe Company"""
     def test_dump_to_list(self):
