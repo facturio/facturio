@@ -26,10 +26,10 @@ git clone https://github.com/facturio/facturio
 cd facturio/
 pip install --prefix ../facturio-1.0/usr .
 
-cd ..
-$EDITOR facturio-1.0/run.sh
-chmod +x facturio-1.0/run.sh
-tar czf facturio-1.0.tar.gz facturio-1.0/
+cd ../facturio-1.0
+$EDITOR run.sh
+chmod +x run.sh
+tar czf facturio-1.0.tar.gz *
 ```
 
 ```bash
@@ -42,5 +42,5 @@ export XDG_DATA_DIRS="$APPDIR/usr/share/:/usr/share/:$XDG_DATA_DIRS"
 export PYTHONPATH="$PYTHONPATH:$APPDIR/usr/local/lib/python3.10/dist-packages"
 export GI_TYPELIB_PATH="$APPDIR/usr/lib/x86_64-linux-gnu/girepository-1.0"
 
-facturio
+facturio "$@"
 ```
