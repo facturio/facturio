@@ -37,6 +37,7 @@ class DisplayClient (PageGui):
         self.dao=ClientDAO.get_instance()
         self.num_client=DisplayClient.num_client
         self.is_ut=is_ut
+        print(self.num_client)
         self.num_client=int(num_client)
         DisplayClient.num_client=int(num_client)
         self.header_bar = HeaderBarSwitcher.get_instance()
@@ -136,7 +137,8 @@ class DisplayClient (PageGui):
         Recupere de la bd les info client
         et les retourne sous forme de liste
         """
-        list_client= self.db.find_client(int(self.num_client))
+        list_client= self.dao.get_with_id(int(self.num_client))
+        list_client= list_client.dump_to_list()
         return list_client
 
 

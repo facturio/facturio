@@ -2,6 +2,7 @@
 import i18n
 import gi
 from facturio.gui.page_gui import PageGui
+from facturio.classes.client import Client
 import concurrent.futures
 from facturio.db.clientdao import ClientDAO
 from geopy.geocoders import Nominatim
@@ -37,10 +38,11 @@ class Map(PageGui):
         )
         list_obj_client= self.dao.get_all()
         list_client =[]
-        for i in list_obj_client:
-            list_client.append(i.dump_to_list)
-        list_adress=[client[4] for client in list_client ]
-        print(list_adress)
+        #for i in list_obj_client:
+        #    l=i.dump_to_list()
+        #    list_client.append(i)
+        #list_adress=[client[4] for client in list_client ]
+        #print(list_adress)
         # self.print_all_customer(list_adress)
 
 

@@ -94,3 +94,4 @@ if __name__ == "__main__":
     user = User("Facturio INC", "Youssef", "BENJELLOUN", "yb@gmail.com",
                 "427 Boulevard des armaris 83100 Toulon", "07 67 31 58 20",
                 "12348921 2341")
+    dao.insert(user)

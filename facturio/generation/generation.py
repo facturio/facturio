@@ -171,7 +171,7 @@ if __name__ == "__main__":
     print(create_random_user())
     print()
     print(create_random_client())
-    print() 
+    print()
     print(create_random_invoice())
     print()
     print(create_random_estimate())

@@ -91,7 +91,7 @@ class ModifyClient(PageGui):
         sqlite et insert les info client
         """
         self.client=self.__entry2client()
-        print(self.client.dump_to_list())
+        print(self.client.dump_to_list()[:-1])
         if self.is_valid_for_db(self.client.dump_to_list()):
             self.dao.update(self.client)
             self.header_bar.switch_page(None,"customer_page")

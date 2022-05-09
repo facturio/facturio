@@ -100,8 +100,7 @@ class ClientDAO:
 if __name__ == "__main__":
     dao = ClientDAO.get_instance()
     a =None
-    dao.insert(a)
-    #a=dao.get_all()
+    a=dao.get_all()
     #avoir celui qu'on veut
     #a=a[len(a)-1]
     #a.first_name="titit"

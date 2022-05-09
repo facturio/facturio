@@ -55,6 +55,15 @@ class Client:
                   note=data_dict["note"])
         return res
 
+    @classmethod
+    def from_list(cls, liste):
+        res = cls(email=liste[2],
+                  address=liste[3],
+                  phone_number=liste[4],
+                  first_name=liste[1],
+                  last_name=liste[0],
+                  note=liste[5])
+        return res
 
 class Company(Client):
     """

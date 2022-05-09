@@ -125,12 +125,11 @@ class Customer(PageGui):
                         elif line != "#":
                             l_clients[len(l_clients)-1].append(line)
             for clients in l_clients:
-                print(l_clients)
                 if self.is_valid_for_db(clients[1:]):
                     self.db.insertion_client_or_company(clients[1:],
                                                     clients[0])
                 else:
-                    print("section incorrect :",clients)
+                    raise Exception("Mauvais format")
             filechooserdialog.destroy()
 
 
@@ -141,7 +140,7 @@ class Customer(PageGui):
         list_obj_client= self.dao.get_all()
         list_client =[]
         for i in list_obj_client:
-            list_client.append(i.dump_to_list)
+            list_client.append(i.dump_to_list())
         searchbar = FacturioOmnisearch(list_client)
         searchbar.completion.connect('match-selected', self.switch_to_display)
         self.cent.attach(searchbar, 1,3,2,1)
@@ -158,7 +157,9 @@ class Customer(PageGui):
         recupere les info de la completion et les affiche
         avec la page info_persone
         """
-        num_client = str(list((completion.props.model.get_value(iter, 0)))[1])
+        print(str(list((completion.props.model.get_value(iter, 0)))))
+        num_client = str(list((completion.props.model.get_value(iter, 0)))[-2])
+        print("num_client=",num_client)
         page=DisplayClient(False,num_client)
         page.is_ut=False
         page.num_client=int(num_client)

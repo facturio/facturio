@@ -2,9 +2,11 @@
 import i18n
 import sqlite3
 import gi
+from facturio.classes.client import Client, Company
 from facturio.gui.home import HeaderBarSwitcher
 from facturio.gui.page_gui import PageGui
 from facturio.db.clientdao import ClientDAO
+from facturio.db.companydao import CompanyDAO
 gi.require_version("Gtk", "3.0")
 from gi.repository import Gtk, Gdk, Gio, GdkPixbuf
 
@@ -17,10 +19,13 @@ class Add_Customer(PageGui):
     | --  -- |
     +--------+
     """
+    #TODO fix bug rmq
     def __init__(self):
         self.list_att_par=[i18n.t('gui.surname'),i18n.t('gui.name'),i18n.t('gui.email'),i18n.t('gui.address'),
                            i18n.t('gui.phone_number'), i18n.t('gui.remark')]
         super().__init__()
+        self.dao=ClientDAO.get_instance()
+        self.cdao=CompanyDAO.get_instance()
         self.is_pro=True
         self.header_bar = HeaderBarSwitcher.get_instance()
         self.cent = Gtk.Grid(column_homogeneous=False,
@@ -77,14 +82,19 @@ class Add_Customer(PageGui):
             self.info.append(self.client_entries[i18n.t('gui.siret_number')].get_text())
             self.client_entries[i18n.t('gui.siret_number')].set_text("")
             if self.is_valid_for_db(self.info) and self.info[-1].isnumeric():
-                #TODO convert en obj et insere avec DAO
+                print("info",self.info)
+                Cls=Company(self.info[6],self.info[0], self.info[1], self.info[2],
+                           self.info[3], self.info[4], self.info[5],self.info[7])
+                self.cdao.insert(Cls)
                 self.header_bar.switch_page(None,"home_page")
             else:
                 print("champs incorrect")
         else:
             if self.is_valid_for_db(self.info):
-                self.header_bar.switch_page(page="home")
-                self.db.insertion_client_or_company(self.info, 0)
+                Cls=Client(self.info[0], self.info[1], self.info[2],
+                           self.info[3], self.info[4], self.info[5],)
+                self.dao.insert(Cls)
+                self.header_bar.switch_page(page="home_page")
             else:
                 print("champs incorrect")
 
