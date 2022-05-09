@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 import sqlite3
-
+from xdg import BaseDirectory
 
 class DBManager:
     """Data Base Manager."""
@@ -15,7 +15,7 @@ class DBManager:
 
     def __init__(self):
         """Fonction pour creation ou/et connexion a la data_base."""
-        self.connexion = sqlite3.connect("facturio.db")
+        self.connexion = sqlite3.connect(BaseDirectory.save_data_path("facturio") + "/facturio.db")
 
         # execution des requetes il faut un curseur
         self.cursor = self.connexion.cursor()

@@ -7,7 +7,7 @@ setup(
     version='1.0',
     url='https://github.com/facturio/facturio',
     packages=find_packages(),
-    install_requires=["pygobject", "borb", "geopy", "python-i18n[YAML]"],
+    install_requires=["pygobject", "borb", "geopy", "python-i18n[YAML]", "pyxdg"],
     entry_points={
         'console_scripts': [
             'facturio = facturio.main:main'
