@@ -111,7 +111,6 @@ class DBManager:
         self.cursor.execute("""
         CREATE TABLE IF NOT EXISTS invoice
         (id_invoice INTEGER PRIMARY KEY AUTOINCREMENT,
-        solde INTEGER,
         FOREIGN KEY(id_invoice) REFERENCES receipt(id_receipt)
         ON DELETE CASCADE)""")
         self.connexion.commit()

@@ -78,7 +78,7 @@ class Add_Customer(PageGui):
                 print("champs incorrect")
         else:
             if self.is_valid_for_db(self.info):
-                self.header_bar.active_button("home")
+                self.header_bar.switch_page(page="home")
                 self.db.insertion_client_or_company(self.info, 0)
             else:
                 print("champs incorrect")

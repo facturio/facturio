@@ -21,14 +21,14 @@ class InvoiceDAO:
         self.db = DBManager.get_instance()
 
     def insert(self, invoice: Invoice):
-        """Insertion de la facture."""
+        """Insere la facture."""
         rdao = ReceiptDAO.get_instance()
         rdao.insert(invoice)
         max_req = "SELECT max(id_receipt) FROM receipt"
         id_rcp = self.db.cursor.execute(max_req).fetchone()[0]
         # TODO: CHANGER SOLDE PAR BALANCE PARTOUT
-        request = "INSERT INTO invoice(id_invoice, solde) VALUES(?,?)"
-        self.db.cursor.execute(request, (id_rcp, invoice.balance))
+        request = "INSERT INTO invoice(id_invoice) VALUES (?)"
+        self.db.cursor.execute(request, (id_rcp,))
         self.db.connexion.commit()
         # insertion des accomptes
         adv_dao = AdvanceDAO.get_instance()
@@ -54,7 +54,6 @@ class InvoiceDAO:
         return res
 
     def get_with_id(self, id_inv):
-
         request = ("SELECT * FROM invoice "
                    "INNER JOIN receipt ON "
                    "invoice.id_invoice=receipt.id_receipt "
@@ -62,6 +61,15 @@ class InvoiceDAO:
         tup = self.db.cursor.execute(request).fetchone()
         return self._gen_invoice(tup)
 
+    def update_balance_with_id(self, id_invoice):
+        """Mis a jour de balance de l'id id_invoice."""
+        invoice = self.get_with_id(id_invoice)
+        balance = invoice.total_with_advances()
+        request = (f"UPDATE receipt SET balance={balance} "
+                   f"WHERE id_receipt={id_invoice}")
+        self.db.cursor.execute(request)
+        self.db.connexion.commit()
+        # inv_dao.update_balance_with_id(advance.id_invoice)
 
     def _gen_invoice(self, tup):
         udao = UserDAO.get_instance()
@@ -70,7 +78,7 @@ class InvoiceDAO:
         user = udao.get()
         # entreprise ou client?
         # Verifier si l'id est un entrprise
-        id_cli_comp = tup[7]
+        id_cli_comp = tup[6]
         assert(id_cli_comp is not None)
         request = f"SELECT * FROM company where id_company={id_cli_comp}"
         client = None
@@ -84,14 +92,15 @@ class InvoiceDAO:
         articles = art_dao.get_all_with_id_receipt(tup[0])
         adv_dao = AdvanceDAO.get_instance()
         advances = adv_dao.get_all_with_id_invoice(tup[0])
+        print(f"balance from invdao={tup}")
         return Invoice(user=user,
                        client=client,
                        articles_list=articles,
-                       taxes=tup[4],
-                       date=tup[5],
-                       balance=tup[1],
+                       taxes=tup[3],
+                       date=tup[4],
+                       balance=tup[2],
                        advances_list=advances,
-                       note=tup[6],
+                       note=tup[5],
                        id_=tup[0])
 
         # TODO
