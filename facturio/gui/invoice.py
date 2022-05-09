@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
+import re
 import gi
-gi.require_version("Gtk", "3.0")
-from gi.repository import Gtk, GObject, Gdk
 import i18n
+import webbrowser
 from facturio.classes.client import Company, Client
 from facturio.classes.user import User
 from facturio.classes.invoice_misc import Article, Invoice, Estimate
 from facturio.gui.headerbar import HeaderBarSwitcher
-from facturio.gui.showinvoice import ShowInvoicePage
+from facturio.gui.showreceipt import ShowReceiptPage
 from facturio.build_pdf.build_pdf import build_pdf
 from facturio.gui.autocompletion import FacturioEntryCompletion
 from facturio.db.invoicedao import InvoiceDAO
@@ -15,13 +15,22 @@ from facturio.db.userdao import UserDAO
 from facturio.db.estimatedao import EstimateDAO
 from facturio import examples
 from datetime import datetime
-import re
 from datetime import date
-import webbrowser
+gi.require_version("Gtk", "3.0")
+from gi.repository import Gtk, GObject, Gdk
 
 class InvoicePage(Gtk.ScrolledWindow):
+    __instance = None
+
+    def get_instance():
+        """Return l'instance de invoice page."""
+        if InvoicePage.__instance is None:
+            InvoicePage.__instance = InvoicePage()
+        return InvoicePage.__instance
+
     def __init__(self):
         super().__init__()
+        InvoicePage.__instance = self
         # client | date | solde restant
         self.grid = Gtk.Grid(row_homogeneous=True,
                              column_spacing=20, row_spacing=20)
@@ -31,12 +40,14 @@ class InvoicePage(Gtk.ScrolledWindow):
         self.hb = header_bar
         hbox = Gtk.HBox()
         self.paid_switch = Gtk.RadioButton(label=i18n.t('gui.paid'))
-        self.not_paid_switch = Gtk.RadioButton(group=self.paid_switch,
+        self.unpaid_switch = Gtk.RadioButton(group=self.paid_switch,
                                                label=i18n.t('gui.unpaid'))
+        self.paid_switch.connect("clicked", self.refresh)
+        self.unpaid_switch.connect("clicked", self.refresh)
         self.paid_switch.set_mode(False)
-        self.not_paid_switch.set_mode(False)
+        self.unpaid_switch.set_mode(False)
         hbox.pack_start(self.paid_switch, True, True, 0)
-        hbox.pack_start(self.not_paid_switch, True, True, 0)
+        hbox.pack_start(self.unpaid_switch, True, True, 0)
         Gtk.StyleContext.add_class(hbox.get_style_context(), "linked")
 
         vbox = Gtk.VBox()
@@ -106,12 +117,19 @@ class InvoicePage(Gtk.ScrolledWindow):
         id_ = model[sel_iter][-1]
         inv_dao = InvoiceDAO.get_instance()
         invoice = inv_dao.get_with_id(id_)
+        show_inv = ShowReceiptPage.get_instance()
+        show_inv.load_receipt(invoice, add_adv=True)
+        self.hb.switch_page(page="show_invoice_page")
+    def switch_to_show_inv(self, *args):
+        model, sel_iter = self.treeview.get_selection().get_selected()
+        id_ = model[sel_iter][-1]
+        inv_dao = InvoiceDAO.get_instance()
+        invoice = inv_dao.get_with_id(id_)
         print(invoice)
-        show_inv = ShowInvoicePage.get_instance()
+        show_inv = ShowReceiptPage.get_instance()
         print(show_inv)
-        show_inv.load_receipt(invoice)
-        self.hb.active_button(page="show_invoice_page")
-
+        show_inv.load_receipt(invoice, add_adv=False)
+        self.hb.switch_page(page="show_invoice_page")
 
     def show_hide_style_settings(self, *args):
         """Affiche ou cache la grid des styles."""
@@ -122,20 +140,7 @@ class InvoicePage(Gtk.ScrolledWindow):
 
     def switch_to_create_invoice(self, *args):
         hb = HeaderBarSwitcher.get_instance()
-        hb.active_button(page="create_invoice_page")
-
-    # def style_update_window(self, *args):
-    #     self.set_sensitive(False)
-    #     box = Gtk.VBox()
-    #     rb = Gtk.RadioButton(label=i18n.t('gui.lines'))
-    #     rb1 = Gtk.RadioButton(group=rb, label=i18n.t('gui.columns'))
-    #     window = Gtk.Window(title=i18n.t('gui.edit_style'), type=Gtk.WindowType.TOPLEVEL)
-    #     color_chooser = Gtk.ColorChooserWidget(show_editor=False)
-    #     box.pack_start(color_chooser, True, True, 5)
-    #     box.pack_start(rb, True, True, 5)
-    #     box.pack_start(rb1, True, True, 5)
-    #     window.add(box)
-    #     window.show_all()
+        hb.switch_page(page="create_invoice_page")
 
     def _init_treeview(self):
         self.treeview_scroll = Gtk.ScrolledWindow()
@@ -143,6 +148,7 @@ class InvoicePage(Gtk.ScrolledWindow):
         # self.refresh_store()
         self.treeview = Gtk.TreeView(model=self.store, headers_clickable=True)
         self.treeview_scroll.add(self.treeview)
+        self.treeview.connect("row-activated", self.switch_to_show_inv)
         renderer_text = Gtk.CellRendererText()
         column_text = Gtk.TreeViewColumn(i18n.t('gui.name'), renderer_text, text=0)
         column_text.set_clickable(True)
@@ -180,24 +186,31 @@ class InvoicePage(Gtk.ScrolledWindow):
         renderer_text = Gtk.CellRendererText()
         column_text = Gtk.TreeViewColumn(title=i18n.t('gui.refresh'),
                                          cell_renderer=renderer_text)
-        column_text.get_button().connect("clicked", self.refresh_store)
+        column_text.get_button().connect("clicked", self.refresh)
         column_text.set_clickable(True)
         # column_text.set_halign(Gtk.Align.END)
         # column_text.set_widget(btn)
         # btn.show()
         self.treeview.append_column(column_text)
 
-    def refresh_store(self, *args):
+    def refresh(self, *args):
         """Syncro avec la bd."""
         inv_dao = InvoiceDAO.get_instance()
         invoices = inv_dao.get_all()
         self.store.clear()
         for invoice in inv_dao.get_all():
-            iter_ = self.store.append([invoice.client.first_name,
-                                      invoice.client.last_name,
-                                      invoice.date_string(),
-                                      invoice.balance,
-                                      invoice.id_])
+            if self.paid_switch.get_active() and invoice.balance <= 0:
+                iter_ = self.store.append([invoice.client.first_name,
+                                        invoice.client.last_name,
+                                        invoice.date_string(),
+                                        invoice.balance,
+                                        invoice.id_])
+            if self.unpaid_switch.get_active() and invoice.balance > 0:
+                iter_ = self.store.append([invoice.client.first_name,
+                                        invoice.client.last_name,
+                                        invoice.date_string(),
+                                        invoice.balance,
+                                        invoice.id_])
 
     def _gen_invoice(self, btn):
         model, sel_iter = self.treeview.get_selection().get_selected()
@@ -538,7 +551,7 @@ class CreateInvoicePage(Gtk.ScrolledWindow):
         ]
 
         for c in self.user_completions:
-            c.fill_entry([self.userdao.get()])
+            #c.fill_entry([self.userdao.get()])
             c.to_update = self.user_completions
 
         label = Gtk.Label(i18n.t('gui.business_name'))

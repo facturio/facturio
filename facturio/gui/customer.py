@@ -76,7 +76,7 @@ class Customer(PageGui):
                   (i18n.t('gui.export'), (4,5,1,1)))
         but = Gtk.Button.new_from_icon_name("list-add-symbolic",
                                                     Gtk.IconSize.BUTTON)
-        but.connect("clicked", self.header_bar.active_button, "add_customer")
+        but.connect("clicked", self.header_bar.switch_page, "add_customer")
         self.cent.attach(but, *p_button[1][1])
         but = Gtk.Button.new_from_icon_name("document-save-symbolic",
                                                     Gtk.IconSize.BUTTON)

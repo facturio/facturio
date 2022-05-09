@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 from facturio.classes.client import Client
 from facturio.db.dbmanager import DBManager
-import unittest
+
 
 class ClientDAO:
     """Client controleur pour la DB."""
@@ -106,3 +106,4 @@ if __name__ == "__main__":
     #a=a[len(a)-1]
     #a.first_name="titit"
     #dao.update(a)
+

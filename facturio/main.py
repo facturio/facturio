@@ -11,7 +11,7 @@ from facturio.gui.modify_usr import ModifyUsr
 from facturio.gui.modify_client import ModifyClient
 from facturio.gui.display_info import DisplayUser
 from facturio.gui.history import History
-from facturio.gui.showinvoice import ShowInvoicePage
+from facturio.gui.showreceipt import ShowReceiptPage
 from facturio.gui.map import Map
 from pathlib import Path
 from facturio import __path__
@@ -52,12 +52,14 @@ class Window(Gtk.ApplicationWindow):
         self.main_page = HomePage()
         self.stack.add_named(self.main_page, "home_page")
         self.invoice_page = InvoicePage()
+        self.invoice_page.refresh()
         self.stack.add_named(self.invoice_page, "invoice_page")
         self.create_invoice_page = CreateInvoicePage()
         self.stack.add_named(self.create_invoice_page, "create_invoice_page")
         self.estimate_page = EstimatePage()
+        self.estimate_page.refresh()
         self.stack.add_named(self.estimate_page, "estimate_page")
-        self.show_invoice_page = ShowInvoicePage.get_instance()
+        self.show_invoice_page = ShowReceiptPage.get_instance()
         self.stack.add_named(self.show_invoice_page, "show_invoice_page")
         self.add_customer = Add_Customer()
         self.stack.add_named(self.add_customer, "add_customer")
@@ -79,9 +81,10 @@ class Window(Gtk.ApplicationWindow):
 
     def initial_show(self):
         self.show_all()
-    #     self.stack.set_visible_child_name("home_page")
-    #     self.header_bar.set_visible(False)
-        # self.create_invoice_page.calendar.set_visible(False)
+        self.header_bar.set_visible(False)
+        self.create_invoice_page.calendar.set_visible(False)
+        self.estimate_page.style_grid.set_visible(False)
+        self.invoice_page.style_grid.set_visible(False)
 
 
 class App(Gtk.Application):

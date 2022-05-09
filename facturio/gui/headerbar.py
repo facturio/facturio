@@ -3,10 +3,11 @@ import gi
 gi.require_version("Gtk", "3.0")
 from gi.repository import Gtk, Gio
 
-
 class ButtonIcon(Gtk.RadioButton):
     """
-    Spécialise la classe Gtk.RadioButton en ajoutant un icon et un label
+    Spécialise la classe Gtk.RadioButton.
+
+    En ajoutant un icon et un label
     """
     def __init__(self, label, icon_name):
         super().__init__()
@@ -48,7 +49,7 @@ class HeaderBarSwitcher(Gtk.HeaderBar):
         # Création et affichage du button home
         btn = ButtonIcon("", "go-home-symbolic")
         self.button_dict["home_page"] = btn
-        btn.connect("clicked", self.switch_page, "home_page")
+        btn.connect("clicked", self._switch_page, "home_page")
         btn.join_group(self.invisible_btn)
         self.pack_start(btn)
 
@@ -77,7 +78,7 @@ class HeaderBarSwitcher(Gtk.HeaderBar):
                  "system-users-symbolic")
         for name, label, icon in zip(page_names, labels, icons):
             self.button_dict[name] = ButtonIcon(label, icon)
-            self.button_dict[name].connect("clicked", self.switch_page, name)
+            self.button_dict[name].connect("clicked", self._switch_page, name)
             self.button_dict[name].join_group(self.invisible_btn)
             self.box.pack_start(self.button_dict[name], True, True, 10)
 
@@ -94,7 +95,7 @@ class HeaderBarSwitcher(Gtk.HeaderBar):
             self.button_dict["home_page"].set_visible(False)
             self.box.set_visible(False)
 
-    def switch_page(self, btn: Gtk.Button = None, page: str = None):
+    def _switch_page(self, btn: Gtk.Button = None, page: str = None):
         """
         Change de page.
 
@@ -103,21 +104,24 @@ class HeaderBarSwitcher(Gtk.HeaderBar):
         if page is None:
             raise ValueError
         if self.stack:
+            if self.stack.get_visible_child_name() != page:
+                if page == "home_page":
+                    self.set_visible(False)
+                else:
+                    self.set_visible(True)
             self.stack.set_visible_child_name(page)
 
 
-            # if self.stack.get_visible_child_name() != page:
-            #     if page == "home_page":
-            #         self.set_visible(False)
-            #     else:
-            #         self.set_visible(True)
-            #     self.stack.set_visible_child_name(page)
-
-
-    def active_button(self, btn: Gtk.Button = None, page: str = None):
-        "active le button en déclanchant une signal si besoin"
+    def switch_page(self, btn: Gtk.Button = None, page: str = None):
+        """Active le button en déclanchant une signal si besoin"""
+        # from facturio.gui.estimate import EstimatePage
+        # from facturio.gui.invoice import InvoicePage
+        # est = EstimatePage.get_instance()
+        # inv = InvoicePage.get_instance()
+        # est.refresh()
+        # inv.refresh()
         if page in self.button_dict:
             self.button_dict[page].set_active(True)
         else:
             self.invisible_btn.set_active(True)
-            self.switch_page(btn, page)
+            self._switch_page(btn, page)

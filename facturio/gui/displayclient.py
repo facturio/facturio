@@ -83,13 +83,13 @@ class DisplayClient (PageGui):
                       "","","",""]]
         imp = Gtk.Button(label="Modifier")
         self.cent.attach(imp, 6, 10, 2, 1)
-        imp.connect("clicked", self.header_bar.active_button, "modify_client")
+        imp.connect("clicked", self.header_bar.switch_page, "modify_client")
         DisplayClient.buttons["Modifier"]=imp
 
 
         imp = Gtk.Button(label="Modifier")
         self.cent.attach(imp, 6, 4, 3, 3)
-        imp.connect("clicked", self.header_bar.active_button, "modify_client")
+        imp.connect("clicked", self.header_bar.switch_page, "modify_client")
         DisplayClient.buttons["ModifierClient"]=imp
 
         button = Gtk.Button(label="Supprimer")
@@ -160,7 +160,7 @@ class DisplayClient (PageGui):
 
         imp = Gtk.Button(label="Modifier")
         self.cent.attach(imp, 6, 10, 2, 1)
-        imp.connect("clicked", self.header_bar.active_button, "modify_client")
+        imp.connect("clicked", self.header_bar.switch_page, "modify_client")
         DisplayClient.buttons["Modifier"]=imp
 
         att_usr=att_usr[0]
@@ -184,7 +184,7 @@ class DisplayClient (PageGui):
         l_id=[l[0] for l in l_entr]
         self.imp = Gtk.Button(label="Modifier")
         self.cent.attach(self.imp, 6, 4, 3, 3)
-        self.imp.connect("clicked", self.header_bar.active_button, "modify_usr")
+        self.imp.connect("clicked", self.header_bar.switch_page, "modify_usr")
         self.button = Gtk.Button(label="Supprimer")
         self.button.connect("clicked", self.__delete_client, self.num_client)
         self.cent.attach(self.button, 6, 7, 3, 3)

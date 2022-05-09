@@ -4,6 +4,7 @@ import sqlite3
 import gi
 from facturio.gui.page_gui import PageGui
 from facturio.gui.home import HeaderBarSwitcher
+from facturio.classes.user import User
 from facturio.db.userdao import UserDAO
 gi.require_version("Gtk", "3.0")
 from gi.repository import Gtk, Gdk, Gio, GdkPixbuf
@@ -27,8 +28,7 @@ class ModifyUsr(PageGui):
         self.cent = Gtk.Grid(column_homogeneous=False,
                                   row_homogeneous=False, column_spacing=20,
                                   row_spacing=20)
-        self.attr_usr= self.dao.get()
-        self.attr_usr= self.attr_usr.dump_to_list()
+        self.attr_usr= self.__get_user()
         print(self.attr_usr)
         if self.attr_usr==[]:
             self.attr_usr=["","","",
@@ -46,8 +46,15 @@ class ModifyUsr(PageGui):
         Recupere de la bd les info utilisateur
         et les retourne sous forme de liste
         """
-        list_client= self.dao.get
-        return list_client
+        if not User.exists():
+            list_client=['Aucun', 'Aucun', 'Aucun', 'Aucun',
+                         'Aucun', 'Aucun', 'Aucun', 'Aucun']
+            return list_client
+        else:
+            self.client= self.dao.get_with_id(self.num_client)
+            list_client=self.client.dump_to_list()
+            return list_client
+
 
     def __init_grid(self):
         """
