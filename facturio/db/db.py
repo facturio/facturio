@@ -9,7 +9,7 @@ class Data_base:
         self.name=name
         #fonction pour creation ou/et connexion
         # a la data_base
-        self.connexion=sqlite3.connect(BaseDirectory.load_data_paths("facturio") + self.name+'.db')
+        self.connexion=sqlite3.connect(BaseDirectory.save_data_path("facturio") + self.name+'.db')
 
         # execution des requetes il faut un curseur
         self.cursor=self.connexion.cursor()
