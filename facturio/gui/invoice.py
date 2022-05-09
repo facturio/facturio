@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
+import re
 import gi
-gi.require_version("Gtk", "3.0")
-from gi.repository import Gtk, GObject, Gdk
 import i18n
+import webbrowser
 from facturio.classes.client import Company, Client
 from facturio.classes.user import User
 from facturio.classes.invoice_misc import Article, Invoice, Estimate
@@ -15,9 +15,9 @@ from facturio.db.userdao import UserDAO
 from facturio.db.estimatedao import EstimateDAO
 from facturio import examples
 from datetime import datetime
-import re
 from datetime import date
-import webbrowser
+gi.require_version("Gtk", "3.0")
+from gi.repository import Gtk, GObject, Gdk
 
 class InvoicePage(Gtk.ScrolledWindow):
     def __init__(self):
