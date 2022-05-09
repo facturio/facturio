@@ -3,7 +3,7 @@ import sqlite3
 import gi
 from facturio.gui.page_gui import PageGui
 from facturio.gui.home import HeaderBarSwitcher
-from facturio.db.db import Data_base
+from facturio.db.userdao import UserDAO
 gi.require_version("Gtk", "3.0")
 from gi.repository import Gtk, Gdk, Gio, GdkPixbuf
 
@@ -18,6 +18,7 @@ class ModifyUsr(PageGui):
     +--------+
     """
     def __init__(self):
+        self.dao=UserDAO.get_instance()
         self.list_att_par=["Entreprise ","Mail ","Adresse ",
                            "Numero ","Siret "]
         super().__init__()
@@ -25,10 +26,11 @@ class ModifyUsr(PageGui):
         self.cent = Gtk.Grid(column_homogeneous=False,
                                   row_homogeneous=False, column_spacing=20,
                                   row_spacing=20)
-        self.attr_usr=self.__get_user()
+        self.attr_usr= self.dao.get_user()
         if self.attr_usr==[]:
             self.attr_usr=[["","","",
                            "","","",""]]
+        print("quoi? ",self.attr_usr)
         self.path=self.attr_usr[0][1]
         self.client_entries={}
         self.client_label={}
@@ -42,7 +44,7 @@ class ModifyUsr(PageGui):
         Recupere de la bd les info utilisateur
         et les retourne sous forme de liste
         """
-        list_client= self.db.selection_table("user")
+        list_client= self.dao.get
         return list_client
 
     def __init_grid(self):
@@ -90,23 +92,6 @@ class ModifyUsr(PageGui):
         else:
             print("champs incorrect")
 
-
-    def on_button_toggled(self, button, pro):
-        if button.get_active() and pro=="1":
-            self.is_pro=True
-            self.client_entries["Entreprise "].show()
-            self.client_label["Entreprise "].show()
-            self.client_label["Siret "].show()
-            self.client_entries["Siret "].show()
-            self.is_pro=True
-        elif button.get_active():
-            self.is_pro=False
-            self.client_entries["Entreprise "].hide()
-            self.client_label["Entreprise "].hide()
-            self.client_entries["Siret "].hide()
-            self.client_label["Siret "].hide()
-
-
     def utilisateur(self):
         """
         Affichage pour client
@@ -116,13 +101,15 @@ class ModifyUsr(PageGui):
         self.logo_button.set_label('+ Logo')
         self.logo_button.set_always_show_image(True)
         self.logo_button.set_hexpand(True)
-        self.cent.attach(self.logo_button, 4, 11, 2, 1)
+        self.cent.attach(self.logo_button, 5, 11, 2, 1)
         self.logo_fn = None
         self.logo_button.connect("clicked", self._logo_dialog)
         self.imp = Gtk.Button.new_with_label(label="Modifier")
         self.imp.connect("clicked", self.__add2bd)
         self.grid.attach(self.cent, 1, 2, 2, 1)
-        self.cent.attach(self.imp, 1, 16, 5, 1)
+        self.cent.attach(self.imp, 2, 16, 5, 1)
+        self.first_name()
+        self.last_name()
         self.adrss()
         self.mails()
         self.nums()
@@ -166,22 +153,22 @@ class ModifyUsr(PageGui):
 
 
     def adrss(self):
-        self.__creat_labelbox("Mail ",(3,5,1,1),3)
+        self.__creat_labelbox("Mail ",(4,5,1,1),3)
         return self
 
 
     def mails(self):
-        self.__creat_labelbox("Adresse ",(0,7,1,1),4)
+        self.__creat_labelbox("Adresse ",(4,7,1,1),4)
         return self
 
 
     def nums(self):
-        self.__creat_labelbox("Numero ",(3,7,1,1),5)
+        self.__creat_labelbox("Numero ",(1,7,1,1),5)
         return self
 
 
     def entreprise_name(self):
-        self.__creat_labelbox("Entreprise ",(0,5,1,1),2)
+        self.__creat_labelbox("Entreprise ",(1,5,1,1),2)
         return self
 
     def _logo_dialog(self, *args):
@@ -201,9 +188,16 @@ class ModifyUsr(PageGui):
 
 
     def siret(self):
-        self.__creat_labelbox("Siret ",(0,11,1,1),6)
+        self.__creat_labelbox("Siret ",(1,11,1,1),6)
         return self
 
+    def first_name(self):
+        self.__creat_labelbox("Prenom ",(1,2,1,1),1)
+        return self
+
+    def last_name(self):
+        self.__creat_labelbox("Nom ",(4,2,1,1),2)
+        return self
 
     def rmq(self):
         label = Gtk.Label()

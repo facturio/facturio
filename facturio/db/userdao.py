@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 from facturio.classes.user import User
-from dbmanager import DBManager
+from facturio.db.dbmanager import DBManager
 
 
 class UserDAO:
@@ -23,12 +23,13 @@ class UserDAO:
         # TODO: Tester que sur la table il n'aie pas deja un user
         # TODO: Modifier l'ordre des attributs pour respecter la table
         request = """INSERT INTO user(logo, company_name, e_mail, address,
-                     phone, business_num, first_name, last_name)
+                     phone, num_SIREN, first_name, last_name)
                      VALUES(?, ?, ?, ?, ?, ?, ?, ?)"""
         # convertir image logo sous forme de fichier binaire
         logo = None
-        if user.logo is not None:
-            with open(texte,"rb") as user.logo:
+        print(user.logo)
+        if user.logo is not None and user.logo != "Aucun":
+            with open(user.logo, "rb") as user.logo:
                 logo = myfile.read()
         values = [logo, user.company_name, user.email, user.address,
                   user.phone_number, user.business_number, user.first_name,
@@ -40,14 +41,13 @@ class UserDAO:
         # il y une seule instance
         user.id_ = 1
 
-
     def update_user(self, user: User):
         """Maj de l'utilisateur."""
         request = """UPDATE user SET logo=?,company_name=?,e_mail=?,
                      address=?,phone=?,business_num=? WHERE id_user=1"""
         #convertir image logo sous forme de fichier binaire
         logo = None
-        if user.logo is not None:
+        if user.logo is not None and user.logo != "Aucun":
             with open(texte,"rb") as user.logo:
                 logo = myfile.read()
         values = [logo, user.company_name, user.email, user.address,
@@ -78,6 +78,31 @@ class UserDAO:
                     logo=tup[8],
                     id_=tup[0])
         return user
+
+    def get_user(self):
+        """
+        Renvoie l'unique user ou None sinon
+        """
+        tuples = self.bdd.cursor.execute("select * from  user").fetchall()
+        self.user=User.get_instance()
+        if len(tuples)>1:
+            raise Exception("Erreur : Plusieurs Utilisateur")
+        else:
+            if tuples == []:
+                self.user.set_attr("company_name","Aucun")
+                self.user.set_attr("first_name","Aucun")
+                self.user.set_attr("last_name","Aucun")
+                self.user.set_attr("email","Aucun")
+                self.user.set_attr("address","Aucun")
+                self.user.set_attr("phone_number","Aucun")
+                self.user.set_attr("business_number","Aucun")
+                self.user.set_attr("logo","Aucun")
+                self.insert(self.user)
+                return self.user
+            else:
+                user=self._gen_user(tuples[0])
+                return user
+
 
     # def selection_table(self,nom):
     #     bdd = DBManager.get_instance()

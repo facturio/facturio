@@ -54,6 +54,8 @@ class User:
             return self.business_number
         elif name == "logo":
             return self.logo
+        elif name == "i_":
+            return self.logo
         else:
             print(f"No attribute {name} found")
             raise KeyError
@@ -76,6 +78,8 @@ class User:
             self.business_number = val
         elif name == "logo":
             self.logo = val
+        elif name == "_id":
+            self._id = val
         else:
             print(f"No attribute {name} found")
             raise KeyError

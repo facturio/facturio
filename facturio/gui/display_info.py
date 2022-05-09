@@ -6,13 +6,14 @@ from classes.user import User
 from gui.add_customer import Add_Customer
 gi.require_version("OsmGpsMap", "1.0")
 from facturio.gui.page_gui import PageGui
+from facturio.db.userdao import UserDAO
 from gi.repository import Gtk, Gdk, Gio, GdkPixbuf, OsmGpsMap
 from facturio import __path__
 
 class DisplayUser (PageGui):
     """
-    Classe IHM de le fenetre d'affichage, elle permet soit d'afficher la page
-    d'utilisateur soit la page d'un client
+    Classe IHM de le fenetre d'affichage, elle permet d'afficher
+    l'utilisateur
     +--------+
     |---  == |
     |---  -- |
@@ -33,6 +34,7 @@ class DisplayUser (PageGui):
     def __init__(self,is_ut=True,num_client=0,*args, **kwargs):
         super().__init__()
         self.is_ut=is_ut
+        self.dao=UserDAO()
         self.num_client=int(num_client)
         self.header_bar = HeaderBarSwitcher.get_instance()
         super().__init__(*args, **kwargs)
@@ -92,21 +94,13 @@ class DisplayUser (PageGui):
         self.logo(__path__[0] + "/data/icons/Moi.png")
 
 
-
-
-    def __delete_client(self,button,num_client):
-        """
-        """
-        self.db.db_delete_client(num_client)
-        self.header_bar.switch_page(None,"home_page")
-
-
     def __get_user(self):
         """
         Recupere de la bd les info utilisateur
         et les retourne sous forme de liste
         """
-        list_client= self.db.selection_table("user")
+        list_client = self.dao.get_user()
+        print(list_client)
         return list_client
 
     def __get_client(self):
