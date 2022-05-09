@@ -15,6 +15,7 @@ en:
   amount: "Amount"
   number: "#"
   contractor: "Contractor"
+  client: "Customer"
 fr:
   invoice: "Facture"
   estimate: "Devis"
@@ -32,3 +33,4 @@ fr:
   amount: "Montant"
   number: "n°"
   contractor: "Prestataire"
+  client: "Client"
