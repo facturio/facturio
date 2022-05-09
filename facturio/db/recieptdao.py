@@ -29,9 +29,9 @@ class ReceiptDAO:
 
     def insert(self, receipt: Receipt):
         """Insertion du receipt."""
+
         # Insertion de l'user
         user_dao = UserDAO.get_instance()
-        user_dao.insert(receipt.user)
 
         if receipt.client.id_ is None:
             # On insere seulement si le client n'est pas deja sur la bd
@@ -47,13 +47,14 @@ class ReceiptDAO:
         # TODO:Verifier que les id_client et id_user existent et ne soient
         request = """select * from client"""
         client_table = self.bdd.cursor.execute(request).fetchall()
-        print("tto")
+
         request = """select* from user """
-        user_table = self.bdd.cursor.execute(request).fetchone()
+        user_table = self.bdd.cursor.execute(request).fetchall()
         flag = 0
         for i in client_table:
             if i[0] == receipt.client:
                 flag += 1
+
         for i in user_table:
             if i[0] == receipt.user:
                 flag += 1
@@ -65,19 +66,23 @@ class ReceiptDAO:
         values = (receipt.balance, receipt.taxes, receipt.date,
                   receipt.note,
                   receipt.client.id_, receipt.user.id_)
+        print("valeur= ", values)
         self.bdd.cursor.execute(request, values)
         self.bdd.connexion.commit()
+
         # On recupere l'id qui vient d'etre insere'
         max_req = "SELECT max(id_receipt) FROM receipt"
-        id_ = self.bdd.cursor.execute(max_req).fetchone()
-        # Insertion des articles
-        article_dao = ArticleDAO.get_instance()
-        for article in receipt.articles_list:
-            article.id_receipt = id_[0]
-            article_dao.insert(article)
+        id_ = self.bdd.cursor.execute(max_req).fetchall()
+        max_req = "SELECT * FROM receipt"
+        self.bdd.cursor.execute(max_req).fetchall()
 
+        # Insertion des articles
+        self.bdd.connexion.commit()
+        print("tata")
         # mis a jour des id receipt et articles
         self._set_id(receipt, id_[0])
+
+        return
 
     def update(self, receipt: Receipt):
 
@@ -89,46 +94,48 @@ class ReceiptDAO:
                                  receipt.client, receipt.user, receipt.id_))
         self.bdd.connexion.commit()
 
+    @staticmethod
+    def _gen_receipt(tup):
+        receipt = Receipt(balance=tup[1],
+                          taxes=tup[2],
+                          date=tup[3],
+                          note=tup[4],
+                          client=tup[5],
+                          articles_list=None,
+                          user=tup[6],
+                          id_=tup[0])
+
+        return receipt
+
     def get_all(self):
         # TODO?
         request = "SELECT * FROM receipt"
-        self.bdd.cursor.execute(request)
-        return self.bdd.cursor.fetchall()
+        tuples = self.bdd.cursor.execute(request).fetchall()
+        self.bdd.connexion.commit()
+        res = []
+        for tup in tuples:
+
+            res.append(self._gen_receipt(tup))
+        return res
+
+    def get_with_id(self, id_):
+        """Renvoie une instace du user avec id_."""
+        request = f"SELECT * FROM receipt where id_receipt = {id_}"
+        tup = self.bdd.cursor.execute(request).fetchall()
+
+        return self._gen_receipt(tup[0])
+
+    def delete(self, id, idc, idu):
+
+        self.bdd.cursor.execute(
+            """ DELETE FROM receipt WHERE id_receipt="""+str(id))
+        self.bdd.cursor.execute(
+            """ DELETE FROM client WHERE id_client="""+str(idc))
+        self.bdd.cursor.execute(
+            """ DELETE FROM user WHERE id_user="""+str(idu))
+        self.bdd.connexion.commit()
 
 
 if __name__ == "__main__":
-    from facturio.classes.invoice_misc import Article
-    from facturio.classes.client import Client, Company
-    from facturio.classes.user import User
-    from facturio.db.articledao import ArticleDAO
 
-    user = User(company_name="Facturio INC", last_name="BENJELLOUN",
-                first_name="Youssef", email="yb@gmail.com",
-                address="427 Boulevard des armoaris 83100 Toulon",
-                phone_number="07 67 31 58 20",
-                business_number="12348921 2341")
-    # user_dao.insert(user)
-
-    comp = Company(company_name="LeRoy", last_name="Ben",
-                   first_name="Karim", business_number="287489404",
-                   email="LeRoy83@sfr.fr", address="12 ZAC de La Crau",
-                   phone_number="0345678910")
-    # company_dao.insert(comp)
-
-    ordinateur = Article("Ordinateur", 1684.33, 3)
-    cable_ethernet = Article("Cable ethernet", 5, 10)
-    telephone = Article("Telephone", 399.99, 1)
-    casque = Article("Casque", 69.99, 6)
-    articles = [ordinateur, cable_ethernet, telephone, casque]
-
-    receipt = Receipt(user=user, client=comp, articles_list=articles,
-                      date=0, taxes=0.11, balance=122,
-                      note="Facture de matériel informatiques")
-    dao = ReceiptDAO()
-
-    dao.insert(receipt)
-    user_dao = UserDAO.get_instance()
-    company_dao = CompanyDAO.get_instance()
     receipt_dao = ReceiptDAO.get_instance()
-    art_dao = ArticleDAO.get_instance()
-    client_dao = ClientDAO.get_instance()

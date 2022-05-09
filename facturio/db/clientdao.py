@@ -54,8 +54,13 @@ class ClientDAO:
         request = """UPDATE client SET first_name=?, last_name=?, e_mail=?,
                      address=?, phone=?, remark=? WHERE id_client=?"""
         data = client.dump_to_list()
-        data.append(client.id_)
         self.bdd.cursor.execute(request, data)
+        self.bdd.connexion.commit()
+
+    def delete(self, id):
+
+        self.bdd.cursor.execute(
+            """ DELETE FROM client WHERE id_client="""+str(id))
         self.bdd.connexion.commit()
 
     def get_all(self):

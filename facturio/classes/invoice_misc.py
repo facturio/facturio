@@ -83,6 +83,7 @@ class Receipt:
     Classe contenant toutes les informations communes liées aux
     factures et devis
     """
+
     def __init__(self,
                  user,
                  client,
@@ -154,6 +155,7 @@ class Invoice(Receipt):
     """
         Classe contenant toutes les informations liées aux factures
     """
+
     def __init__(self,
                  user,
                  client,
@@ -170,12 +172,12 @@ class Invoice(Receipt):
 
     def __str__(self):
         return (
-                f"User :\n{self.user}\nClient :\n {self.client}\n"
-                f"Date :\n{self.date_string()}\nListe des articles :"
-                f"{self.articles_list}\n"
-                f"\nListe des acomptes :\n{self.advances_list}"
-                f"\nTaxes :\n{self.taxes}\n"
-                f"Montants :\n{self.balance}\nCommentaire :\n{self.note}"
+            f"User :\n{self.user}\nClient :\n {self.client}\n"
+            f"Date :\n{self.date_string()}\nListe des articles :"
+            f"{self.articles_list}\n"
+            f"\nListe des acomptes :\n{self.advances_list}"
+            f"\nTaxes :\n{self.taxes}\n"
+            f"Montants :\n{self.balance}\nCommentaire :\n{self.note}"
         )
 
     def __repr__(self):
@@ -210,11 +212,12 @@ class Estimate(Receipt):
         Classe contenant toutes les informations communes liées aux
         devis.
     """
+
     def __init__(
         self,
         user: User,
         client: Union[Client, Company],
-        articles_list: list[(Article, int)],
+        articles_list,
         date: int = None,
         balance: float = None,
         taxes: float = None,
@@ -227,35 +230,35 @@ class Estimate(Receipt):
 
 if __name__ == "__main__":
     artisan = User(
-            company_name="Facturio",
-            address="15 rue des champs Cuers",
-            phone_number="0734567221",
-            business_number="128974654",
-            first_name="Tom",
-            last_name="Pommier",
-            email="facturio@gmail.com",
-            logo="logo.jpg",
-            id_=3
+        company_name="Facturio",
+        address="15 rue des champs Cuers",
+        phone_number="0734567221",
+        business_number="128974654",
+        first_name="Tom",
+        last_name="Pommier",
+        email="facturio@gmail.com",
+        logo="logo.jpg",
+        id_=3
     )
 
     client_physique = Client(
-            last_name="Lombardo",
-            first_name="Quentin",
-            email="quentin.lombardo@email.com",
-            address="HLM Sainte-Muse Toulon",
-            phone_number="0678905324",
-            id_=4
+        last_name="Lombardo",
+        first_name="Quentin",
+        email="quentin.lombardo@email.com",
+        address="HLM Sainte-Muse Toulon",
+        phone_number="0678905324",
+        id_=4
     )
 
     client_moral = Company(
-            company_name="LeRoy",
-            email="LeRoy83@sfr.fr",
-            address="12 ZAC de La Crau",
-            phone_number="0345678910",
-            first_name="Ben",
-            last_name="Karim",
-            business_number="287489404",
-            id_=6
+        company_name="LeRoy",
+        email="LeRoy83@sfr.fr",
+        address="12 ZAC de La Crau",
+        phone_number="0345678910",
+        first_name="Ben",
+        last_name="Karim",
+        business_number="287489404",
+        id_=6
     )
     ordinateur = Article("ordinateur", 1684.33, 3, "Asus spire", 5, 2)
     cable_ethernet = Article("cable ethernet", 9.99, 10, "15m", 6, 2)

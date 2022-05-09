@@ -89,7 +89,7 @@ class User:
         return User.instance
 
     @staticmethod
-    def exists():
+    def exits():
         """Renvoie vrai si il exist une instance du singleton."""
         return True if User.instance else False
 
@@ -101,9 +101,17 @@ class User:
 
     def dump_to_list(self):
         """Renvoie une liste de toutes les variables de classes."""
-        return [self.logo, self.company_name, self.email,
-                self.address, self.phone_number, self.first_name,
-                self.last_name, self.business_number]
+        return [self.id_, self.company_name, self.first_name,
+                self.last_name, self.email,
+                self.address, self.phone_number,
+                self.business_number, self.logo]
+
+    def dump_to_list(self):
+        """Renvoie un tuple de toutes les variables de classes."""
+        return (self.id_, self.company_name, self.first_name,
+                self.last_name, self.email,
+                self.address, self.phone_number,
+                self.business_number, self.logo)
 
     def dump_to_field(self):
         """

@@ -44,7 +44,7 @@ class CompanyDAO:
         data = [company.first_name, company.last_name, company.email,
                 company.address, company.phone_number, company.note,
                 company.id_]
-        print(data)
+
         self.bdd.cursor.execute(request, data)
 
         # mis a jour de entreprise
@@ -53,6 +53,11 @@ class CompanyDAO:
         data = [company.company_name, company. business_number, company.id_]
 
         self.bdd.cursor.execute(request, data)
+        self.bdd.connexion.commit()
+
+    def delete(self, id):
+        self.bdd.cursor.execute(
+            """ DELETE FROM client WHERE id_client="""+str(id))
         self.bdd.connexion.commit()
 
     def get_all(self):
@@ -103,41 +108,3 @@ class CompanyDAO:
 
 if __name__ == "__main__":
     dao = CompanyDAO.get_instance()
-    comp = Company("LeRoy", "Ben", "Karim", "287489404",
-<< << << < HEAD
-                   "LeRoy83@sfr.fr", "12 ZAC de La Crau", "0345678910")
-    # dao.inser(comp)
-    # dao.inner()
-    # pour update
-    client = dao.inner()
-    # selection de id
-
-    id = 11
-    for i in client:
-        if id == i[0]:
-            client = i
-            break
-    client = dao._gen_company(client)
-    # attribut a modifier
-    client.first_name = "geoge"
-    client.company_name = "caca"
-== == == =
-                "LeRoy83@sfr.fr", "12 ZAC de La Crau", "0345678910")
-    # dao.inser(comp)
-    # dao.inner()
-    # pour update
-    # client = dao.inner()
-    # #selection de id
-
-    # id=11
-    # for i in client:
-    #     if id == i[0]:
-    #         client = i
-    #         break
-    # client = dao._gen_company(client)
-    # #attribut a modifier
-    # client.first_name="geoge"
-    # client.company_name="caca"
->> >>>> > origin/dev
-
-    # dao.update(client)

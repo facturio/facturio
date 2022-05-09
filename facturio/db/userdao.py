@@ -25,15 +25,15 @@ class UserDAO:
         self.bdd.cursor.execute(request)
         self.bdd.connexion.commit()
         ligne = self.bdd.cursor.fetchone()
-        if len(ligne) >= 2:
-            return
+        if ligne != None:
+            if len(ligne) >= 2:
+                return
         #  Modifier l'ordre des attributs pour respecter la table
         request = """INSERT INTO user(company_name, first_name, last_name
         , e_mail, address, phone, business_num,logo)
                      VALUES(?, ?, ?, ?, ?, ?, ?, ?)"""
         # convertir image logo sous forme de fichier binaire
         logo = None
-        print(user.logo)
         if user.logo is not None:
             with open(user.logo, "rb") as user.logo:
                 logo = myfile.read()
@@ -63,19 +63,26 @@ class UserDAO:
 
         self.bdd.connexion.commit()
 
+    def delete(self, id):
+        self.bdd.cursor.execute(
+            """ DELETE FROM user WHERE id_user="""+str(id))
+        self.bdd.connexion.commit()
+
     def get(self):
         """Renvoie une liste tous les instances des client sur la BD."""
-        data = self.bdd.cursor.execute("select * from user").fetchone()
+        data = self.bdd.cursor.execute("select * from user").fetchall()
+
         # VERIFIER QUE IL Y A UNE LIGNE SINON ERROR
-        if len(data) >= 2:
-            return
         if not User.exits():
+
             return self._gen_user(data)
         else:
+
             return User.get_instance()
 
     @staticmethod
     def _gen_user(tup):
+        print("titit", tup)
         user = User(company_name=tup[1],
                     first_name=tup[2],
                     last_name=tup[3],
@@ -87,6 +94,13 @@ class UserDAO:
                     id_=tup[0])
         return user
 
+    def get_with_id(self, id_):
+        """Renvoie une instace du user avec id_."""
+        request = f"SELECT * FROM user where id_user = {id_}"
+        tup = self.bdd.cursor.execute(request).fetchone()
+
+        return tup
+
 
 if __name__ == "__main__":
 
@@ -94,5 +108,6 @@ if __name__ == "__main__":
     user = User("Facturio INC", "Yousggsef", "BENJEggLLOUN", "yb@gmail.com",
                 "427 Boulevard des armaris 8dsfdsfdsq3100 Toulon", "07 67 31 58 20",
                 "12348921 2341")
+
     # dao.insert(user)
     dao.update_user(user)
