@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=Facturio
+Categories=Office;
+Comment=Gérez vos factures et clients avec Facturio.
+Exec=facturio %u
+Icon=
+Terminal=false
