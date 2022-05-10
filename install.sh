@@ -9,7 +9,7 @@ rm -fr .facturio "${XDG_DATA_HOME:-$HOME/.local/share}/applications"/facturio.de
 mkdir -p .facturio
 mkdir -p "${XDG_DATA_HOME:-$HOME/.local/share}/applications"
 
-echo "$PATH" | grep -q "$HOME/.local/bin" && echo 'PATH=$PATH:$HOME/.local/bin' >> $HOME/.bashrc
+echo "$PATH" | grep -q "$HOME/.local/bin" || echo 'PATH=$PATH:$HOME/.local/bin' >> $HOME/.bashrc
 
 wget https://azaleth.xyz/facturio/${TAG}/facturio-${TAG}.tar.gz
 
