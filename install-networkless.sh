@@ -12,8 +12,6 @@ mkdir -p "$HOME"/.local/bin
 
 echo "$PATH" | grep -q "$HOME/.local/bin" || echo 'PATH=$PATH:$HOME/.local/bin' >> $HOME/.bashrc
 
-wget https://azaleth.xyz/facturio/${TAG}/facturio-${TAG}.tar.gz
-
 tar xvf facturio-${TAG}.tar.gz -C .facturio
 ln -s "$PWD/.facturio/run.sh" $HOME/.local/bin/facturio
 chmod +x $HOME/.local/bin/facturio
