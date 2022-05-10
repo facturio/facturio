@@ -1,5 +1,8 @@
 # Facturio
+
 **Facturio** est un logiciel de gestion de factures pour les systèmes d'exploitation GNU/Linux.
+Il permet la création, customisation et sauvegarde des contrats qu'un professionnel effectue, ainsi que la génération automatique des factures associées.
+
 
 # Installation
 
