@@ -203,13 +203,13 @@ class InvoicePage(Gtk.ScrolledWindow):
                 iter_ = self.store.append([invoice.client.first_name,
                                         invoice.client.last_name,
                                         invoice.date_string(),
-                                        invoice.balance,
+                                        invoice.total_with_advances(),
                                         invoice.id_])
             if self.unpaid_switch.get_active() and invoice.balance > 0:
                 iter_ = self.store.append([invoice.client.first_name,
                                         invoice.client.last_name,
                                         invoice.date_string(),
-                                        invoice.balance,
+                                        invoice.total_with_advances(),
                                         invoice.id_])
 
     def _gen_invoice(self, btn):
