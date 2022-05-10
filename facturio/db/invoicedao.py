@@ -61,15 +61,15 @@ class InvoiceDAO:
         tup = self.db.cursor.execute(request).fetchone()
         return self._gen_invoice(tup)
 
-    def update_balance_with_id(self, id_invoice):
-        """Mis a jour de balance de l'id id_invoice."""
-        invoice = self.get_with_id(id_invoice)
-        balance = invoice.total_with_advances()
-        request = (f"UPDATE receipt SET balance={balance} "
-                   f"WHERE id_receipt={id_invoice}")
-        self.db.cursor.execute(request)
-        self.db.connexion.commit()
-        # inv_dao.update_balance_with_id(advance.id_invoice)
+    # def update_balance_with_id(self, id_invoice):
+    #     """Mis a jour de balance de l'id id_invoice."""
+    #     invoice = self.get_with_id(id_invoice)
+    #     balance = invoice.total_with_advances()
+    #     request = (f"UPDATE receipt SET balance={balance} "
+    #                f"WHERE id_receipt={id_invoice}")
+    #     self.db.cursor.execute(request)
+    #     self.db.connexion.commit()
+    #     # inv_dao.update_balance_with_id(advance.id_invoice)
 
     def _gen_invoice(self, tup):
         udao = UserDAO.get_instance()

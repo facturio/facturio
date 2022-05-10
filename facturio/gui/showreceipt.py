@@ -89,11 +89,11 @@ class ShowReceiptPage(Gtk.ScrolledWindow):
 
     def _update_receipt(self, btn=None):
         # Validation de la date
-        for adv_dict in self.all_adv_entries:
+        for adv_dict in self.new_adv_entries:
             if not self._validate_date(adv_dict["date"]):
                 return None
         adv_insts = []
-        for adv_dict in self.all_adv_entries:
+        for adv_dict in self.new_adv_entries:
             amount = round(float(adv_dict["amount"].get_text()), 2)
             date_text = adv_dict["date"].get_text()
             date = datetime.strptime(date_text, "%d/%m/%Y")
@@ -106,7 +106,7 @@ class ShowReceiptPage(Gtk.ScrolledWindow):
         for adv in adv_insts:
             dao.insert(adv)
         inv_dao = InvoiceDAO.get_instance()
-        inv_dao.update_balance_with_id(self.receipt.id_)
+        # inv_dao.update_balance_with_id(self.receipt.id_)
         hb = HeaderBarSwitcher.get_instance()
         hb.switch_page(page="invoice_page")
 
@@ -134,6 +134,7 @@ class ShowReceiptPage(Gtk.ScrolledWindow):
         self.row_pbtn = 3
         self.btns_row = {}
         self.all_adv_entries = []
+        self.new_adv_entries = []
 
     def _delete_row(self, btn):
         row = self.btns_row.pop(btn)
@@ -226,6 +227,7 @@ class ShowReceiptPage(Gtk.ScrolledWindow):
         self.advances_grid.attach(entry, 3, i, 1, 1)
         self.row_pbtn += 1
         self.all_adv_entries.append(adv_entries)
+        self.new_adv_entries.append(adv_entries)
 
     def _allow_only_date(self, entry, string, *args):
         for char in string:

@@ -199,13 +199,15 @@ class InvoicePage(Gtk.ScrolledWindow):
         invoices = inv_dao.get_all()
         self.store.clear()
         for invoice in inv_dao.get_all():
-            if self.paid_switch.get_active() and invoice.balance <= 0:
+            if self.unpaid_switch.get_active() \
+               and invoice.total_with_advances() > 0:
                 iter_ = self.store.append([invoice.client.first_name,
                                         invoice.client.last_name,
                                         invoice.date_string(),
                                         invoice.total_with_advances(),
                                         invoice.id_])
-            if self.unpaid_switch.get_active() and invoice.balance > 0:
+            if self.paid_switch.get_active() \
+               and invoice.total_with_advances() <= 0:
                 iter_ = self.store.append([invoice.client.first_name,
                                         invoice.client.last_name,
                                         invoice.date_string(),
@@ -641,7 +643,7 @@ class CreateInvoicePage(Gtk.ScrolledWindow):
         user = User.get_instance()
         for name, entry in self.user_entries.items():
             print(name,user.get_attr(name))
-            entry.set_text(user.get_attr(name))
+            entry.set_text(str(user.get_attr(name)))
             entry.set_sensitive(False)
 
     def allow_only_phone(self, entry, string, *args):
@@ -694,6 +696,7 @@ class CreateInvoicePage(Gtk.ScrolledWindow):
         return
 
     def _update_user(self, btn):
+        UserDAO.get_instance().get()
         user = User.get_instance()
         for name, entry in self.user_entries.items():
             entry.set_sensitive(True)
@@ -921,6 +924,7 @@ class CreateInvoicePage(Gtk.ScrolledWindow):
 
     def _get_user(self):
         self.userdao = UserDAO.get_instance()
+        self.userdao.get()
         if not User.exists():
             self.user_data = {}
             for name, entry in self.user_entries.items():
@@ -1039,6 +1043,7 @@ class CreateInvoicePage(Gtk.ScrolledWindow):
 
     def clean_page(self):
         """Nettoyage de la page."""
+        dao = UserDAO.get_instance().get()
         self.update_user_btn.set_active(False)
         if User.exists():
             self._load_user_entries()

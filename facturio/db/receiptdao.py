@@ -68,10 +68,6 @@ class ReceiptDAO:
     def update(self, receipt: Receipt):
         raise NotImplementedError
         # TODO
-    #     bdd=DBManager.get_instance()
-    #     liste=liste[1:]+[liste[0]]
-    #     bdd.cursor.execute("""UPDATE invoice_estimate SET balance=?,date=?,description=?,note=?,remark=?,id_client=?,id_user=? WHERE id_invoice_estimate=?""",liste)
-    #     bdd.connexion.commit()
 
     def get_all(self):
         #TODO?
