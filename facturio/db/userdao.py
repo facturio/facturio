@@ -27,10 +27,9 @@ class UserDAO:
                      VALUES(?, ?, ?, ?, ?, ?, ?, ?)"""
         # convertir image logo sous forme de fichier binaire
         logo = None
-        print(user.logo)
         if user.logo is not None and user.logo != "Aucun":
             with open(user.logo, "rb") as user.logo:
-                logo = myfile.read()
+                logo = user.logo.read()
         values = [logo, user.company_name, user.email, user.address,
                   user.phone_number, user.business_number, user.first_name,
                   user.last_name]
@@ -47,9 +46,9 @@ class UserDAO:
                      address=?,phone=?,business_num=? WHERE id_user=1"""
         #convertir image logo sous forme de fichier binaire
         logo = None
-        if user.logo is not None and user.logo != "Aucun":
-            with open(texte,"rb") as user.logo:
-                logo = myfile.read()
+        #if user.logo is None or user.logo != "Aucun":
+        #    with open(texte,"rb") as user.logo:
+        #        logo = myfile.read()
         values = [logo, user.company_name, user.email, user.address,
                   user.phone_number, user.business_number]
 

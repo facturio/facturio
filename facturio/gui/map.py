@@ -5,6 +5,7 @@ from facturio.gui.page_gui import PageGui
 from facturio.classes.client import Client
 import concurrent.futures
 from facturio.db.clientdao import ClientDAO
+from facturio.gui.omnisearch import FacturioOmnisearch
 from geopy.geocoders import Nominatim
 gi.require_version("Gtk", "3.0")
 gi.require_version("OsmGpsMap", "1.0")
@@ -27,15 +28,18 @@ class Map(PageGui):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.dao=ClientDAO.get_instance()
-        self.grid = Gtk.Grid(column_homogeneous=True, row_homogeneous=True,
-                             column_spacing=20, row_spacing=20)
+        self.cent = Gtk.Grid(column_homogeneous=True,
+                                  row_homogeneous=True, column_spacing=20,
+                                  row_spacing=20)
+        self.__init_grid()
         self.add(self.grid)
         (
             self.title(i18n.t('gui.map'))
                 .space()
-                .search((1,3,5,1))
                 .__init_map()
         )
+        self.__space_info()
+        self.search_bar_client()
         list_obj_client= self.dao.get_all()
         list_client =[]
         #for i in list_obj_client:
@@ -46,6 +50,31 @@ class Map(PageGui):
         # self.print_all_customer(list_adress)
 
 
+    def __space_info(self):
+        """
+        Ajoute les espace
+        pour l'ergonomie
+        """
+        spacel = Gtk.Label("")
+        self.cent.attach(spacel, 0, 1, 1, 1)
+        spacer = Gtk.Label("")
+        self.cent.attach(spacer, 10, 2, 1, 1)
+        spaceb = Gtk.Label("")
+
+    def __init_grid(self):
+        """
+        Propriete de la Grid Gtk
+        voir doc
+        """
+        self.grid = Gtk.Grid()
+        self.add(self.grid)
+        self.grid.set_column_homogeneous(True)
+        self.grid.set_row_homogeneous(False)
+        self.grid.set_row_spacing(20)
+        self.grid.set_column_spacing(20)
+        self.grid.attach(self.cent, 2, 2, 6, 3)
+        return self
+
     def __init_map(self):
         """
         Initialise la map a l'universite de Toulon
@@ -54,7 +83,7 @@ class Map(PageGui):
         self.osm.set_property("map-source", OsmGpsMap.MapSource_t.OPENSTREETMAP)
         self.osm.set_center_and_zoom(46.333328 ,2.6, 5)
         self.osm.set_hexpand(True)
-        self.grid.attach(self.osm, 1, 4, 5, 6)
+        self.cent.attach(self.osm, 2, 4, 5, 6)
 
 
     def __get_gps(self,adrss):
@@ -71,6 +100,38 @@ class Map(PageGui):
         print((x,y))
         return (x,y)
 
+    def search_bar_client(self):
+        """
+        Affiche tout les clients de la base de donner
+        """
+        list_obj_client= self.dao.get_all()
+        list_client =[]
+        for i in list_obj_client:
+            list_client.append(i.dump_to_list())
+        searchbar = FacturioOmnisearch(list_client)
+        searchbar.completion.connect('match-selected', self.switch_to_local)
+        self.cent.attach(searchbar, 2,3,5,1)
+
+    def switch_to_local(self, completion, model, iter):
+        """
+        recupere les info de la completion et les affiche
+        avec la page info_persone
+        """
+        print("insdie")
+        iterr=((list((completion.props.model.get_value(iter, 0)))))
+        iterr=iterr[:-1]
+        num_client=""
+        for i in reversed(iterr):
+            if i == ' ':
+                break
+            else:
+                num_client+=i
+        client=self.dao.get_with_id(num_client)
+        if client!=None:
+            print(client.dump_to_list()[3])
+            self.mv_map(client.dump_to_list()[2])
+        else:
+            print("erreur")
 
     def mv_map(self, adrss):
         """

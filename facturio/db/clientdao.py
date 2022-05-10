@@ -91,10 +91,8 @@ class ClientDAO:
 
     def get_with_id(self, id_):
         """Renvoie une instace du client avec id_."""
-        print(id_)
         request = f"SELECT * FROM client where id_client = {id_}"
         tup = self.bdd.cursor.execute(request).fetchone()
-        print("tup==",tup)
         return self._gen_client(tup)
 
 

@@ -1,10 +1,12 @@
 from os import EX_USAGE
 import gi
+from facturio.gui import modify_client
 from facturio.gui.home import HeaderBarSwitcher
 gi.require_version("Gtk", "3.0")
 from classes.user import User
 from classes.client import Client
 from gui.add_customer import Add_Customer
+from gui.modify_client import ModifyClient
 gi.require_version("OsmGpsMap", "1.0")
 from facturio.gui.page_gui import PageGui
 from facturio.db.companydao import CompanyDAO
@@ -105,6 +107,8 @@ class DisplayClient (PageGui):
 
         imp = Gtk.Button(label="Modifier")
         self.cent.attach(imp, 6, 4, 3, 3)
+        clss=ModifyClient.get_instance()
+        clss.num=DisplayClient.num_client
         imp.connect("clicked", self.header_bar.switch_page, "modify_client")
         DisplayClient.buttons["ModifierClient"]=imp
 

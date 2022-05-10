@@ -5,7 +5,6 @@ from facturio.gui import displayclient
 from facturio.gui.page_gui import PageGui
 from facturio.classes.client import Client
 from facturio.gui.home import HeaderBarSwitcher
-from facturio.gui.displayclient import DisplayClient
 from facturio.db.clientdao import ClientDAO
 gi.require_version("Gtk", "3.0")
 from gi.repository import Gtk, Gdk, Gio, GdkPixbuf
@@ -32,12 +31,12 @@ class ModifyClient(PageGui):
 
     def __init__(self):
         self.dao=ClientDAO.get_instance()
-        self.num_client=DisplayClient.num_client
         super().__init__()
         self.header_bar = HeaderBarSwitcher.get_instance()
         self.cent = Gtk.Grid(column_homogeneous=False,
                                   row_homogeneous=False, column_spacing=20,
                                   row_spacing=20)
+        self.num_client =0
         if self.num_client != 0:
             print("putain")
             self.attr_usr=self.__get_client()
@@ -151,7 +150,7 @@ class ModifyClient(PageGui):
         self.imp = Gtk.Button.new_with_label(label="Modifier")
         self.imp.connect("clicked", self.__update_client)
         self.grid.attach(self.cent, 1, 2, 2, 1)
-        self.cent.attach(self.imp, 1, 16, 5, 1)
+        self.cent.attach(self.imp, 1, 18, 5, 1)
         self.adrss()
         self.mails()
         self.last_name()
@@ -226,7 +225,7 @@ class ModifyClient(PageGui):
 
 
     def siret(self):
-        self.__creat_labelbox("Siret ",(0,14,1,1),6)
+        self.__creat_labelbox("Siret ",(0,13,1,1),6)
         return self
 
 
@@ -236,9 +235,9 @@ class ModifyClient(PageGui):
         label.set_hexpand(True)
         label.set_justify(Gtk.Justification.CENTER)
         self.client_label["Remarque "] = label
-        self.cent.attach(label,0,13,1,1)
+        self.cent.attach(label,0,15,1,1)
         self.entry = Gtk.Entry()
         self.entry.set_hexpand(True)
         self.client_entries["Remarque "] = self.entry
-        self.cent.attach(self.entry,1,13,5,3)
+        self.cent.attach(self.entry,1,15,5,3)
         return self

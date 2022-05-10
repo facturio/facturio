@@ -30,6 +30,7 @@ class ModifyUsr(PageGui):
                                   row_spacing=20)
         self.attr_usr= self.__get_user()
         print(self.attr_usr)
+        print(self.attr_usr)
         if self.attr_usr==[]:
             self.attr_usr=["","","",
                            "","","",""]
@@ -41,20 +42,21 @@ class ModifyUsr(PageGui):
         self.__space_info()
         self.utilisateur()
 
+
     def __get_user(self):
         """
         Recupere de la bd les info utilisateur
         et les retourne sous forme de liste
         """
-        if not User.exists():
-            list_client=['Aucun', 'Aucun', 'Aucun', 'Aucun',
-                         'Aucun', 'Aucun', 'Aucun', 'Aucun']
-            return list_client
-        else:
-            self.client= self.dao.get_with_id(self.num_client)
-            list_client=self.client.dump_to_list()
-            return list_client
-
+        self.user= self.dao.get()
+        if self.user is None:
+            self.user=User("Aucun", "Aucun", "Aucun",
+                           "Aucun", "Aucun", 0,0,
+                           __path__[0] + "/data/icons/Moi.png",1)
+            print(self.user)
+            self.dao.insert(self.user)
+        list_client=self.user.dump_to_list()
+        return list_client
 
     def __init_grid(self):
         """
@@ -96,7 +98,7 @@ class ModifyUsr(PageGui):
         if self.is_usr_valid_for_db(self.info):
             self.info.append("1")
             print("info=",self.info)
-            self.db.update_user(self.info)
+            self.dao.update_user(self.user)
             self.header_bar.switch_page(None,"home_page")
         else:
             print("champs incorrect")
@@ -165,22 +167,22 @@ class ModifyUsr(PageGui):
 
 
     def adrss(self):
-        self.__creat_labelbox(i18n.t('gui.email'),(4,5,1,1),3)
+        self.__creat_labelbox(i18n.t('gui.email'),(4,5,1,1),2)
         return self
 
 
     def mails(self):
-        self.__creat_labelbox(i18n.t('gui.address'),(4,7,1,1),4)
+        self.__creat_labelbox(i18n.t('gui.address'),(4,7,1,1),3)
         return self
 
 
     def nums(self):
-        self.__creat_labelbox(i18n.t('gui.phone_number'),(1,7,1,1),5)
+        self.__creat_labelbox(i18n.t('gui.phone_number'),(1,7,1,1),4)
         return self
 
 
     def entreprise_name(self):
-        self.__creat_labelbox(i18n.t('gui.business'),(1,5,1,1),2)
+        self.__creat_labelbox(i18n.t('gui.business'),(1,5,1,1),1)
         return self
 
     def _logo_dialog(self, *args):
@@ -200,15 +202,15 @@ class ModifyUsr(PageGui):
 
 
     def siret(self):
-        self.__creat_labelbox(i18n.t('gui.siret_number'),(1,11,1,1),6)
+        self.__creat_labelbox(i18n.t('gui.siret_number'),(1,11,1,1),7)
         return self
 
     def first_name(self):
-        self.__creat_labelbox("Prenom ",(1,2,1,1),1)
+        self.__creat_labelbox("Prenom ",(1,2,1,1),6)
         return self
 
     def last_name(self):
-        self.__creat_labelbox("Nom ",(4,2,1,1),2)
+        self.__creat_labelbox("Nom ",(4,2,1,1),5)
         return self
 
     def rmq(self):
