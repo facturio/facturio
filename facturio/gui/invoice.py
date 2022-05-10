@@ -199,13 +199,15 @@ class InvoicePage(Gtk.ScrolledWindow):
         invoices = inv_dao.get_all()
         self.store.clear()
         for invoice in inv_dao.get_all():
-            if self.paid_switch.get_active() and invoice.balance <= 0:
+            if self.unpaid_switch.get_active() \
+               and invoice.total_with_advances() > 0:
                 iter_ = self.store.append([invoice.client.first_name,
                                         invoice.client.last_name,
                                         invoice.date_string(),
                                         invoice.total_with_advances(),
                                         invoice.id_])
-            if self.unpaid_switch.get_active() and invoice.balance > 0:
+            if self.paid_switch.get_active() \
+               and invoice.total_with_advances() <= 0:
                 iter_ = self.store.append([invoice.client.first_name,
                                         invoice.client.last_name,
                                         invoice.date_string(),
