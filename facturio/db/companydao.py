@@ -43,7 +43,6 @@ class CompanyDAO:
         data = [company.first_name, company.last_name, company.email,
                 company.address, company.phone_number, company.note,
                 company.id_]
-        print(data)
         self.bdd.cursor.execute(request, data)
 
         # mis a jour de entreprise
@@ -76,7 +75,6 @@ class CompanyDAO:
 
     @staticmethod
     def _gen_company(tup):
-        print(tup[9], type(tup[9]))
         company = Company(first_name=tup[1],
                           last_name=tup[2],
                           email=tup[3],

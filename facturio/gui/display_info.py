@@ -85,7 +85,7 @@ class DisplayUser (PageGui):
         self.cent.attach(imp, 6, 9, 3, 2)
         imp.connect("clicked", self.header_bar.switch_page, "modify_usr")
         DisplayUser.buttons["ModifierClient"]=imp
-        print(self.att_usr)
+        # print(self.att_usr)
         self.first_name(self.att_usr[2])
         self.last_name(self.att_usr[1])
         self.adrss(self.att_usr[3])
@@ -106,7 +106,7 @@ class DisplayUser (PageGui):
             self.user=User("Aucun", "Aucun", "Aucun",
                            "Aucun", "Aucun", 0,0,
                            __path__[0] + "/data/icons/Moi.png",1)
-            print(self.user)
+            # print(self.user)
             self.dao.insert(self.user)
         list_client=self.user.dump_to_list()
         return list_client
@@ -144,7 +144,7 @@ class DisplayUser (PageGui):
         self.imp.connect("clicked", self.header_bar.switch_page, "modify_usr")
 
         att_usr=att_usr[0]
-        print(att_usr)
+        # print(att_usr)
         self.first_name(att_usr[2])
         self.last_name(att_usr[3])
         self.adrss(att_usr[5])
@@ -298,7 +298,7 @@ class DisplayUser (PageGui):
         self.cent.attach(log, 6, 4, 3, 6 )
 
     def update2user(self):
-        print(DisplayUser.entrys)
+        # print(DisplayUser.entrys)
         DisplayUser.entrys[i18n.t('gui.surname')].set_text(self.att_usr[1])
         DisplayUser.entrys[i18n.t('gui.name')].set_text(self.att_usr[2])
         DisplayUser.entrys[i18n.t('gui.address')].set_text(self.att_usr[5])

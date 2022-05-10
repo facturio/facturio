@@ -152,7 +152,7 @@ class Customer(PageGui):
         TODO
         Remplit la treeview
         """
-        print(completion)
+        # print(completion)
 
     def switch_to_display(self, completion, model, iter):
         """

@@ -35,7 +35,6 @@ class ClientDAO:
         # jointure = self.bdd.cursor.fetchall()
         # for i in jointure:
         #     if i[1]==client.first_name and i[2]==client.last_name:
-        #         print("tu ne peux pas ")
         #         return
         self.bdd.cursor.execute(request, values)
         self.bdd.connexion.commit()

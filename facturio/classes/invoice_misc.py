@@ -262,7 +262,6 @@ if __name__ == "__main__":
     telephone = Article("telephone", 399.99, 1, "téléphone clapet", 8, 2)
     casque = Article("casque", 69.99, 6, "casque sans fils", 7, 2)
     bureau = Article("Bureau", 500, 2, "Bureau à 6pieds", 9, 2)
-    print(ordinateur.dump_to_list())
     paiements = [Advance(1230.0), Advance(654)]
 
     articles = [ordinateur, cable_ethernet, telephone, casque]
@@ -275,4 +274,3 @@ if __name__ == "__main__":
         artisan, client_physique, articles,
         note="Facture de matériel informatiques"
     )
-    print(fact, dev)

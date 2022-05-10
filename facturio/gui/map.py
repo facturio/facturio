@@ -94,10 +94,10 @@ class Map(PageGui):
         geolocator = Nominatim(user_agent="Nominatim")
         location = geolocator.geocode(adrss)
         if location == None:
-            print("adresse non trouver :", adrss)
+            # print("adresse non trouver :", adrss)
             return (None,None)
         x, y = location.latitude, location.longitude
-        print((x,y))
+        # print((x,y))
         return (x,y)
 
     def search_bar_client(self):
@@ -117,9 +117,9 @@ class Map(PageGui):
         recupere les info de la completion et les affiche
         avec la page info_persone
         """
-        print("insdie")
-        iterr=((list((completion.props.model.get_value(iter, 0)))))
-        iterr=iterr[:-1]
+        # print("insdie")
+        iterr = ((list((completion.props.model.get_value(iter, 0)))))
+        iterr = iterr[:-1]
         num_client=""
         for i in reversed(iterr):
             if i == ' ':
@@ -128,10 +128,11 @@ class Map(PageGui):
                 num_client+=i
         client=self.dao.get_with_id(num_client)
         if client!=None:
-            print(client.dump_to_list()[3])
+            # print(client.dump_to_list()[3])
             self.mv_map(client.dump_to_list()[2])
         else:
-            print("erreur")
+            # print("erreur")
+            pass
 
     def mv_map(self, adrss):
         """

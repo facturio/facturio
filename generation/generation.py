@@ -11,21 +11,21 @@ def random_firstname():
     """
     Return a random first name from a list
     """
-    with open("generation/datasets/firstnames.txt","r") as f:
+    with open("generation/datasets/firstnames.txt", "r") as f:
         return choice([n[:-1] for n in f.readlines()])
 
 def random_lastname():
     """
     Return a random last name from a list
     """
-    with open("generation/datasets/lastnames.txt","r") as f:
+    with open("generation/datasets/lastnames.txt", "r") as f:
         return choice([n[:-1] for n in f.readlines()])
 
 def random_address():
     """
     Return a random address from a list
     """
-    with open("generation/datasets/adress.txt","r") as f:
+    with open("generation/datasets/adress.txt", "r") as f:
         return choice([n[:-1] for n in f.readlines()])
 
 def random_companyname():
@@ -153,26 +153,23 @@ def create_random_estimate():
     """
     Return a random estimate
     """
-    user = create_random_user()
+    if User.exists():
+        user = User.get_instance()
+    else:
+        user = create_random_user()
     client = create_random_client()
     articles = create_random_articles(5)
     date = random_date()
     taxes = 0.2
-    amount = 0
+    amount = randint(0, 1000)
     return Estimate(user, client, articles, date, taxes, amount)
 
 
 if __name__ == "__main__":
-    print()
-    print(create_random_articles(5))
-    print()
-    print(create_random_advances(5))
-    print()
-    print(create_random_user())
-    print()
-    print(create_random_client())
-    print()
-    print(create_random_invoice())
-    print()
-    print(create_random_estimate())
-    print()
+    from facturio.db.invoicedao import InvoiceDAO
+    from facturio.db.estimatedao import EstimateDAO
+    inv = InvoiceDAO.get_instance()
+    estimate = EstimateDAO.get_instance()
+    for _ in range(30):
+        inv.insert(create_random_invoice())
+        estimate.insert(create_random_estimate())

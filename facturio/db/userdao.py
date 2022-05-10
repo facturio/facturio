@@ -62,8 +62,8 @@ class UserDAO:
         """Renvoie une liste tous les instances des client sur la BD."""
         data = self.bdd.cursor.execute("select * from user").fetchone()
         # TODO: VERIFIER QUE IL Y A UNE LIGNE SINON ERROR
-        print(User.exists())
-        print(data)
+        # print(User.exists())
+        # print(data)
         if not User.exists():
             return self._gen_user(data)
         else:

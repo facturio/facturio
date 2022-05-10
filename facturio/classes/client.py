@@ -135,11 +135,9 @@ if __name__ == "__main__":
         "quentin.lombardo@email.com", "HLM Sainte-Muse Toulon", "0678905324",
         note="Personne peu sympathique", id_=13
         )
-    print(client_physique.dump_to_list())
 
     client_moral = Company(
             "LeRoy", "Ben", "Karim", "287489404", "LeRoy83@sfr.fr",
             "12 ZAC de La Crau", "0345678910", note="Investisseur important",
             id_=34
         )
-    print(client_moral.dump_to_list())
