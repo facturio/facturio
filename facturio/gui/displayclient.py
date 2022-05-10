@@ -1,14 +1,14 @@
 from os import EX_USAGE
 import gi
 from facturio.gui.home import HeaderBarSwitcher
-gi.require_version("Gtk", "3.0")
-from classes.user import User
-from gui.add_customer import Add_Customer
-gi.require_version("OsmGpsMap", "1.0")
+from facturio.classes.user import User
+from facturio.gui.add_customer import Add_Customer
 from facturio.gui.page_gui import PageGui
 from facturio.db.clientdao import ClientDAO
-from gi.repository import Gtk, Gdk, Gio, GdkPixbuf, OsmGpsMap
 from facturio import __path__
+gi.require_version("Gtk", "3.0")
+gi.require_version("OsmGpsMap", "1.0")
+from gi.repository import Gtk, Gdk, Gio, GdkPixbuf, OsmGpsMap
 
 class DisplayClient (PageGui):
     """
