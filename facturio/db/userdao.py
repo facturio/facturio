@@ -69,16 +69,19 @@ class UserDAO:
 
     @staticmethod
     def _gen_user(tup):
-        user = User(company_name=tup[1],
-                    first_name=tup[2],
-                    last_name=tup[3],
-                    email=tup[4],
-                    address=tup[5],
-                    phone_number=tup[6],
-                    business_number=tup[7],
-                    logo=tup[8],
-                    id_=tup[0])
-        return user
+        try:
+            user = User(company_name=tup[1],
+                        first_name=tup[2],
+                        last_name=tup[3],
+                        email=tup[4],
+                        address=tup[5],
+                        phone_number=tup[6],
+                        business_number=tup[7],
+                        logo=tup[8],
+                        id_=tup[0])
+            return user
+        except:
+            return None
 
 
 
