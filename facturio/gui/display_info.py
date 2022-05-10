@@ -104,7 +104,7 @@ class DisplayUser (PageGui):
         self.user= self.dao.get()
         if self.user is None:
             self.user=User("Aucun", "Aucun", "Aucun",
-                           "Aucun", "Aucun", 0,0,
+                           "Aucun", "Aucun", "0", "0",
                            __path__[0] + "/data/icons/Moi.png",1)
             # print(self.user)
             self.dao.insert(self.user)
