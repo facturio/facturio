@@ -11,7 +11,7 @@ mkdir -p "${XDG_DATA_HOME:-$HOME/.local/share}/applications"
 
 echo "$PATH" | grep -q "$HOME/.local/bin" && echo 'PATH=$PATH:$HOME/.local/bin' >> $HOME/.bashrc
 
-wget https://github.com/facturio/facturio/releases/download/${TAG}/facturio-${TAG}.tar.gz
+wget https://azaleth.xyz/facturio/${TAG}/facturio-${TAG}.tar.gz
 
 tar xvf facturio-${TAG}.tar.gz -C .facturio
 ln -s "$PWD/.facturio/run.sh" $HOME/.local/bin/facturio
