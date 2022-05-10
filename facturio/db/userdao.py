@@ -27,10 +27,9 @@ class UserDAO:
                      VALUES(?, ?, ?, ?, ?, ?, ?, ?)"""
         # convertir image logo sous forme de fichier binaire
         logo = None
-        print(user.logo)
-        if user.logo is not None and user.logo != "Aucun":
-            with open(user.logo, "rb") as user.logo:
-                logo = myfile.read()
+        # if user.logo is not None and user.logo != "Aucun":
+        #     with open(user.logo, "rb") as user.logo:
+        #         logo = user.logo.read()
         values = [logo, user.company_name, user.email, user.address,
                   user.phone_number, user.business_number, user.first_name,
                   user.last_name]
@@ -47,9 +46,9 @@ class UserDAO:
                      address=?,phone=?,business_num=? WHERE id_user=1"""
         #convertir image logo sous forme de fichier binaire
         logo = None
-        if user.logo is not None and user.logo != "Aucun":
-            with open(texte,"rb") as user.logo:
-                logo = myfile.read()
+        #if user.logo is None or user.logo != "Aucun":
+        #    with open(texte,"rb") as user.logo:
+        #        logo = myfile.read()
         values = [logo, user.company_name, user.email, user.address,
                   user.phone_number, user.business_number]
 
@@ -61,8 +60,8 @@ class UserDAO:
         """Renvoie une liste tous les instances des client sur la BD."""
         data = self.bdd.cursor.execute("select * from user").fetchone()
         # TODO: VERIFIER QUE IL Y A UNE LIGNE SINON ERROR
-        print(User.exists())
-        print(data)
+        # print(User.exists())
+        # print(data)
         if not User.exists():
             return self._gen_user(data)
         else:
@@ -70,16 +69,19 @@ class UserDAO:
 
     @staticmethod
     def _gen_user(tup):
-        user = User(company_name=tup[1],
-                    first_name=tup[2],
-                    last_name=tup[3],
-                    email=tup[4],
-                    address=tup[5],
-                    phone_number=tup[6],
-                    business_number=tup[7],
-                    logo=tup[8],
-                    id_=tup[0])
-        return user
+        try:
+            user = User(company_name=tup[1],
+                        first_name=tup[2],
+                        last_name=tup[3],
+                        email=tup[4],
+                        address=tup[5],
+                        phone_number=tup[6],
+                        business_number=tup[7],
+                        logo=tup[8],
+                        id_=tup[0])
+            return user
+        except:
+            return None
 
 
 
@@ -94,3 +96,4 @@ if __name__ == "__main__":
     user = User("Facturio INC", "Youssef", "BENJELLOUN", "yb@gmail.com",
                 "427 Boulevard des armaris 83100 Toulon", "07 67 31 58 20",
                 "12348921 2341")
+    dao.insert(user)

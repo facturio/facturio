@@ -26,6 +26,7 @@ i18n.set('locale', 'fr')
 class Window(Gtk.ApplicationWindow):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+
         self.set_position(Gtk.WindowPosition.CENTER)
         self.set_hexpand(True)
         self.set_vexpand(True)

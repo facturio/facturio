@@ -125,9 +125,9 @@ class InvoicePage(Gtk.ScrolledWindow):
         id_ = model[sel_iter][-1]
         inv_dao = InvoiceDAO.get_instance()
         invoice = inv_dao.get_with_id(id_)
-        print(invoice)
+        # print(invoice)
         show_inv = ShowReceiptPage.get_instance()
-        print(show_inv)
+        # print(show_inv)
         show_inv.load_receipt(invoice, add_adv=False)
         self.hb.switch_page(page="show_invoice_page")
 
@@ -203,13 +203,13 @@ class InvoicePage(Gtk.ScrolledWindow):
                 iter_ = self.store.append([invoice.client.first_name,
                                         invoice.client.last_name,
                                         invoice.date_string(),
-                                        invoice.balance,
+                                        invoice.total_with_advances(),
                                         invoice.id_])
             if self.unpaid_switch.get_active() and invoice.balance > 0:
                 iter_ = self.store.append([invoice.client.first_name,
                                         invoice.client.last_name,
                                         invoice.date_string(),
-                                        invoice.balance,
+                                        invoice.total_with_advances(),
                                         invoice.id_])
 
     def _gen_invoice(self, btn):
@@ -222,7 +222,7 @@ class InvoicePage(Gtk.ScrolledWindow):
         prominent = self.inf_footer.get_active()
         show_adv = self.detail.get_active()
         inline = self.radio_line.get_active()
-        print(color)
+        # print(color)
         build_pdf(invoice, path="facture.pdf", color=color, inline=inline,
                   prominent_article_table=prominent,
                   show_advances_table=show_adv)
@@ -640,6 +640,7 @@ class CreateInvoicePage(Gtk.ScrolledWindow):
     def _load_user_entries(self):
         user = User.get_instance()
         for name, entry in self.user_entries.items():
+            print(name,user.get_attr(name))
             entry.set_text(user.get_attr(name))
             entry.set_sensitive(False)
 
@@ -699,7 +700,7 @@ class CreateInvoicePage(Gtk.ScrolledWindow):
         self.logo_button.set_label(i18n.t('gui.edit_picture'))
         self.logo_button.set_sensitive(True)
         self.update_user_btn.set_sensitive(False)
-        self.save_user_btn.set_sensitive(True)
+        # self.save_user_btn.set_sensitive(True)
 
     def reset_context(self, entry):
         context = entry.get_style_context()
@@ -832,7 +833,7 @@ class CreateInvoicePage(Gtk.ScrolledWindow):
             self.activated_btn = False
 
     def set_error(self, entry):
-        print(entry)
+        # print(entry)
         context = entry.get_style_context()
         context.add_class("entry_error")
 
@@ -902,7 +903,7 @@ class CreateInvoicePage(Gtk.ScrolledWindow):
             if art_dict["title"].get_text() == "":
                 self.set_error(art_dict["title"])
                 error = True
-        print(error)
+        # print(error)
         return not error
 
     def validate_entries(self):
@@ -1064,9 +1065,10 @@ class CreateInvoicePage(Gtk.ScrolledWindow):
         filter_.add_pattern("*.jpeg")
         file_chooser.set_filter(filter_)
         if file_chooser.run() == Gtk.ResponseType.ACCEPT:
-           self.logo_fn = file_chooser.get_filename()
-           # self.logo_button.set_sensitive(False)
-           self.logo_button.set_label(i18n.t('gui.added'))
+            self.logo_fn = file_chooser.get_filename()
+            print(self.logo_fn)
+            # self.logo_button.set_sensitive(False)
+            self.logo_button.set_label(i18n.t('gui.added'))
 
     def _put_percentage(self, spin_btn):
         """Ajout d'un pourcentage(%) a la fin pour les taxes."""
@@ -1095,7 +1097,7 @@ class CreateInvoicePage(Gtk.ScrolledWindow):
         """Modifie le sous total."""
         total = 0
         for label in self.total_articles:
-            print(label.get_text())
+            # print(label.get_text())
             total += float(label.get_text()[:-2])
         self.sub_total.set_text(f"{total} €")
         self._modify_tax_fields()

@@ -30,7 +30,6 @@ class ArticleDAO:
                   article.price, article.quantity, article.id_receipt)
         request = """INSERT INTO article(id_article, name, description, price,
                      quantity, id_receipt) VALUES(?,?,?,?,?,?)"""
-        print(values)
         self.bdd.cursor.execute(request, values)
         self.bdd.connexion.commit()
 
@@ -54,7 +53,6 @@ class ArticleDAO:
         prend un tuple(title,description,price,quantity,id)
         et renvoie une instance de la classe article
         """
-        print(tup)
         article = Article(title=tup[1],
                           description=tup[2],
                           price=tup[3],

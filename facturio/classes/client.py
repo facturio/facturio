@@ -55,6 +55,15 @@ class Client:
                   note=data_dict["note"])
         return res
 
+    @classmethod
+    def from_list(cls, liste):
+        res = cls(email=liste[2],
+                  address=liste[3],
+                  phone_number=liste[4],
+                  first_name=liste[1],
+                  last_name=liste[0],
+                  note=liste[5])
+        return res
 
 class Company(Client):
     """
@@ -126,11 +135,9 @@ if __name__ == "__main__":
         "quentin.lombardo@email.com", "HLM Sainte-Muse Toulon", "0678905324",
         note="Personne peu sympathique", id_=13
         )
-    print(client_physique.dump_to_list())
 
     client_moral = Company(
             "LeRoy", "Ben", "Karim", "287489404", "LeRoy83@sfr.fr",
             "12 ZAC de La Crau", "0345678910", note="Investisseur important",
             id_=34
         )
-    print(client_moral.dump_to_list())

@@ -12,6 +12,7 @@ from facturio.gui.home import HeaderBarSwitcher
 from facturio.gui.add_customer import Add_Customer
 from facturio.gui.headerbar import HeaderBarSwitcher
 from facturio.db.clientdao import ClientDAO
+from facturio.db.companydao import CompanyDAO
 gi.require_version("Gtk", "3.0")
 from gi.repository import Gtk, Gdk, Gio, GdkPixbuf
 
@@ -28,6 +29,7 @@ class Customer(PageGui):
     def __init__(self):
         super().__init__()
         self.dao = ClientDAO.get_instance()
+        self.cdao = CompanyDAO.get_instance()
         self.cent = Gtk.Grid(column_homogeneous=True,
                                   row_homogeneous=True, column_spacing=20,
                                   row_spacing=20)
@@ -125,12 +127,11 @@ class Customer(PageGui):
                         elif line != "#":
                             l_clients[len(l_clients)-1].append(line)
             for clients in l_clients:
-                print(l_clients)
                 if self.is_valid_for_db(clients[1:]):
                     self.db.insertion_client_or_company(clients[1:],
                                                     clients[0])
                 else:
-                    print("section incorrect :",clients)
+                    raise Exception("Mauvais format")
             filechooserdialog.destroy()
 
 
@@ -141,7 +142,7 @@ class Customer(PageGui):
         list_obj_client= self.dao.get_all()
         list_client =[]
         for i in list_obj_client:
-            list_client.append(i.dump_to_list)
+            list_client.append(i.dump_to_list())
         searchbar = FacturioOmnisearch(list_client)
         searchbar.completion.connect('match-selected', self.switch_to_display)
         self.cent.attach(searchbar, 1,3,2,1)
@@ -151,15 +152,26 @@ class Customer(PageGui):
         TODO
         Remplit la treeview
         """
-        print(completion)
+        # print(completion)
 
     def switch_to_display(self, completion, model, iter):
         """
         recupere les info de la completion et les affiche
         avec la page info_persone
         """
-        num_client = str(list((completion.props.model.get_value(iter, 0)))[1])
-        page=DisplayClient(False,num_client)
+        iterr=((list((completion.props.model.get_value(iter, 0)))))
+        iterr=iterr[:-1]
+        num_client=""
+        for i in reversed(iterr):
+            if i == ' ':
+                break
+            else:
+                num_client+=i
+        if self.cdao.get_with_id(num_client)!=None:
+            page=DisplayClient(True,num_client)
+            page.is_pro=True
+        else:
+            page=DisplayClient(False,num_client)
         page.is_ut=False
         page.num_client=int(num_client)
         if num_client.isnumeric():

@@ -6,6 +6,7 @@ from facturio.classes.user import User
 from facturio.gui.add_customer import Add_Customer
 from facturio.gui.page_gui import PageGui
 from facturio.db.userdao import UserDAO
+from facturio.db.companydao import CompanyDAO
 from gi.repository import Gtk, Gdk, Gio, GdkPixbuf, OsmGpsMap
 from facturio import __path__
 import gi
@@ -38,8 +39,8 @@ class DisplayUser (PageGui):
     def __init__(self,is_ut=True,num_client=0,*args, **kwargs):
         super().__init__(*args, **kwargs)
         self.is_ut=is_ut
-        print("here")
         self.dao=UserDAO.get_instance()
+        self.cdao=CompanyDAO.get_instance()
         self.num_client=int(num_client)
         self.header_bar = HeaderBarSwitcher.get_instance()
         self.cent = Gtk.Grid(column_homogeneous=False,
@@ -47,7 +48,7 @@ class DisplayUser (PageGui):
                                   row_spacing=20)
         self.__init_grid()
         self.att_usr= self.__get_user()
-        self.__title(str(self.num_client))
+        self.__title("utilisateur")
         self.grid.attach(self.cent, 1, 2, 2, 1)
         self.__space_info()
         if DisplayUser.__instance is None:
@@ -84,13 +85,14 @@ class DisplayUser (PageGui):
         self.cent.attach(imp, 6, 9, 3, 2)
         imp.connect("clicked", self.header_bar.switch_page, "modify_usr")
         DisplayUser.buttons["ModifierClient"]=imp
-        self.__title(self.att_usr[1])
+        # print(self.att_usr)
         self.first_name(self.att_usr[2])
-        self.last_name(self.att_usr[3])
-        self.adrss(self.att_usr[5])
+        self.last_name(self.att_usr[1])
+        self.adrss(self.att_usr[3])
         self.mails(self.att_usr[4])
         self.nums(str(self.att_usr[6]))
-        self.siret(str(self.att_usr[7]))
+        self.siret(str(self.att_usr[6]))
+        self.entreprise(str(self.att_usr[3]))
         self.logo(__path__[0] + "/data/icons/Moi.png")
 
 
@@ -99,15 +101,15 @@ class DisplayUser (PageGui):
         Recupere de la bd les info utilisateur
         et les retourne sous forme de liste
         """
-        if not User.exists():
-            list_usr=['Aucun', 'Aucun', 'Aucun', 'Aucun',
-                         'Aucun', 'Aucun', 'Aucun', 'Aucun']
-            return list_usr
-            return list_usr
-        else:
-            self.client= self.dao.get_with_id(self.num_client)
-            list_client=self.client.dump_to_list()
-            return list_client
+        self.user= self.dao.get()
+        if self.user is None:
+            self.user=User("Aucun", "Aucun", "Aucun",
+                           "Aucun", "Aucun", "0", "0",
+                           __path__[0] + "/data/icons/Moi.png",1)
+            # print(self.user)
+            self.dao.insert(self.user)
+        list_client=self.user.dump_to_list()
+        return list_client
 
 
     def __get_client(self):
@@ -142,13 +144,14 @@ class DisplayUser (PageGui):
         self.imp.connect("clicked", self.header_bar.switch_page, "modify_usr")
 
         att_usr=att_usr[0]
-        self.__title(att_usr[1])
+        # print(att_usr)
         self.first_name(att_usr[2])
         self.last_name(att_usr[3])
         self.adrss(att_usr[5])
-        self.mails(att_usr[4])
+        self.mails(att_usr[6])
         self.nums(str(att_usr[6]))
         self.siret(str(att_usr[7]))
+        self.entreprise(str(att_usr[5]))
         self.logo(__path__[0] + "/data/icons/Moi.png")
 
     def client(self):
@@ -295,13 +298,13 @@ class DisplayUser (PageGui):
         self.cent.attach(log, 6, 4, 3, 6 )
 
     def update2user(self):
-        print(DisplayUser.entrys)
+        # print(DisplayUser.entrys)
         DisplayUser.entrys[i18n.t('gui.surname')].set_text(self.att_usr[1])
         DisplayUser.entrys[i18n.t('gui.name')].set_text(self.att_usr[2])
         DisplayUser.entrys[i18n.t('gui.address')].set_text(self.att_usr[5])
-        DisplayUser.entrys[i18n.t('gui.phone_number')].set_text(str(self.att_usr[6]))
-        DisplayUser.entrys[i18n.t('gui.email')].set_text(str(self.att_usr[4]))
-        DisplayUser.entrys[i18n.t('gui.siret_number')].set_text(str(self.att_usr[7]))
+        DisplayUser.entrys[i18n.t('gui.phone_number')].set_text(str(self.att_usr[4]))
+        DisplayUser.entrys[i18n.t('gui.email')].set_text(str(self.att_usr[5]))
+        DisplayUser.entrys[i18n.t('gui.business')].set_text(str(self.att_usr[5]))
 
 
     def commentaire(self,com):
