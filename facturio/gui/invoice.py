@@ -1067,9 +1067,10 @@ class CreateInvoicePage(Gtk.ScrolledWindow):
         filter_.add_pattern("*.jpeg")
         file_chooser.set_filter(filter_)
         if file_chooser.run() == Gtk.ResponseType.ACCEPT:
-           self.logo_fn = file_chooser.get_filename()
-           # self.logo_button.set_sensitive(False)
-           self.logo_button.set_label(i18n.t('gui.added'))
+            self.logo_fn = file_chooser.get_filename()
+            print(self.logo_fn)
+            # self.logo_button.set_sensitive(False)
+            self.logo_button.set_label(i18n.t('gui.added'))
 
     def _put_percentage(self, spin_btn):
         """Ajout d'un pourcentage(%) a la fin pour les taxes."""
