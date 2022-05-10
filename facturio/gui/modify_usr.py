@@ -6,6 +6,7 @@ from facturio.gui.page_gui import PageGui
 from facturio.gui.home import HeaderBarSwitcher
 from facturio.classes.user import User
 from facturio.db.userdao import UserDAO
+from facturio import __path__
 gi.require_version("Gtk", "3.0")
 from gi.repository import Gtk, Gdk, Gio, GdkPixbuf
 
@@ -57,6 +58,7 @@ class ModifyUsr(PageGui):
             self.dao.insert(self.user)
         list_client=self.user.dump_to_list()
         return list_client
+
 
     def __init_grid(self):
         """
