@@ -4,11 +4,11 @@ fi
 
 TAG="v0.9"
 
+rm -fr .facturio "${XDG_DATA_HOME:-$HOME/.local/share}/applications"/facturio.desktop $HOME/.local/bin/facturio
+
 mkdir -p .facturio
 mkdir -p "${XDG_DATA_HOME:-$HOME/.local/share}/applications"
 mkdir -p "$HOME"/.local/bin
-
-rm -fr .facturio "${XDG_DATA_HOME:-$HOME/.local/share}/applications"/facturio.desktop $HOME/.local/bin/facturio
 
 echo "$PATH" | grep -q "$HOME/.local/bin" || echo 'PATH=$PATH:$HOME/.local/bin' >> $HOME/.bashrc
 
