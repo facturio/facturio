@@ -30,5 +30,5 @@ pip install --prefix ../facturio-1.0/usr .
 
 cd ../facturio-1.0
 chmod +x run.sh
-tar czf facturio-1.0.tar.gz *
+tar czf ../facturio-1.0.tar.gz *
 ```
