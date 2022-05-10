@@ -16,7 +16,7 @@ class DBManager:
     def __init__(self):
         """Fonction pour creation ou/et connexion a la data_base."""
         db_path = BaseDirectory.save_data_path("facturio") + "/facturio.db"
-        print(db_path)
+        # print(db_path)
         self.connexion = sqlite3.connect(db_path)
 
         # execution des requetes il faut un curseur

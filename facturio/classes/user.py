@@ -23,8 +23,7 @@ class User:
         if User.instance is None:
             User.instance = self
         else:
-            print("Class singleton User already exists")
-            raise ValueError
+            raise ValueError("Class singleton User already exists")
 
         self.logo = logo
         self.first_name = first_name
@@ -81,15 +80,13 @@ class User:
         elif name == "_id":
             self._id = val
         else:
-            print(f"No attribute {name} found")
-            raise KeyError
+            raise KeyError(f"No attribute {name} found")
 
     @staticmethod
     def get_instance():
         """Recupere l'instance."""
         if User.instance is None:
-            print("Class singleton User already exists")
-            raise ValueError
+            raise ValueError("Class singleton User already exists")
         return User.instance
 
     @staticmethod

@@ -128,9 +128,7 @@ class EstimatePage(Gtk.ScrolledWindow):
         id_ = model[sel_iter][-1]
         inv_dao = EstimateDAO.get_instance()
         invoice = inv_dao.get_with_id(id_)
-        print(invoice)
         show_inv = ShowReceiptPage.get_instance()
-        print(show_inv)
         show_inv.load_receipt(invoice, add_adv=False)
         self.hb.switch_page(page="show_invoice_page")
 
@@ -207,7 +205,6 @@ class EstimatePage(Gtk.ScrolledWindow):
         prominent = self.inf_footer.get_active()
         show_adv = self.detail.get_active()
         inline = self.radio_line.get_active()
-        print(color)
         build_pdf(invoice, path="facture.pdf", color=color, inline=inline,
                   prominent_article_table=prominent,
                   show_advances_table=show_adv)

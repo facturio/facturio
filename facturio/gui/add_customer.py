@@ -72,7 +72,7 @@ class Add_Customer(PageGui):
         self.info=[]
         self.entry.set_text("")
         for i in self.list_att_par:
-            print(i)
+            # print(i)
             self.info.append(self.client_entries[i].get_text())
             self.client_entries[i].set_text("")
         if self.is_pro:
@@ -81,13 +81,14 @@ class Add_Customer(PageGui):
             self.info.append(self.client_entries[i18n.t('gui.siret_number')].get_text())
             self.client_entries[i18n.t('gui.siret_number')].set_text("")
             if self.is_valid_for_db(self.info) and self.info[-1].isnumeric():
-                print("info",self.info)
+                # print("info",self.info)
                 Cls=Company(self.info[6],self.info[0], self.info[1], self.info[2],
                            self.info[3], self.info[4], self.info[5],self.info[7])
                 self.cdao.insert(Cls)
                 self.header_bar.switch_page(None,"home_page")
             else:
-                print("champs incorrect")
+                pass
+                # print("champs incorrect")
         else:
             if self.is_valid_for_db(self.info):
                 Cls=Client(self.info[0], self.info[1], self.info[2],
@@ -95,7 +96,8 @@ class Add_Customer(PageGui):
                 self.dao.insert(Cls)
                 self.header_bar.switch_page(page="home_page")
             else:
-                print("champs incorrect")
+                pass
+                # print("champs incorrect")
 
 
     def __swicth_client(self):

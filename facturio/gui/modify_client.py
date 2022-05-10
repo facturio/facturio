@@ -38,8 +38,7 @@ class ModifyClient(PageGui):
                                   row_spacing=20)
         self.num_client =0
         if self.num_client != 0:
-            print("putain")
-            self.attr_usr=self.__get_client()
+            self.attr_usr = self.__get_client()
         else:
             self.attr_usr=[""]
         self.client_entries={}

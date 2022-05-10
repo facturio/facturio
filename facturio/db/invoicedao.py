@@ -92,7 +92,6 @@ class InvoiceDAO:
         articles = art_dao.get_all_with_id_receipt(tup[0])
         adv_dao = AdvanceDAO.get_instance()
         advances = adv_dao.get_all_with_id_invoice(tup[0])
-        print(f"balance from invdao={tup}")
         return Invoice(user=user,
                        client=client,
                        articles_list=articles,
