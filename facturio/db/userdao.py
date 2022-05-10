@@ -26,11 +26,10 @@ class UserDAO:
                      phone, business_num, first_name, last_name)
                      VALUES(?, ?, ?, ?, ?, ?, ?, ?)"""
         # convertir image logo sous forme de fichier binaire
-        logo = None
         # if user.logo is not None and user.logo != "Aucun":
         #     with open(user.logo, "rb") as user.logo:
         #         logo = user.logo.read()
-        values = [logo, user.company_name, user.email, user.address,
+        values = [user.logo, user.company_name, user.email, user.address,
                   user.phone_number, user.business_number, user.first_name,
                   user.last_name]
         self.bdd.cursor.execute(request, values)
@@ -62,6 +61,8 @@ class UserDAO:
         # TODO: VERIFIER QUE IL Y A UNE LIGNE SINON ERROR
         # print(User.exists())
         # print(data)
+        if data is None:
+            return None
         if not User.exists():
             return self._gen_user(data)
         else:

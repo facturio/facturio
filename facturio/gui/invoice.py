@@ -643,7 +643,7 @@ class CreateInvoicePage(Gtk.ScrolledWindow):
         user = User.get_instance()
         for name, entry in self.user_entries.items():
             print(name,user.get_attr(name))
-            entry.set_text(user.get_attr(name))
+            entry.set_text(str(user.get_attr(name)))
             entry.set_sensitive(False)
 
     def allow_only_phone(self, entry, string, *args):
@@ -696,6 +696,7 @@ class CreateInvoicePage(Gtk.ScrolledWindow):
         return
 
     def _update_user(self, btn):
+        UserDAO.get_instance().get()
         user = User.get_instance()
         for name, entry in self.user_entries.items():
             entry.set_sensitive(True)
@@ -923,6 +924,7 @@ class CreateInvoicePage(Gtk.ScrolledWindow):
 
     def _get_user(self):
         self.userdao = UserDAO.get_instance()
+        self.userdao.get()
         if not User.exists():
             self.user_data = {}
             for name, entry in self.user_entries.items():
@@ -1041,6 +1043,7 @@ class CreateInvoicePage(Gtk.ScrolledWindow):
 
     def clean_page(self):
         """Nettoyage de la page."""
+        dao = UserDAO.get_instance().get()
         self.update_user_btn.set_active(False)
         if User.exists():
             self._load_user_entries()
