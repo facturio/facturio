@@ -6,6 +6,8 @@
 L'installation est très simple, il suffit de télécharger le script d'installation [install.sh](https://azaleth.xyz/install.sh), et de l'exécuter.
 Tout sera automatiquement installé.
 
+Pour une installation hors-ligne (ou derrière un proxy restrictif), on téléchargera les fichiers `install-networkless.sh` et `facturio-vTAG.tar.gz`, dans le même dossier, avant d'exécuter le premier.
+
 # Construction du paquet à partir des sources
 
 On utilisera une VM Ubuntu 22.04 pour générer le paquet (afin d'avoir un paquet reproducible.)
