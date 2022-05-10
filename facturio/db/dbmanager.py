@@ -69,7 +69,7 @@ class DBManager:
             address TEXT,
             phone TEXT,
             business_num TEXT,
-            logo BLOB)""")
+            logo TEXT)""")
         self.connexion.commit()
 
     def _creation_table_article(self):

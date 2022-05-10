@@ -640,6 +640,7 @@ class CreateInvoicePage(Gtk.ScrolledWindow):
     def _load_user_entries(self):
         user = User.get_instance()
         for name, entry in self.user_entries.items():
+            print(name,user.get_attr(name))
             entry.set_text(user.get_attr(name))
             entry.set_sensitive(False)
 
