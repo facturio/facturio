@@ -101,8 +101,8 @@ class DisplayUser (PageGui):
         Recupere de la bd les info utilisateur
         et les retourne sous forme de liste
         """
-        self.user= self.dao.get()
-        if self.user is None:
+        self.user = self.dao.get()
+        if not User.exists():
             self.user=User("Aucun", "Aucun", "Aucun",
                            "Aucun", "Aucun", "0", "0",
                            __path__[0] + "/data/icons/Moi.png",1)

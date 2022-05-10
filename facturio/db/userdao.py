@@ -57,7 +57,7 @@ class UserDAO:
 
     def get(self):
         """Renvoie une liste tous les instances des client sur la BD."""
-        data = self.bdd.cursor.execute("select * from user").fetchone()
+        data = self.bdd.cursor.execute("select * from user").fetchall()[-1]
         # TODO: VERIFIER QUE IL Y A UNE LIGNE SINON ERROR
         # print(User.exists())
         # print(data)
