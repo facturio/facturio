@@ -707,7 +707,7 @@ class ShowReceiptPage(Gtk.ScrolledWindow):
                 self.save_modifs_btn.show()
                 self.plus_btn_adv.show()
         else:
-            self.title.set_text("<big> Devis </big>")
+            self.title.set_text("<big>" + i18n.t('gui.estimate') + "</big>")
             self.title.set_use_markup(True)
             self.adv_sep.hide()
             self.advances_grid.hide()

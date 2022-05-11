@@ -60,6 +60,8 @@ en:
   export: "Export"
   plus: "Plus"
   add_client: "Add a client"
+  create_estimate: "Create an estimate"
+  create_invoice: "Create an invoice"
 fr:
   paid: "Acquittée"
   unpaid: "Non-acquittée"
@@ -122,3 +124,5 @@ fr:
   export: "Exporter"
   plus: "Plus"
   add_client: "Ajouter un client"
+  create_estimate: "Créer un devis"
+  create_invoice: "Créer une facture"

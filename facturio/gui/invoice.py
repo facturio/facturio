@@ -336,10 +336,10 @@ class CreateInvoicePage(Gtk.ScrolledWindow):
         sep = Gtk.HSeparator()
         self.main_grid.attach(sep, 2, 7, 1, 1)
 
-        self.create_inv_btn = Gtk.Button(label="Creer Facture")
+        self.create_inv_btn = Gtk.Button(label=i18n.t('gui.create_invoice'))
         self.create_inv_btn.connect("clicked", self._gen_invoice)
         self.create_inv_btn.set_halign(Gtk.Align.END)
-        self.create_estimate_btn = Gtk.Button(label="Creer Devis")
+        self.create_estimate_btn = Gtk.Button(label=i18n.t('gui.create_estimate'))
         self.create_estimate_btn.connect("clicked", self._gen_estimate)
 
         hbox = Gtk.HBox()
